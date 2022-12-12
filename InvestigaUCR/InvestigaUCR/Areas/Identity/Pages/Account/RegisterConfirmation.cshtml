@@ -1,0 +1,48 @@
+﻿@page
+@model RegisterConfirmationModel
+<!DOCTYPE html>
+@{
+    ViewData["Title"] = "Confirmación de registro";
+}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" integrity="sha256-h20CPZ0QyXlBuAw7A+KluUYx/3pK+c7lYEpqLTlxjYQ=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="\css\LoginStyle.css" />
+    <title>Iniciar Sesion</title>
+</head>
+
+
+<body>
+    <div class="login-page">
+        <div class="form">
+            <section>
+                <img src="\Images\Logos\logo-login.svg" class="image-logo" data-src-small="\Images\Logos\logo-login.svg" id="logo" alt="Logo">
+                <div class="login-form">
+                    @{
+                        if (@Model.DisplayConfirmAccountLink)
+                        {
+                            <p>
+                                Esta aplicación actualmente no tiene un remitente de correo electrónico real registrado, consulte <a href="https://aka.ms/aspaccountconf">estos documentos</a> para saber cómo configurar un remitente de correo electrónico real.
+                                Normalmente esto sería enviado por correo electrónico: <a id="confirm-link" href="@Model.EmailConfirmationUrl">Clickee aquí para confirmar su cuenta</a>
+                            </p>
+                        }
+                        else
+                        {
+                            <h6 align="center">
+                                Por favor confirme su cuenta a traves de su correo electrónico
+                            </h6>
+                        }
+                    }
+                </div>
+            </section>
+        </div>
+    </div>
+</body>
+</html>
+
+

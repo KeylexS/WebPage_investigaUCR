@@ -1,0 +1,35 @@
+﻿@using Domain.Users.Entities
+@inject IDialogService DialogService
+@*PIIB22II02-1319 MC-PL-3.5 Show Logged Users Task : PIIB22II02-1324 create component to list users Dev: Sam Cheang
+*@
+<MudTable Items="@userRols" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+    <HeaderContent>
+        <MudTh>Id</MudTh>
+        <MudTh>Email</MudTh>
+        <MudTh>Roles</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id">@context.Id</MudTd>
+        <MudTd DataLabel="Email">@context.Email</MudTd>
+        <MudTd DataLabel="Roles">
+            @foreach (var rol in context.Roles)
+            {
+                <p class="d-inline">@rol </p>
+            }
+            <ToolButton onClick="OpenDialog" _icon="@Icons.Filled.AddCircle" _text="Añadir rol" />
+        </MudTd>
+    </RowTemplate>
+</MudTable>
+
+@code {
+    [Parameter]
+    public IEnumerable<UserRolModel>? userRols { get; set; }
+
+    public User user { get; set; }
+
+    private void OpenDialog()
+    {
+        //DialogParameters parameters = new DialogParameters() { ["_user"] = user };
+        //DialogService.Show<DialogAddRoles>("", parameters);
+    }
+}

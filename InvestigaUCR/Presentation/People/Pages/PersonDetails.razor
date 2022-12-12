@@ -1,0 +1,280 @@
+﻿@*PIIB22II02-15 MC-PL-2.1 Show detailed profile information about a person 
+  task: PIIB22II02-581 Create page to see person details driver(JoséFNúñez), navigator(AndreyMena)*@
+
+@page "/personas/{PersonId}"
+@using Application.People
+@using Domain.Core.Exceptions
+@using Domain.People.Entities
+@using Presentation.Core.Components
+@using Presentation.People.Components
+@using Domain.People.Relations;
+@using Domain.ResearchProjects.Entities;
+@using Domain.Publications.Entities;
+@using Presentation.Publications.Components;
+@using Presentation.ResearchGroups.Components;
+@using Presentation.ResearchProjects.Components;
+@using Presentation.Theses.Components;
+@using Application.Shared.ImageConverter;
+@inject IPeopleService PersonService
+@inject IImageService ImageService
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+
+<Loading IsLoading="_isLoading">
+@if (_person is not null) {
+    <MudText Align="Align.Center" Typo="Typo.h2"> @_person?.HighestDegree.ToString() @_person?.Name.ToString() @_person?.LastName1.ToString() @_person?.LastName2.ToString() </MudText>
+        @*PIIB22II02-521 MC-PL-2.5 Show the default profile picture of a person, GreivinArce*@
+        <br>
+        <br>
+        <PersonEditImage OnImageEdit="ChangeImage" _person="_person"/>
+        <br>
+
+        <PersonEditUniversity OnUniversityEdit="ChangeUniversity" _person="_person" />
+        @*<MudText Align="Align.Center" Typo="Typo.h3"> @_person?.University.ToString() </MudText>*@
+        
+        <MudText Align="Align.Center" Typo="Typo.h4"> <MudLink Typo="Typo.h4" Underline="Underline.Always"> @_person?.Id.ToString().ToLower()</MudLink></MudText>
+        <p></p>
+        @*PIIB22II02-190 MC-PL-2.3 Show publications associated with a person | task:  PIIB22II02-590 Create blazor component for the publication tab.*@
+        <br>
+        <br>
+        <MudText id="projects" Align="Align.Center" Typo="Typo.h2">Proyectos</MudText>
+        <br>
+        <br>
+        <MudPaper Class="d-flex flex-grow-1 gap-4 justify-center" Elevation="0">
+            @if (isOpenProjects)
+            {
+                <ResearchProjectsList _researchProjects="_person?.ResearchProjects" />
+            }
+            else if (_person?.ResearchProjects.Count > 0)
+            {
+                <ResearchProjectsList _researchProjects="_person.ResearchProjects.Take(2)" />
+            }
+            else
+            {
+                <MudText Align="Align.Center" Color=Color.Warning Typo="Typo.body2" Class="text-danger">No se encontraron proyectos asociados.</MudText>
+            }
+        </MudPaper>
+        @if (_person?.ResearchProjects.Count > 2)
+        {
+                <br>
+                <br>
+                <MudPaper Class="d-flex flex-grow-1 gap-4 justify-center" Elevation="0">
+                    <SeeMoreButton onClick="onClickProjects" />
+                </MudPaper>
+        }
+        <br>
+        <br>
+        <MudText id="publications" Align="Align.Center" Typo="Typo.h2">Publicaciones</MudText>
+        <br>
+        <br>
+        @*PIIB22II02-190 MC-PL-2.3 Show publications associated with a person | task:  PIIB22II02-590 Create blazor component for the publication tab.*@
+        <MudPaper Class="d-flex flex-grow-1 gap-4 justify-center" Elevation="0">
+            @if (isOpenPublications)
+            {
+                <PublicationsList _publications="@_person?.Publications" />
+
+            }
+            else if (_person?.Publications.Count > 0)
+            {
+                <PublicationsList _publications="@_person.Publications.Take(2)" />
+
+            }
+            else
+            {
+                <MudText Align="Align.Center" Color=Color.Warning Typo="Typo.body2" Class="text-danger">No se encontraron publicaciones asociadas.</MudText>
+            }
+        </MudPaper>
+        <br>
+        @if (_person?.Publications.Count > 2)
+        {
+            <MudPaper Class="d-flex flex-grow-1 gap-4 justify-center" Elevation="0">
+                <SeeMoreButton onClick="onClickPublications" />
+            </MudPaper>
+        }
+        <br>
+        <br>
+        <MudText id="researchGroups" Align="Align.Center" Typo="Typo.h2">Grupos de Investigación</MudText>
+        <br>
+        <br>
+        @*PIIB22II02-525 MC-PL-2.8 Show research groups associated with a person. Greivin (Driver) & Andrey (Navigator)*@
+        <MudPaper Class="d-flex flex-grow-1 gap-4 justify-center" Elevation="0">
+            @if (isOpenGroups)
+            {
+                <GroupCard _groups="@_groups" />
+
+            }
+            else if (_groups?.Count() > 0)
+            {
+                 <GroupCard _groups="@_groups.Take(2)" />
+
+            }
+            else
+            {
+            <MudText Align="Align.Center" Color=Color.Warning Typo="Typo.body2" Class="text-danger">No se encontraron grupos asociados.</MudText>
+            }
+        </MudPaper>
+        @if (_groups?.Count() > 2)
+        {
+            <br>
+            <br>
+            <MudPaper Class="d-flex flex-grow-1 gap-4 justify-center" Elevation="0">
+                <SeeMoreButton onClick="onClickGroups" />
+            </MudPaper>
+        }
+        @*PIIB22II02-524 MC-PL-2.7 Show thesis associated with a person | task: PIIB22II02-1045 Create blazor component for the theses tab.*@
+        <br>
+        <br>
+        <MudText id="theses" Align="Align.Center" Typo="Typo.h2">Tesis</MudText>
+        <br>
+        <br>
+        <MudPaper Class="d-flex flex-grow-1 gap-4 justify-center" Elevation="0">
+            @if (isOpenTheses)
+            {
+                <ThesesList _theses="@_person?.Theses" />
+            }
+            else if(_person?.Theses.Count > 0)
+            {
+                <ThesesList _theses="@_person.Theses.Take(2)"/>
+            }
+            else
+            {
+                <MudText Align="Align.Center" Color=Color.Warning Typo="Typo.body2" Class="text-danger">No se encontraron tesis asociadas</MudText>
+            }
+        </MudPaper>
+        @if (_person?.Theses.Count > 2)
+        {
+            <MudPaper Class="d-flex flex-grow-1 gap-4 justify-center" Elevation="0">
+                <SeeMoreButton onClick="onClickTheses" />
+            </MudPaper>
+        }
+}else{
+        <h6 class="text-danger">Esta persona no existe</h6>
+}
+</Loading>
+
+
+@code {
+    [Parameter] public string? PersonId { get; set; }
+    private bool _isLoading { get; set; }
+    private Person? _person;
+    //PIIB22II02-525 MC-PL-2.8 Show research groups associated with a person. Greivin(Driver) & Andrey(Navigator)
+    private IEnumerable<GroupDTO>? _groups;
+    private bool isEditingImage = false;
+    PersonEditImage pageData = new PersonEditImage();
+    PersonEditUniversity pageUniversityData = new PersonEditUniversity();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPerson();
+    }
+
+    public String getImage(byte[]? img)
+    {
+        return img != null ? ImageService.ConvertByteToImage(img) : "/Images/DefaultImages/profile_photo.png";
+    }
+
+    private async Task LoadPerson()
+    {
+        _isLoading = true;
+        _person = await PersonService.GetPersonByIdAsync(PersonId);
+        //PIIB22II02 - 525 MC - PL - 2.8 Show research groups associated with a person. Greivin(Driver) & Andrey(Navigator)
+        _groups = await PersonService.GetGroupsByPersonID(PersonId);
+
+        _isLoading = false;
+    }
+
+    private bool isOpenProjects = false;
+
+    public void onClickProjects(bool isOpenProjects)
+    {
+        this.isOpenProjects = isOpenProjects;
+
+    }
+
+    private bool isOpenPublications = false;
+
+    public void onClickPublications(bool isOpenPublications)
+    {
+        this.isOpenPublications = isOpenPublications;
+
+    }
+
+    //PIIB22II02-525 MC-PL-2.8 Show research groups associated with a person. Greivin(Driver) & Andrey(Navigator)
+    private bool isOpenGroups = false;
+
+    public void onClickGroups(bool isOpenGroups)
+    {
+        this.isOpenGroups = isOpenGroups;
+
+    }
+
+    //PIIB22II02-524 MC-PL-2.7 Show thesis associated with a person | task: PIIB22II02-1045 Create blazor component for the theses tab.
+    private bool isOpenTheses = false;
+
+    public void onClickTheses(bool isOpenTheses)
+    {
+        this.isOpenTheses = isOpenTheses;
+    }
+
+    private async void ChangeImage(byte[] _image)
+    {
+        try
+        {
+            await PersonService.SavePersonImage(_person!, _image);
+            pageData.personImageMessage = "La imagen de la persona ha sido modificada.";
+            pageData.personAlertColor = Alert.AlertColor.Success;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData.personImageMessage = null;
+            pageData.personAlertColor = Alert.AlertColor.Danger;
+            StateHasChanged();
+        }
+        catch (DomainException e)
+        {
+            pageData.personImageMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData.personImageMessage = null;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            pageData.personImageMessage = "Ocurrió un error. Intente de nuevo.";
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData.personImageMessage = null;
+            StateHasChanged();
+        }
+    }
+
+    private async void ChangeUniversity(string _text)
+    {
+        try
+        {
+            await PersonService.SavePersonUniversity(_person!, _text);
+            pageUniversityData._personUniversityMessage = "La universidad asociada a sido modificado.";
+            pageUniversityData._personAlertColor = Alert.AlertColor.Success;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageUniversityData._personUniversityMessage = null;
+            pageUniversityData._personAlertColor = Alert.AlertColor.Danger;
+            StateHasChanged();
+        }
+        catch (DomainException e)
+        {
+            pageUniversityData._personUniversityMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageUniversityData._personUniversityMessage = null;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            pageUniversityData._personUniversityMessage = "Ocurrió un error. Intente de nuevo.";
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageUniversityData._personUniversityMessage = null;
+            StateHasChanged();
+        }
+    }
+}

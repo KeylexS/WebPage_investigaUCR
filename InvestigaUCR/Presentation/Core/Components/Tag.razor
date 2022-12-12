@@ -1,0 +1,25 @@
+﻿@if (tagName is not null) 
+{
+   <AuthorizeView Roles="AdminRole, CoordinatorRole">
+        <Authorized>
+            <MudChip Disabled="false" OnClose="TagSelected" Class="align-self-center">@tagName<MudIcon Icon="@Icons.Filled.Circle" Color="Color.Transparent" /></MudChip>
+        </Authorized>
+        <NotAuthorized>
+            <MudChip Disabled="true" Class="align-self-center">@tagName<MudIcon Icon="@Icons.Filled.Circle" Color="Color.Transparent" /></MudChip>
+        </NotAuthorized>
+    </AuthorizeView>
+
+}
+
+@code {
+    [Parameter]
+    public string? tagName { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnTagSelected { get; set; }
+
+    private async Task TagSelected()
+    {
+        await OnTagSelected.InvokeAsync(tagName);
+    }
+}

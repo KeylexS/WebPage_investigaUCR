@@ -1,0 +1,33 @@
+﻿@*PIIB22II02-500 SD-RG-3.5 Show a preview of the research project on the research group pagePIIB22II02-736Make show more component*@
+<MudButton Class="rounded-lg" OnClick="@(() => onClick.InvokeAsync(ChangeStatus()))" Variant="Variant.Filled" Color="Color.Primary" Style="background-color:#EEEEEE; color: black; width:118px; height:50px;">
+    @if (isOpen)
+    {
+        <MudText Style="font-weight:bold">
+            Ver menos
+            <MudIcon Icon="@Icons.Filled.KeyboardArrowUp" />
+        </MudText>
+
+    }
+    else
+    {
+        <MudText Style="font-weight:bold">
+            Ver más<br>
+            <MudIcon Icon="@Icons.Filled.KeyboardArrowDown" />
+        </MudText>
+    }
+</MudButton>
+
+
+
+@code {
+    private bool isOpen { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<bool> onClick { get; set; }
+
+    public bool ChangeStatus()
+    {
+        isOpen = !isOpen;
+        return isOpen;
+    }
+}

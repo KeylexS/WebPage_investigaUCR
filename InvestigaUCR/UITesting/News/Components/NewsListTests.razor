@@ -1,0 +1,128 @@
+﻿@using Application.News
+@using Application.Shared.ImageConverter
+@using Domain.Core.Helpers
+@using Domain.News.DTOs;
+@using Domain.News.Entities;
+@using MudBlazor
+@using Presentation.News.Components
+@using Xunit
+@using Bunit
+
+@inherits TestContext
+
+@code {
+    internal class FallbackServiceProvider : IServiceProvider
+    {
+        public object GetService(Type serviceType)
+        {
+
+            if(serviceType == typeof(INewsService))
+            {
+                return new NewsService();
+            }
+            if (serviceType == typeof(IImageService))
+            {
+                return new ImageService();
+            }else{
+                return null!;
+            }
+        }
+    }
+
+    internal class NewsService : INewsService
+    {
+        public async Task<IEnumerable<NewsDTO>> GetNewsAsync()
+        {
+            var news1 = new NewsDTO("Id1", "Title1", "Desc1", "Autor1", null, null, null);
+            var news2 = new NewsDTO("Id2", "Title2", "Desc2", "Autor2", null, null, null);
+            var objectsList = new List<NewsDTO>() { news1, news2 };
+            return await Task.FromResult<IEnumerable<NewsDTO>>(objectsList);
+        }
+
+        public async Task<GroupNews?> GetNewsByIdAsync(String? id)
+        {
+            var news1 = new GroupNews("Id1", "Title1", "Desc1", "Autor1", null, null, null);
+            return await Task.FromResult<GroupNews>(news1);
+        }
+
+        public async Task SaveNewsTitle(GroupNews news, string? text){
+            throw new NotImplementedException();
+        }
+
+        public async Task SaveNewsDescription(GroupNews news, string? text)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task SaveNewsImage(GroupNews news, byte[]? img)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetMonth(NewsDTO news)
+        {
+            return "01";
+        }
+
+        public string GetDay(NewsDTO news)
+        {
+            return "01";
+        }
+
+        public string GetYear(NewsDTO news)
+        {
+            return "1970";
+        }
+    } 
+
+    internal class ImageService : IImageService
+    {
+        public string ConvertByteToImage(byte[] img)
+        {
+            return "/Images/DefaultImages/newsDefault.png";
+        }
+
+        public byte[] ConvertImageToByte(string url)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    [Fact]
+    public void NewsDateComponentTest()
+    {
+        Services.AddFallbackServiceProvider(new FallbackServiceProvider());
+
+        var news = new NewsDTO("ESE-1", "Title1", "Default Description", "Default Author", null, null, null);
+        var objectList = new List<NewsDTO>() { news };
+
+        var cut = RenderComponent<NewsList>(param => param.Add(n => n._groupNews, objectList));
+        var actualMudCard = cut.FindComponent<MudCard>();
+        var actualMudCardContent = actualMudCard.FindComponent<MudGrid>();
+        var actualMudDateItem = actualMudCardContent.FindComponent<MudItem>();
+
+        actualMudDateItem.MarkupMatches(@"<div class=""mud-grid-item mud-grid-item-xs-12 mud-grid-item-sm-1"">
+                                          <div class=""mud-paper mud-elevation-0"" style="""">
+                                            <h4 class=""mud-typography mud-typography-h4 mud-typography-align-right"">01</h4>
+                                            <h1 class=""mud-typography mud-typography-h1 mud-typography-align-right"">01</h1>
+                                            <h4 class=""mud-typography mud-typography-h4 mud-typography-align-right"">1970</h4>
+                                          </div>
+                                        </div>");
+    }
+
+    [Fact]
+    public void NewsItemImageComponentTest()
+    {
+        Services.AddFallbackServiceProvider(new FallbackServiceProvider());
+
+        var newsItem = new NewsDTO("ESE-1", "Title1", "Generic description", "Robert Montoya", null, null, null);
+        var objectList = new List<NewsDTO>() { newsItem };
+
+        var cut = RenderComponent<NewsList>(param => param.Add(p => p._groupNews, objectList));
+        var actualMudCard = cut.FindComponent<MudCard>();
+        var actualMudImage = actualMudCard.FindComponent<MudImage>();
+
+        actualMudImage.MarkupMatches(@"<img src=""/Images/DefaultImages/newsDefault.jpg"" class=""mud-image object-cover object-center"" width=""310"" height=""210"">");
+    }
+
+}

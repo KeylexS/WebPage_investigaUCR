@@ -1,0 +1,143 @@
+﻿@using Domain.Core.Helpers
+@using Domain.Core.ValueObjects
+@using Domain.ResearchProjects.ValueObjects
+@using Microsoft.AspNetCore.Components.Forms
+@using Presentation.ResearchProjects.Models
+@using Domain.ResearchProjects.Entities
+@using Domain.Publications.Entities
+@using Presentation.Core.Components
+@using Application.ResearchProjects
+@using Application.Publications
+@using Application.People
+@using Domain.People.Entities
+@inject IResearchProjectsService ResearchProjectService
+@inject ICollaborateService CollaborateService
+@inject NavigationManager _navigationManager
+@inject IGroupService GroupService
+@inject ISnackbar Snackbar
+@inject IPublications PublicationsService
+
+
+
+<Loading IsLoading="_isLoading">
+    <MudText Class="d-flex justify-center flex-grow-1"
+             Style="padding-right:10px; padding-top:30px; padding-bottom:30px" Elevation="0" Justify="Justify.Center"
+             Typo="Typo.h1">
+        Agregar publicación
+    </MudText>
+    <MudDialog>
+        <DialogContent>
+            <MudAutocomplete T="string" Label="Seleccione nueva publicación" @bind-Value="_publicationName" SearchFunc="@Search1"
+                              AdornmentIcon="@Icons.Material.Filled.Group" AdornmentColor="Color.Primary" AnchorOrigin=" Origin.BottomCenter"
+                            />
+        </DialogContent>
+        <DialogActions>
+            <MudToolBar Class="d-flex justify-start flex-grow-1 gap-4">
+                <MudButton OnClick="Close" Color="Color.Primary">Cancelar</MudButton>
+                <MudButton OnClick="HandleSubmit" Disabled="@ValidateRequiredValues()" Color="Color.Primary" Variant="Variant.Filled">Agregar publicación</MudButton>
+            </MudToolBar>
+        </DialogActions>
+    </MudDialog>
+</Loading>
+
+@code {
+    [Parameter]
+    public IEnumerable<Publication>? _associatedPublications { get; set; } = Enumerable.Empty<Publication>();
+    [Parameter]
+    public ResearchProject _associatedResearchProject { get; set; } = null!;
+
+    private bool _isLoading { get; set; }
+
+    private string _publicationName { get; set; } = string.Empty;
+
+    private static string DefaultDragClass = "relative rounded-lg border-2 border-dashed pa-4 mt-4 mud-width-full mud-height-full";
+
+    private string DragClass = DefaultDragClass;
+
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    void Close() => MudDialog.Close(DialogResult.Ok(true));
+    void Exit() => MudDialog.Cancel();
+    public IEnumerable<Publication>? _publications { get; set; } = Enumerable.Empty<Publication>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadGroups();
+    }
+
+    private async Task LoadGroups()
+    {
+        _isLoading = true;
+        _publications = await PublicationsService.GetPublicationsAsync();
+        _isLoading = false;
+    }
+
+    private async Task HandleSubmit()
+    {
+        string pID = GetPublicationDOI(_publicationName);
+        var auxP = _publications!.FirstOrDefault(x => x.DOI == pID)!;
+        await ResearchProjectService.AddPublicationAsync(_associatedResearchProject, auxP);
+        Exit();
+    }
+    public string GetPublicationDOI(string name)
+    {
+        string auxName = "";
+        foreach (var publication in _publications!)
+        {
+            auxName = publication.Name;
+            if (name == auxName)
+            {
+                return publication.DOI;
+            }
+        }
+        return null!;
+    }
+
+    public bool ValidateRequiredValues()
+    {
+        if (_publicationName != null)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    private async Task<IEnumerable<string>> Search1(string value)
+    {
+        await Task.Delay(5);
+        List<string> names = new List<string>();
+
+
+        foreach (var publication in _publications!)
+        {
+            if (!@publicationExists(publication))
+            {
+                names.Add(publication.Name.ToString());
+            }
+        }
+
+        // if text is null or empty, show complete list
+        if (string.IsNullOrEmpty(value))
+            return names;
+        return names.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    public bool publicationExists(Publication publication)
+    {
+        foreach (var associatedPublication in _associatedPublications!)
+        {
+            if (publication.DOI == associatedPublication.DOI)
+            {
+                return true;
+            }
+
+        }
+        return false;
+    }
+    private void RefreshPage()
+    {
+        string projectID = "/proyectos/" + _associatedResearchProject.Id.ToString();
+        _navigationManager.NavigateTo(projectID, true);
+
+    }
+}

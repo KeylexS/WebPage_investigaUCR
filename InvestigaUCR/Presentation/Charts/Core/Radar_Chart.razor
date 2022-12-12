@@ -1,0 +1,50 @@
+﻿@inject IChartService ChartsService
+@using Domain.Shared.Charts.Entities
+@using Presentation.Charts.Core
+@using Application.Shared
+<Chart Config="_config"></Chart>
+
+@code {
+    [Parameter]
+    public RadarChart? radarChart { get; set; }
+    public List<string> labels { get; set; } = null!;
+    public List<double> values { get; set; } = null!;
+
+    private RadarConfig _config;
+    private RadarChart _radarChartJs;
+
+    private Random _rand = new Random();
+
+    protected override void OnInitialized()
+    {
+        labels = radarChart.Labels;
+        values = radarChart.Values;
+
+        _config = new RadarConfig
+            {
+                
+                Options = new RadarOptions
+                {
+                    Title = new OptionsTitle
+                    {
+                        Display = false,
+                        Text = "Entries"
+                    }
+
+                }
+            };
+
+        foreach (string label in labels)
+        {
+            _config.Data.Labels.Add(label);
+        }
+
+
+        RadarDataset<double> dataset = new RadarDataset<double>(values);
+        dataset.Label = "Cantidad de publicaciones";
+        dataset.BorderColor = ColorUtil.RandomColorString();
+        _config.Data.Datasets.Add(dataset);
+    }
+
+}
+

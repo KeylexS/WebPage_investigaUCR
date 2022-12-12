@@ -1,0 +1,50 @@
+﻿@page "/noticias"
+@using Application.News
+@using Domain.News.DTOs
+@using Domain.News.Entities
+@using Presentation.Core.Components
+@using Presentation.News.Components
+
+@inject IDialogService DialogService
+@inject INewsService NewsService
+@inject IGroupService GroupService
+
+<div class="container">
+    <MudText Align="Align.Center" Typo="Typo.h1">
+        Noticias
+        <AuthorizeView Roles="AdminRole, CoordinatorRole">
+            <ToolButton onClick="OpenDialog" _icon="@Icons.Filled.AddCircle" _text="Añadir una noticia nueva" />
+        </AuthorizeView>
+    </MudText>
+    <br>
+    <Loading IsLoading = "_isLoading">
+        <NewsList _groupNews = "_groupNews" />
+    </Loading>
+</div>
+
+@code {
+    private bool _isLoading { get; set; }
+
+    private IEnumerable<NewsDTO>? _groupNews;
+    public IEnumerable<GroupDTO>? _groups;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadStocks();
+    }
+
+    private async Task LoadStocks()
+    {
+        _isLoading = true;
+        _groupNews = await NewsService.GetNewsAsync();
+        _groups = await GroupService.GetGroupAsync();
+        _isLoading = false;
+    }
+
+    private void OpenDialog()
+    {
+        DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var parameters = new DialogParameters { ["_groups"] = _groups, ["_news"] = _groupNews};
+        DialogService.Show<AddNewsForm>("", parameters, maxWidth);
+    }
+}

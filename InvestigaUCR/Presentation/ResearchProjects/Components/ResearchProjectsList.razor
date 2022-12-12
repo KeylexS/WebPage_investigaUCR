@@ -1,0 +1,99 @@
+﻿@using Domain.ResearchProjects.Entities
+@using Presentation.Core.Components;
+@using System;
+@using System.Globalization;
+
+<div class="container">
+    @if (!_researchProjects!.Any())
+    {
+        <MudText Align="Align.Center" Color=Color.Warning Typo="Typo.body2" Class="text-danger">No hay proyectos de investigación registrados actualmente.</MudText>
+    }
+    else
+    {
+        <MudGrid Spacing="@spacing" Justify="Justify.Center">
+            @foreach (var researchProject in _researchProjects!)
+            {
+                <MudItem>
+                    <MudCard Outlined="true" Style=" height: 460px; width: 560px;" Elevation="0" Allign="Align.Center">
+                        <MudCardMedia Image="@researchProject.getImageSrc()" Class="d-flex justify-space-around flex-grow-1 gap-4" Elevation="0" Style=" height: 190px; width: 558px" />
+                        <MudCardContent>
+                            <MudText Class="d-flex justify-center flex-grow-1 gap-4" Align="Align.Center" Color="Color.Dark" Typo="Typo.h4">@researchProject.Id </MudText>
+                            <MudText Class="d-flex justify-center flex-grow-1 gap-4" Align="Align.Center" Color="Color.Primary" Typo="Typo.h3">
+                                <MudLink Style="display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden" Typo="Typo.h3" Href="@($"/proyectos/{researchProject.Id}")">@researchProject.Name</MudLink>
+                            </MudText>
+                            <MudText Class="d-flex justify-center flex-grow-1 gap-4" Elevation="0" Align="Align.Center" Typo="Typo.body1" Color="Color.Tertiary"> @alligncomponent(researchProject.Name.ToString())</MudText>
+                            <MudText Class="d-flex justify-center flex-grow-1 gap-4" Elevation="0" Align="Align.Center" Typo="Typo.subtitle2" Color="Color.Warning">@researchProject.getFormatedStartDate() hasta @researchProject.getFormatedEndDate()</MudText>
+                            <MudGrid Justify="Justify.Center">
+                                <MudItem Style="padding-right:2px">
+                                    <MudText Class="d-inline justify-center flex-grow-1 gap-4" Elevation="0" Align="Align.Center" Typo="Typo.body2" Color="Color.Warning">Estado:</MudText>
+                                </MudItem>
+                                <MudItem Style="padding-left:2px">
+                                    @if (@researchProject.getStatus() == "En proceso")
+                                    {
+                                        <MudChip Label="true" Class="d-inline" Elevation="0" Align="Align.Center" Typo="Typo.body2" Color="Color.Primary" Size="Size.Small">@researchProject.getStatus()</MudChip>
+                                    }
+                                    else if (@researchProject.getStatus() == "Finalizado")
+                                    {
+                                         <MudChip Label="true" Class="d-inline" Elevation="0" Align="Align.Center" Typo="Typo.body2" Color="Color.Warning" Size="Size.Small">@researchProject.getStatus()</MudChip>
+                                    }
+                                    else if (researchProject.getStatus() == "Pronto a iniciar")
+                                    {
+                                        <MudChip Label="true" Class="d-inline" Elevation="0" Align="Align.Center" Typo="Typo.body2" Color="Color.Info" Size="Size.Small">@researchProject.getStatus()</MudChip>
+                                    }
+                                </MudItem>
+                            </MudGrid>
+                            <MudPaper Class="d-flex flex-grow-1 gap-4 justify-center" Elevation="0" Style="padding-top:10px; padding-bottom:10px">
+                                @if (researchProject.ResearchAreas.Count() > 2) {
+                                    @foreach (var tag in researchProject.ResearchAreas)
+                                        {
+                                            @if (tagsCount < 2){
+                                            <MudChip Disabled="true" Class="align-self-center">@tag.Name<MudIcon Icon="@Icons.Filled.Circle" Color="Color.Transparent" /></MudChip>
+                                        }
+                                        tagsCount++;
+                                    }
+                                    <MudChip>...</MudChip>
+                                }
+                                else if (researchProject.ResearchAreas.Count() == 0)
+                                {
+                                    <MudChip IconColor="Color.Tertiary" Color="Color.Tertiary" Disabled="true"></MudChip>
+                                }
+                                else
+                                {
+                                    @foreach (var tag2 in researchProject.ResearchAreas)
+                                    {
+                                        <MudChip Disabled="true" Class="align-self-center">@tag2.Name<MudIcon Icon="@Icons.Filled.Circle" Color="Color.Transparent" /></MudChip>
+                                    }
+                                }
+                            </MudPaper>
+                            <MudText Align="Align.Center" Style="display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden" GutterBottom="true" Typo="Typo.body2">@researchProject.getDescription()</MudText>
+                        </MudCardContent>
+                        <MudCardActions>
+
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    }
+</div>
+
+@code {
+    public int spacing { get; set; } = 10;
+
+    // Var to count de numbers of tags showed
+    public int tagsCount { get; set; } = 0;
+
+    [Parameter]
+    public IEnumerable<ResearchProject>? _researchProjects { get; set; }
+
+    public String? alligncomponent(String name)
+    {
+        String? newDesc = " ";
+        if (name?.Length < 50) {
+            newDesc = newDesc?.PadLeft(80, '-');
+        } else if (name?.Length < 100 && name?.Length > 50) {
+            newDesc = newDesc?.PadLeft(50, '-');
+        }
+        return newDesc;
+    }
+}

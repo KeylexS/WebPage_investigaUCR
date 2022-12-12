@@ -1,0 +1,25 @@
+﻿@*  US ID: PIIB22II02-186
+    US name: KS-RP-1.2 Card Display
+    Technical Task Resolved: PIIB22II02-311 Implement Loading component*@
+@*ID US: PIIB22II02-59, task: PIIB22II02-324 Add loading componet*@
+
+
+@if (@IsLoading)
+{
+    <div class="d-flex justify-content-center text-primary">
+        <div class="spinner-border" role="status">
+        </div>
+    </div>
+}
+else
+{
+    @ChildContent
+}
+
+@code {
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

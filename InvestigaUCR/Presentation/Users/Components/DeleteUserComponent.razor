@@ -1,0 +1,34 @@
+﻿@inject IDialogService DialogService
+@using Application.Users;
+@using Domain.Core.Exceptions
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Mvc
+@inject IUserService UserService
+@inject NavigationManager NavigationManager
+@inject IDialogService DialogService
+
+
+
+@*
+    PIIB22II02-476 MC-PL-3.3 Delete user | PIIB22II02-1315 Show delete button and Add functionality for delete user.
+*@
+
+<MudNavLink Class="" OnClick="OnDeleteUserClicked">
+    <MudIconButton Class="" ButtonType="ButtonType.Submit" Icon="@Icons.Filled.DeleteForever" OnClick="OnDeleteUserClicked">
+    </MudIconButton>Eliminar mi cuenta
+</MudNavLink>
+
+@code {
+    public string? _userDeleteMessage { get; set; } = null;
+    public Alert.AlertColor _userAlertColor = Alert.AlertColor.Danger;
+
+    public async void OnDeleteUserClicked()
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("ContentText", "La eliminación del usuario no podrá deshacerse");
+        parameters.Add("ButtonText", "Borrar Usuario!");
+        parameters.Add("Color", Color.Error);
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        DialogService.Show<DialogDeleteUser>("Borrar", parameters, options);
+    }
+}

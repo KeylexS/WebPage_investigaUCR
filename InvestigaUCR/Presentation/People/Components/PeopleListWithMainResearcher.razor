@@ -1,0 +1,54 @@
+﻿@using Domain.People.Entities
+@using Domain.People.DTOs
+@inject IImageService ImageService
+
+
+<div class="container">
+    <br /><br />
+    @if (!_people!.Any())
+    {
+        <MudText Align="Align.Center" Color=Color.Error Typo="Typo.body2" Class="text-danger">No hay personas registradas actualmente.</MudText>
+    }
+    else
+    {
+        <span style="white-space: pre-line"></span>
+        <p>
+            <MudGrid Spacing="@spacing" Justify="Justify.Center">
+                @foreach (var person in _people!)
+                {
+                    <MudItem lg="3">
+                        <MudCard Outlined="true" Elevation="0">
+                            <MudCardContent>
+                                <MudText Align="Align.Center"><MudImage Src="@getImage(person.ProfilePicture)" Elevation="0" Class="rounded-circle" Style="align-content" Width="100" Height="100" Fluid="true" /></MudText>
+                                <MudText id="@person.Id" Align="Align.Center" Typo="Typo.h3" Style="display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden"><MudLink Color="Color.Default" Typo="Typo.h3" Href="@($"/personas/{person.Id}")">@person.HighestDegree.ToString() @person.Name.ToString() @person.LastName1.ToString()</MudLink></MudText>
+                                <MudText id="@person.University" Align="Align.Center" Typo="Typo.body2" Style="display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden">@person.University.ToString()</MudText>
+                                <MudText id="@person.Name" Align="Align.Center" Typo="Typo.body2" Style="display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden"> <MudLink Typo="Typo.body2" Underline="Underline.Always">@person.Id.ToString().ToLower()</MudLink></MudText>
+                                @if (person == _people.First())
+                                {
+                                    <MudText id="@person.University" Align="Align.Center" Typo="Typo.body2" Style="display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden">Investigador(a) Principal</MudText>
+                                }
+                                else
+                                {
+                                     <MudText id="@person.University" Align="Align.Center" Typo="Typo.body2" Style="display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden">Colaborador(a)</MudText>
+                                }
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                }
+            </MudGrid>
+        </p>
+    }
+</div>
+
+@code {
+    public int spacing { get; set; } = 4;
+
+    [Parameter]
+    public IEnumerable<Person>? _people { get; set; }
+
+    public String getImage(byte[]? img)
+    {
+        return img != null ? ImageService.ConvertByteToImage(img) : "/Images/DefaultImages/profile_photo.png";
+    }
+
+}

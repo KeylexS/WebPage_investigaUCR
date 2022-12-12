@@ -1,0 +1,220 @@
+﻿@inject IGroupService GroupService
+@inject ISnackbar Snackbar
+
+@using Domain.Core.Helpers
+@using Microsoft.AspNetCore.Components.Forms
+@using Presentation.Publications.Models
+@using Domain.Publications.Entities
+@using Presentation.Core.Components
+@using Application.Publications
+
+<Loading IsLoading="_isLoading">
+    <MudDialogProvider FullWidth="true"
+                       MaxWidth="MaxWidth.ExtraLarge"
+                       CloseButton="true"
+                       DisableBackdropClick="true"
+                       NoHeader="true"
+                       Position="DialogPosition.Center"
+                       CloseOnEscapeKey="true" />
+    <MudDialog Style="max-height: 600px; overflow-y: scroll">
+        <DialogContent>
+            <MudText Class="d-flex justify-center flex-grow-1"
+                     Style="padding-right:10px; padding-top:30px; padding-bottom:30px" Elevation="0" Justify="Justify.Center"
+                     Typo="Typo.h1">
+                Agregar una nueva publicacion
+            </MudText>
+            <MudText Typo="Typo.body2"> DOI </MudText>
+            <MudTextField
+                          Required="true" RequiredError="Escriba el DOI"
+                          @bind-Value="Model.DOI" Variant="@Variant.Outlined" Clearable />
+            <MudText Typo="Typo.body2"> Nombre </MudText>
+            <MudTextField MaxLength="300" Lines="3"
+                          Required="true" RequiredError="Escriba un nombre"
+                          @bind-Value="Model.Name" Variant="@Variant.Outlined" Clearable />
+
+            <MudText Typo="Typo.body2"> Abstract </MudText>
+            <MudTextField Lines="5"
+                          @bind-Value="Model.Abstract" Variant="@Variant.Outlined" Clearable />
+            <MudText Typo="Typo.body2"> Proceeding </MudText>
+            <MudTextField Lines="5"
+                          @bind-Value="Model.Reference" Variant="@Variant.Outlined" Clearable />
+            <MudGrid Class="d-flex justify-center flex-grow-1 gap-4" Style="padding-left:12px; padding-right:12px; padding-top:30px; padding-bottom:20px" Justify="Justify.Center">
+                <MudTextField T="DateTime?" Variant="@Variant.Outlined" Format="yyyy-MM-dd" Label="Fecha de publicacion" InputType="InputType.Date"
+                              Required="true" RequiredError="Escoga una fecha de publicacion"
+                              @bind-Value="Model.Date" />
+            </MudGrid>
+            <MudAutocomplete T="string" Label="Seleccione el tipo de la publicacion" @bind-Value="Model.Type" SearchFunc="@SearchType"
+                             ResetValueOnEmptyText="@resetValueOnEmptyText" AdornmentIcon="@Icons.Filled.Article" AdornmentColor="Color.Primary" AnchorOrigin=" Origin.BottomCenter"
+                             CoerceText="@coerceText" CoerceValue="@coerceValue" />
+                             @if(Model.Type == "Other"){
+                <MudText Typo="Typo.body2"> Otro tipo de publicacion</MudText>
+                <MudTextField Required="true" RequiredError="Escriba otro tipo de publicacion"
+                          @bind-Value="Model.Type" Variant="@Variant.Outlined" Clearable />
+                             }
+            <MudAutocomplete T="string" Label="Seleccione el nombre del publicador" @bind-Value="Model.Publisher_Name" SearchFunc="@SearchPublisher"
+                             ResetValueOnEmptyText="@resetValueOnEmptyText" AdornmentIcon="@Icons.Filled.Article" AdornmentColor="Color.Primary" AnchorOrigin=" Origin.BottomCenter"
+                             CoerceText="@coerceText" CoerceValue="@coerceValue" />
+                            @if (Model.Publisher_Name == "Other")
+                            {
+                                <MudText Typo="Typo.body2"> Otro nombre de publicador</MudText>
+                                <MudTextField Required="true" RequiredError="Escriba otro nombre de publicador"
+                                          @bind-Value="Model.Publisher_Name" Variant="@Variant.Outlined" Clearable />
+                            }
+            <MudAutocomplete T="string" Label="Seleccione el grupo al que pertenece la publicacion" @bind-Value="GroupName" SearchFunc="@SearchGroup"
+                             ResetValueOnEmptyText="@resetValueOnEmptyText" AdornmentIcon="@Icons.Material.Filled.Group" AdornmentColor="Color.Primary" AnchorOrigin=" Origin.BottomCenter"
+                             CoerceText="@coerceText" CoerceValue="@coerceValue" />
+        </DialogContent>
+        <DialogActions>
+            <MudToolBar Class="d-flex justify-start flex-grow-1 gap-4">
+                <MudButton OnClick="Close" Color="Color.Primary">Cancelar</MudButton>
+                <MudButton OnClick="Clicked" Disabled="@ValidateRequiredValues()" Color="Color.Primary" Variant="Variant.Filled">Crear</MudButton>
+                @if (@publicationLoaded)
+                {
+                        <MudChip Color="Color.Success">La publicacion se cargo correctamente</MudChip>
+                }
+            </MudToolBar>
+        </DialogActions>
+    </MudDialog>
+</Loading>
+
+@code {
+    public IEnumerable<GroupDTO>? _groups { get; set; } = null!;
+
+    private PublicationModel Model { get; set; } = new();
+
+    private bool _isLoading { get; set; }
+
+    private String GroupName { get; set; } = string.Empty;
+
+    private static string DefaultDragClass = "relative rounded-lg border-2 border-dashed pa-4 mt-4 mud-width-full mud-height-full";
+
+    private string DragClass = DefaultDragClass;
+
+    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
+
+    void Close() => MudDialog?.Close(DialogResult.Ok(true));
+
+
+    private bool IsTaskRunning = false, publicationLoaded = false;
+    private bool resetValueOnEmptyText = false, coerceText = false, coerceValue = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadGroups();
+    }
+
+    private async Task LoadGroups()
+    {
+        _isLoading = true;
+        _groups = await GroupService.GetGroupAsync();
+        _isLoading = false;
+    }
+
+    private async Task HandleSubmit()
+    {
+        Group? group = await GroupService.GetGroupByIdAsync(getId(GroupName));
+        var publication = new Publication
+        (
+            Model.DOI!,
+            Model.Name!,
+            1,
+            Model.Type!,
+            Model.Publisher_Name!,
+            Model.Abstract!,
+            Model.Reference!,
+            Model.Date.GetValueOrDefault(DateTime.Now)
+        );
+        await GroupService.AddPublicationToGroup(publication, group!);
+        Model = new PublicationModel();
+    }
+
+    public bool ValidateRequiredValues()
+    {
+        if (Model.DOI != null && Model.Name != null && GroupName != string.Empty
+        && Model.Type != null && Model.Publisher_Name != null && Model.Abstract != null && Model.Date != null && !IsTaskRunning  
+        && Model.Reference != null )
+        {
+            return false;
+        }
+        return true;
+    }
+
+    private async Task<IEnumerable<string>> SearchGroup(string value)
+    {
+        publicationLoaded = false;
+        await Task.Delay(5);
+        List<string> names = new List<string>();
+        @if (!_groups!.Any())
+        {
+            names.Add("No hay Grupos de Investigación registrados actualmente");
+        }
+        else
+        {
+            @foreach (var group in _groups!)
+            {
+                names.Add(group.Name.ToString());
+            }
+        }
+        // if text is null or empty, show complete list
+        if (string.IsNullOrEmpty(value))
+            return names;
+        return names.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    private async Task<IEnumerable<string>> SearchType(string value)
+    {
+        publicationLoaded = false;
+        await Task.Delay(5);
+        List<string> names = new List<string>();
+        names.Add("Full Conference Paper");
+        names.Add("Short Conference Paper");
+        names.Add("Journal Article");
+        names.Add("Other");
+        // if text is null or empty, show complete list
+        if (string.IsNullOrEmpty(value))
+            return names;
+        return names.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    private async Task<IEnumerable<string>> SearchPublisher(string value)
+    {
+        publicationLoaded = false;
+        await Task.Delay(5);
+        List<string> names = new List<string>();
+        names.Add("ACM");
+        names.Add("IEEE");
+        names.Add("Springer");
+        names.Add("Science Direct");
+        names.Add("Other");
+        // if text is null or empty, show complete list
+        if (string.IsNullOrEmpty(value))
+            return names;
+        return names.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    async void Clicked()
+    {
+        IsTaskRunning = true;
+        await HandleSubmit();
+        IsTaskRunning = true;
+        publicationLoaded = true;
+        StateHasChanged();
+    }
+
+
+    private string getId(string name)
+    {
+        string id = "";
+        @if (_groups!.Any())
+        {
+            @foreach (var group in _groups!)
+            {
+                if (name == group.Name.ToString())
+                {
+                    id = group.Id.ToString();
+                }
+            }
+        }
+        return id;
+    }
+}

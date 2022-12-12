@@ -1,0 +1,465 @@
+{
+  "id": "7cf71142-8ef3-48a1-93d4-27ec9eda731d",
+  "version": "2.0",
+  "name": "SeleniumTests_C05118_C06009",
+  "url": "http://10.1.4.119/",
+  "tests": [{
+    "id": "9ad6bf0c-d30d-4d1e-9bc8-188a626e59a1",
+    "name": "SearchResearchProjectAlternative",
+    "commands": [{
+      "id": "47bc55f0-13ef-42a7-a7bf-48af330711f5",
+      "comment": "",
+      "command": "open",
+      "target": "http://10.1.4.119/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "ac969ab6-8dc9-4683-8318-98db6769ebe3",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1936x1056",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "2bb7d7d1-1519-45d8-ae87-35fb0e95c1e1",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-button-root:nth-child(2) > .mud-button-label",
+      "targets": [
+        ["css=.mud-button-root:nth-child(2) > .mud-button-label", "css:finder"],
+        ["xpath=//a[2]/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Proyectos')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "8a629f50-10c7-44d7-8a96-c5ce57b1270f",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Procedimiento automatizado de medición de contribuciones a partir de repositorios de proyectos de desarrollo de software",
+      "targets": [
+        ["linkText=Procedimiento automatizado de medición de contribuciones a partir de repositorios de proyectos de desarrollo de software", "linkText"],
+        ["css=.mud-grid-item:nth-child(16) .mud-typography > .mud-typography", "css:finder"],
+        ["xpath=//a[contains(text(),'Procedimiento automatizado de medición de contribuciones a partir de repositorios de proyectos de desarrollo de software')]", "xpath:link"],
+        ["xpath=//a[contains(@href, '/proyectos/834-C1-011')]", "xpath:href"],
+        ["xpath=//div[16]/div/div[2]/h3/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Procedimiento automatizado de medición de contribuciones a partir de repositorios de proyectos de desarrollo de software')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "9e62b98a-6d12-4a61-bf60-696580bfaeca",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-container",
+      "targets": [
+        ["css=.mud-container", "css:finder"],
+        ["xpath=//div/div/div/div", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "c8a22e11-210c-411f-a3cc-db83c8abc2d1",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.mud-typography-align-justify",
+      "targets": [
+        ["css=.mud-typography-align-justify", "css:finder"],
+        ["xpath=//div/div/p", "xpath:position"]
+      ],
+      "value": "La medición de las contribuciones de los(as) desarrolladores(as) durante el desarrollo de un proyecto puede ayudar en la planificación, monitoreo y seguimiento del proyecto, la identificación de riesgos, la administración de la calidad, la coordinación de los equipos, el reconocimiento de miembros de equipo clave por su experticia y compromiso, la retroalimentación constante para la modificación de comportamientos, el incremento en la productividad y la toma de decisiones de negocio informadas. Los procesos de ingeniería de software contemplan múltiples actividades para desarrollar, mantener, y operar software. Los procesos de software entrelazan actividades técnicas, colaborativas, y de gestión tales como la especificación de requerimientos, diseño, desarrollo, validación y verificación, calidad y riesgos, versionamiento, planificación y estimación. Los(as) desarrolladores(as) participan y contribuyen en múltiples actividades durante el desarrollo de software conforme este evoluciona. No obstante, la definición de métricas objetivas, justas y exactas para las contribuciones individuales es un problema retador y recolectar las mediciones considerando las múltiples actividades de ingeniería de software es una tarea compleja. Asimismo, estas medidas no sólo deben recolectarse en las distintas etapas del desarrollo sino también considerar la perspectiva de los distintos interesados del proyecto. Este proyecto de investigación desarrolla un procedimiento automatizado de medición de contribuciones a partir de repositorios de proyectos de desarrollo de software. Para esto caracteriza los procesos de recolección de métricas de contribuciones, diseña e implementa el procedimiento de medición y evalúa su efectividad para medir automáticamente las contribuciones de los desarrolladores durante el desarrollo de un proyecto de software. Este proyecto es parte del trabajo de tesis de maestría académica de Sivana Hamer."
+    }]
+  }, {
+    "id": "6be7b2c0-d500-4623-a3c4-bb6124150aff",
+    "name": "SearchResearchProjectHappyPath",
+    "commands": [{
+      "id": "1cb6391f-88b3-4c28-871c-c4447d82f89b",
+      "comment": "",
+      "command": "open",
+      "target": "http://10.1.4.119/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "4dab7149-3ed8-4927-99a2-4d8137a98a39",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1936x1056",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "61233839-9593-4cde-bbca-52d423643eb7",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-button-root:nth-child(2) > .mud-button-label",
+      "targets": [
+        ["css=.mud-button-root:nth-child(2) > .mud-button-label", "css:finder"],
+        ["xpath=//a[2]/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Proyectos')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "42c9e50a-5b7e-4c09-ab6e-8483054eab51",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-input-slot:nth-child(1)",
+      "targets": [
+        ["css=.mud-input-slot:nth-child(1)", "css:finder"],
+        ["xpath=//input[@type='text']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "4f793f3c-2335-4603-9d36-bec29c991ea7",
+      "comment": "",
+      "command": "type",
+      "target": "css=.mud-input-slot:nth-child(1)",
+      "targets": [
+        ["css=.mud-input-slot:nth-child(1)", "css:finder"],
+        ["xpath=//input[@type='text']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "medicion"
+    }, {
+      "id": "63a88664-d3ba-44ff-9693-fa14e15ec009",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Procedimiento automatizado de medición de contribuciones a partir de repositorios de proyectos de desarrollo de software",
+      "targets": [
+        ["linkText=Procedimiento automatizado de medición de contribuciones a partir de repositorios de proyectos de desarrollo de software", "linkText"],
+        ["css=.mud-grid-item:nth-child(1) .mud-typography > .mud-typography", "css:finder"],
+        ["xpath=//a[contains(text(),'Procedimiento automatizado de medición de contribuciones a partir de repositorios de proyectos de desarrollo de software')]", "xpath:link"],
+        ["xpath=//a[contains(@href, '/proyectos/834-C1-011')]", "xpath:href"],
+        ["xpath=//h3/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Procedimiento automatizado de medición de contribuciones a partir de repositorios de proyectos de desarrollo de software')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "a2d7439d-931d-4136-b3b7-e122464deac3",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-container",
+      "targets": [
+        ["css=.mud-container", "css:finder"],
+        ["xpath=//div/div/div/div", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "b9827d42-47fc-4bab-9504-a1ef5f8a3e7b",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.mud-typography-align-justify",
+      "targets": [
+        ["css=.mud-typography-align-justify", "css:finder"],
+        ["xpath=//div/div/p", "xpath:position"]
+      ],
+      "value": "La medición de las contribuciones de los(as) desarrolladores(as) durante el desarrollo de un proyecto puede ayudar en la planificación, monitoreo y seguimiento del proyecto, la identificación de riesgos, la administración de la calidad, la coordinación de los equipos, el reconocimiento de miembros de equipo clave por su experticia y compromiso, la retroalimentación constante para la modificación de comportamientos, el incremento en la productividad y la toma de decisiones de negocio informadas. Los procesos de ingeniería de software contemplan múltiples actividades para desarrollar, mantener, y operar software. Los procesos de software entrelazan actividades técnicas, colaborativas, y de gestión tales como la especificación de requerimientos, diseño, desarrollo, validación y verificación, calidad y riesgos, versionamiento, planificación y estimación. Los(as) desarrolladores(as) participan y contribuyen en múltiples actividades durante el desarrollo de software conforme este evoluciona. No obstante, la definición de métricas objetivas, justas y exactas para las contribuciones individuales es un problema retador y recolectar las mediciones considerando las múltiples actividades de ingeniería de software es una tarea compleja. Asimismo, estas medidas no sólo deben recolectarse en las distintas etapas del desarrollo sino también considerar la perspectiva de los distintos interesados del proyecto. Este proyecto de investigación desarrolla un procedimiento automatizado de medición de contribuciones a partir de repositorios de proyectos de desarrollo de software. Para esto caracteriza los procesos de recolección de métricas de contribuciones, diseña e implementa el procedimiento de medición y evalúa su efectividad para medir automáticamente las contribuciones de los desarrolladores durante el desarrollo de un proyecto de software. Este proyecto es parte del trabajo de tesis de maestría académica de Sivana Hamer."
+    }]
+  }, {
+    "id": "3f3304bb-5269-429e-b746-245386267548",
+    "name": "Delete_and_Add_Collaborators",
+    "commands": [{
+      "id": "9460ece3-7f4a-44b1-b053-0983a4d33b26",
+      "comment": "",
+      "command": "open",
+      "target": "http://10.1.4.119/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "1e07bc8f-5047-4c9e-807e-a88a13be82b0",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1936x1056",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "1ad7aeb5-19c7-4734-92a8-fd51f19c6db0",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-typography > .mud-inherit-text",
+      "targets": [
+        ["css=.mud-typography > .mud-inherit-text", "css:finder"],
+        ["xpath=//p/p", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "87f8faa5-5271-42fa-80bb-cb0ff6c8f530",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Iniciar Sesión",
+      "targets": [
+        ["linkText=Iniciar Sesión", "linkText"],
+        ["css=.mud-link:nth-child(2)", "css:finder"],
+        ["xpath=//a[contains(text(),'Iniciar Sesión')]", "xpath:link"],
+        ["xpath=//a[contains(@href, 'Identity/Account/Login')]", "xpath:href"],
+        ["xpath=//a[2]", "xpath:position"],
+        ["xpath=//a[contains(.,'Iniciar Sesión')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "e44ff78a-daa7-4160-91c0-e484c723087f",
+      "comment": "",
+      "command": "click",
+      "target": "id=Email",
+      "targets": [
+        ["id=Email", "id"],
+        ["name=Input.Email", "name"],
+        ["css=#Email", "css:finder"],
+        ["xpath=//input[@id='Email']", "xpath:attributes"],
+        ["xpath=//form[@id='account']/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "049d8843-8d43-44b8-ab26-c80249e2faae",
+      "comment": "",
+      "command": "type",
+      "target": "id=Email",
+      "targets": [
+        ["id=Email", "id"],
+        ["name=Input.Email", "name"],
+        ["css=#Email", "css:finder"],
+        ["xpath=//input[@id='Email']", "xpath:attributes"],
+        ["xpath=//form[@id='account']/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "admin@admin.com"
+    }, {
+      "id": "7c7dee73-c70e-4156-8540-9ee25e4f3971",
+      "comment": "",
+      "command": "click",
+      "target": "id=Contrasena",
+      "targets": [
+        ["id=Contrasena", "id"],
+        ["name=Input.Password", "name"],
+        ["css=#Contrasena", "css:finder"],
+        ["xpath=//input[@id='Contrasena']", "xpath:attributes"],
+        ["xpath=//form[@id='account']/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "3dea12cf-2b6a-412c-a084-485da8d3f30d",
+      "comment": "",
+      "command": "type",
+      "target": "id=Contrasena",
+      "targets": [
+        ["id=Contrasena", "id"],
+        ["name=Input.Password", "name"],
+        ["css=#Contrasena", "css:finder"],
+        ["xpath=//input[@id='Contrasena']", "xpath:attributes"],
+        ["xpath=//form[@id='account']/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": "Abc!12"
+    }, {
+      "id": "ea7c1efa-ee7c-4239-bf3b-ec89be66aeba",
+      "comment": "",
+      "command": "click",
+      "target": "id=login-submit",
+      "targets": [
+        ["id=login-submit", "id"],
+        ["css=#login-submit", "css:finder"],
+        ["xpath=//button[@id='login-submit']", "xpath:attributes"],
+        ["xpath=//form[@id='account']/div[4]/button", "xpath:idRelative"],
+        ["xpath=//button", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "2e8d0e60-5cac-4422-bc89-06e1e553544f",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-button-root:nth-child(2) > .mud-button-label",
+      "targets": [
+        ["css=.mud-button-root:nth-child(2) > .mud-button-label", "css:finder"],
+        ["xpath=//a[2]/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Proyectos')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "d8e06691-69b1-44a6-89bc-1cc694e73235",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Evaluación de herramientas automatizadas para pruebas de software basadas en modelos",
+      "targets": [
+        ["linkText=Evaluación de herramientas automatizadas para pruebas de software basadas en modelos", "linkText"],
+        ["css=.mud-grid-item:nth-child(20) .mud-typography > .mud-typography", "css:finder"],
+        ["xpath=//a[contains(text(),'Evaluación de herramientas automatizadas para pruebas de software basadas en modelos')]", "xpath:link"],
+        ["xpath=//a[contains(@href, '/proyectos/834-B7-749')]", "xpath:href"],
+        ["xpath=//div[20]/div/div[2]/h3/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Evaluación de herramientas automatizadas para pruebas de software basadas en modelos')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "645291a7-9dc4-4bbe-a3ee-6ec1cad4ffdf",
+      "comment": "",
+      "command": "runScript",
+      "target": "window.scrollTo(0,0)",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "b0fb3e5c-1fd2-424a-baa7-bbc4cb7ee795",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "css=.mud-grid-item:nth-child(4) .mud-typography-body1",
+      "targets": [
+        ["css=.mud-grid-item:nth-child(4) .mud-typography-body1", "css:finder"],
+        ["xpath=//div[4]/div/div/p", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "e2a871ee-c1ce-4d42-b580-76262bbc2a07",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-icon-button:nth-child(3)",
+      "targets": [
+        ["css=.mud-icon-button:nth-child(3)", "css:finder"],
+        ["xpath=(//button[@type='button'])[3]", "xpath:attributes"],
+        ["xpath=//button[2]", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "ace9f59d-89fd-4453-968d-4b8d1e8604bf",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-input-slot:nth-child(1)",
+      "targets": [
+        ["css=.mud-input-slot:nth-child(1)", "css:finder"],
+        ["xpath=//input[@type='text']", "xpath:attributes"],
+        ["xpath=//div[@id='_61633eb20c7144578365f7225c7038a9']/div[2]/div[4]/div/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "4f0cf1f5-c8da-4b04-8ee6-3c3e8746b7a7",
+      "comment": "",
+      "command": "type",
+      "target": "css=.mud-input-slot:nth-child(1)",
+      "targets": [
+        ["css=.mud-input-slot:nth-child(1)", "css:finder"],
+        ["xpath=//input[@type='text']", "xpath:attributes"],
+        ["xpath=//div[@id='_61633eb20c7144578365f7225c7038a9']/div[2]/div[4]/div/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "quesada"
+    }, {
+      "id": "40fbdc4d-ee82-46b3-a0c7-a76d68b5feef",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-list-item-text > .mud-typography",
+      "targets": [
+        ["css=.mud-list-item-text > .mud-typography", "css:finder"],
+        ["xpath=//div[@id='db076d6f-dc8a-4be1-a7bf-789a35729611_item0']/div/p", "xpath:idRelative"],
+        ["xpath=//div[3]/div/div/div/div/p", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "58f80591-b9c5-40c5-b19b-73a87b7133c0",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-button-filled",
+      "targets": [
+        ["css=.mud-button-filled", "css:finder"],
+        ["xpath=(//button[@type='button'])[2]", "xpath:attributes"],
+        ["xpath=//div[@id='_61633eb20c7144578365f7225c7038a9']/div[2]/div[5]/div/button[2]", "xpath:idRelative"],
+        ["xpath=//button[2]", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "14f42f42-8a78-4019-81cf-204b90ee668d",
+      "comment": "",
+      "command": "assertElementNotPresent",
+      "target": "css=.mud-grid-item:nth-child(4) .mud-card-content",
+      "targets": [
+        ["css=.mud-grid-item:nth-child(4) .mud-card-content", "css:finder"],
+        ["xpath=//div[4]/div/div", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "f502eed8-703e-4b09-8ddd-8151175240b8",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-button-root:nth-child(2) .mud-icon-size-medium > path:nth-child(2)",
+      "targets": [
+        ["css=.mud-button-root:nth-child(2) .mud-icon-size-medium > path:nth-child(2)", "css:finder"]
+      ],
+      "value": ""
+    }, {
+      "id": "70c246dc-4b9e-4f01-86f4-15e2aa0f9c87",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-select:nth-child(1) > .mud-input-control .mud-input-slot:nth-child(1)",
+      "targets": [
+        ["css=.mud-select:nth-child(1) > .mud-input-control .mud-input-slot:nth-child(1)", "css:finder"],
+        ["xpath=//input[@type='text']", "xpath:attributes"],
+        ["xpath=//div[@id='_1eb145b4e61e473894c3513ac2c440f2']/div[2]/div[4]/div/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "97c8f38c-b4ee-46e4-920e-2b733e7ab1de",
+      "comment": "",
+      "command": "type",
+      "target": "css=.mud-select:nth-child(1) > .mud-input-control .mud-input-slot:nth-child(1)",
+      "targets": [
+        ["css=.mud-select:nth-child(1) > .mud-input-control .mud-input-slot:nth-child(1)", "css:finder"],
+        ["xpath=//input[@type='text']", "xpath:attributes"],
+        ["xpath=//div[@id='_1eb145b4e61e473894c3513ac2c440f2']/div[2]/div[4]/div/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "quesada"
+    }, {
+      "id": "423a85ec-30d9-436c-a8a2-6e815d50b298",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-list-item-text > .mud-typography",
+      "targets": [
+        ["css=.mud-list-item-text > .mud-typography", "css:finder"],
+        ["xpath=//div[@id='f5027dfc-a1b5-4c4b-8fa8-41586a12e4d1_item0']/div/p", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div/div/p", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "c2513025-91e5-4760-83c8-fd5c83fcc317",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-button-filled > .mud-button-label",
+      "targets": [
+        ["css=.mud-button-filled > .mud-button-label", "css:finder"],
+        ["xpath=//div[@id='_1eb145b4e61e473894c3513ac2c440f2']/div[2]/div[5]/div/button[2]/span", "xpath:idRelative"],
+        ["xpath=//button[2]/span", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "5ad5c262-2336-4950-9de1-76b9042beb39",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "css=.mud-grid-item:nth-child(4) .mud-card-content",
+      "targets": [
+        ["css=.mud-grid-item:nth-child(4) .mud-card-content", "css:finder"],
+        ["xpath=//div[4]/div/div", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "9924d1ef-475b-4fc1-8542-61627627d052",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Cerrar sesión",
+      "targets": [
+        ["linkText=Cerrar sesión", "linkText"],
+        ["css=.mud-tertiary-text", "css:finder"],
+        ["xpath=//a[contains(text(),'Cerrar sesión')]", "xpath:link"],
+        ["xpath=//a[contains(@href, 'Identity/Account/LogOut')]", "xpath:href"],
+        ["xpath=//a[2]", "xpath:position"],
+        ["xpath=//a[contains(.,'Cerrar sesión')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }],
+  "suites": [{
+    "id": "c1d24d13-f97d-485e-8c46-60fd0e9ec7de",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["9ad6bf0c-d30d-4d1e-9bc8-188a626e59a1"]
+  }],
+  "urls": ["http://10.1.4.119/"],
+  "plugins": []
+}

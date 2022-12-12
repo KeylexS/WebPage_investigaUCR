@@ -1,0 +1,129 @@
+﻿@page "/noticias/{Id}"
+
+@using Domain.Core.Exceptions
+@using Domain.News.DTOs;
+@using Domain.News.Entities;
+@using Presentation.News.Components;
+@using Presentation.Core.Components;
+@using Application.News;
+
+@inject INewsService NewsService
+
+<Loading IsLoading="_isLoading">
+    <NewsPageData _news="_news" OnTitleEdit="EditTitle" OnDescriptionEdit="EditDescription" OnImageEdit="EditImage"> </NewsPageData>
+</Loading>
+
+@code {
+    [Parameter]
+    public string Id { get; set; } = "";
+
+    private GroupNews? _news;
+    private bool _isLoading = true;
+    NewsPageData pageData = new NewsPageData();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoading = true;
+        await LoadNews();
+        _isLoading = false;
+    }
+
+    public async Task LoadNews()
+    {
+        _news = await NewsService.GetNewsByIdAsync(Id);
+    }
+
+
+    private async void EditTitle(string _text)
+    {
+        try
+        {
+            await NewsService.SaveNewsTitle(_news!, _text);
+            pageData._newsTitleMessage = "El nombre de la noticia ha sido modificada.";
+            pageData._newsAlertColor = Alert.AlertColor.Success;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._newsTitleMessage = null;
+            pageData._newsAlertColor = Alert.AlertColor.Danger;
+            StateHasChanged();
+        }
+        catch (DomainException e)
+        {
+            pageData._newsTitleMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._newsTitleMessage = null;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            pageData._newsTitleMessage = "Ocurrió un error. Intente de nuevo.";
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._newsTitleMessage = null;
+            StateHasChanged();
+        }
+    }
+
+    private async void EditDescription(string _text)
+    {
+        try
+        {
+            await NewsService.SaveNewsDescription(_news!, _text);
+            pageData._newsDescriptionMessage = "La descripción de la noticia ha sido modificada.";
+            pageData._newsAlertColor = Alert.AlertColor.Success;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._newsDescriptionMessage = null;
+            pageData._newsAlertColor = Alert.AlertColor.Danger;
+            StateHasChanged();
+        }
+        catch (DomainException e)
+        {
+            pageData._newsDescriptionMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._newsDescriptionMessage = null;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            pageData._newsDescriptionMessage = "Ocurrió un error. Intente de nuevo.";
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._newsDescriptionMessage = null;
+            StateHasChanged();
+        }
+    }
+
+    private async void EditImage(byte[] _image)
+    {
+        try
+        {
+            await NewsService.SaveNewsImage(_news!, _image);
+            pageData._newsImageMessage = "La imagen de la noticia ha sido modificada.";
+            pageData._newsAlertColor = Alert.AlertColor.Success;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._newsImageMessage = null;
+            pageData._newsAlertColor = Alert.AlertColor.Danger;
+            StateHasChanged();
+        }
+        catch (DomainException e)
+        {
+            pageData._newsImageMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._newsImageMessage = null;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            pageData._newsImageMessage = "Ocurrió un error. Intente de nuevo.";
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._newsImageMessage = null;
+            StateHasChanged();
+        }
+    }
+}

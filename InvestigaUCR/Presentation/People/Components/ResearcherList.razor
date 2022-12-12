@@ -1,0 +1,55 @@
+﻿@using Application.People
+@using Domain.People.Entities
+@using Domain.People.DTOs
+@inject IImageService ImageService
+@inject IResearcherService ResearcherServices
+
+@*ID US: PIIB22II02-59, task: PIIB22II02-297 Create people components in presentation*@
+@*ID: PIIB22II02-62, Show Image of the researchers in the list.*@
+
+<div class="container">
+    @*<h3>People List</h3>*@
+    @if (!_researchers!.Any())
+    {
+        <MudText Align="Align.Center" Color=Color.Warning Typo="Typo.body2" Class="text-danger">Aún no hay investigadores relacionados con este grupo</MudText>
+    }
+    else
+    {
+        <span style="white-space: pre-line"></span>
+        <p>
+        <MudGrid Spacing="@spacing" Justify="Justify.Center">
+                @foreach (var person in _researchers!)
+        {
+                <MudItem lg="3">
+                    <MudCard Outlined="true" Elevation="0">
+                    <MudCardContent>
+                        @* PIIB22II02-15 MC-PL-2.1 Show detailed profile information about a person | task: PIIB22II02-578
+                           Create a button to see details of a person driver(JoséFNúñez), navigator(AndreyMena) *@
+                                <MudText Align="Align.Center"><MudImage Src="@getImage(person.ProfilePicture)" Elevation="0" Class="rounded-circle" Style="align-content" Width="100" Height="100" Fluid="true" /></MudText>
+                                <MudText Align="Align.Center" Typo="Typo.h3" Style="display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden"><MudLink Color="Color.Default" Typo="Typo.h3" Href="@($"/personas/{person.Id}")">@person.HighestDegree.ToString() @person.Name.ToString() @person.LastName1.ToString()</MudLink></MudText>
+                                <MudText Align="Align.Center" Typo="Typo.body2" Style="display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden">@person.University.ToString()</MudText>
+                                <MudText Align="Align.Center" Typo="Typo.body2" Style="display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden"> <MudLink Typo="Typo.body2" Underline="Underline.Always">@person.Id.ToString().ToLower()</MudLink></MudText>
+                    </MudCardContent>
+                </MudCard>
+                </MudItem>
+        }
+        </MudGrid>
+        </p>
+    }
+</div>
+
+@code {
+    public int spacing { get; set; } = 4;
+
+    //[Parameter]
+    //public string? GroupId { get; set; }
+    [Parameter]
+    public IEnumerable<Person>? _researchers { get; set; }
+
+    public String getImage(byte[]? img)
+    {
+        return img != null ? ImageService.ConvertByteToImage(img) : "/Images/DefaultImages/profile_photo.png";
+    }
+}
+
+

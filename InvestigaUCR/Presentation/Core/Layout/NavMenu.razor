@@ -1,0 +1,45 @@
+﻿@*US ID: PIIB22II02-186
+US name: KS-RP-1.2 Card Display
+Technical Task Resolved: PIIB22II02-316 Add Research Project pages to Nav Menu*@
+@using Microsoft.AspNetCore.Components.Routing
+@using Presentation.News.Components
+
+<MudNavMenu>
+    @*Link to Research Group*@
+    <MudButton Href="/grupos"
+               Variant="Variant.Text"
+               Style="text-transform:none; color: black">
+        Grupos
+    </MudButton>
+    <MudButton Href="/proyectos"
+               Variant="Variant.Text"
+               Style="text-transform:none; color: black">
+        Proyectos
+    </MudButton>
+    <MudButton Href="/personas"
+               Variant="Variant.Text"
+               Style="text-transform:none; color: black">
+        Personas
+    </MudButton>
+    <MudButton Href="/publicaciones"
+               Variant="Variant.Text"
+               Style="text-transform:none; color: black">
+        Publicaciones
+    </MudButton>
+    <MudButton Href="/tesis"
+               Variant="Variant.Text"
+               Style="text-transform:none; color: black">
+        Tesis
+    </MudButton>
+    <NewsLink/>
+    <MudButton Href="/estadisticas"
+               Variant="Variant.Text"
+               Style="text-transform:none; color: black">
+        Estadísticas
+    </MudButton>
+    <MudButton Href="/AboutUs"
+               Variant="Variant.Text"
+               Style="text-transform:none; color: black">
+        Acerca de
+    </MudButton>
+</MudNavMenu>

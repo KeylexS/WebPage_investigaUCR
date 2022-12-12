@@ -1,0 +1,221 @@
+﻿@using Domain.News.Entities;
+@using Presentation.News.Components;
+@using Presentation.Core.Components;
+@using Application.News;
+@using Microsoft.AspNetCore.Components.Forms
+
+@inject IImageService ImageService
+@inject INewsService NewsService
+
+@if(_news is null)
+{
+    <MudText Align="Align.Center" Color=Color.Warning Typo="Typo.body2" Class="text-danger">No hay información de la noticia registrada.</MudText>
+}
+else
+{
+    @*IMAGE*@
+    @if (isEditingImage)
+    {
+        <MudGrid Class="d-flex align-center justify-center" Style="gap: 28px;">
+            <MudItem>
+                <MudImage Src="@getImage(auxImage)" ObjectPosition="ObjectPosition.Center" Height="350" Width="1000" ObjectFit="ObjectFit.Cover" />
+                <ToolButton _placement="Placement.Right" _text="Cancelar" _icon="@Icons.Filled.Cancel" onClick="EditingImage" />
+                <MudTooltip Placement="Placement.Right" Text="Subir">
+                    <InputFile id="fileInput" OnChange="HandleSelection" accept="image/png, image/jpeg, image/jpg" hidden />
+                    <MudIconButton Icon="@Icons.Filled.Upload"
+                           HtmlTag="label"
+                           for="fileInput" />
+                </MudTooltip>
+                <ToolButton _placement="Placement.Right" _text="Subir" _icon="@Icons.Filled.Check" onClick="ChangeImage" />
+            </MudItem>
+        </MudGrid>
+    }
+    else
+    {
+        <MudGrid Class="d-flex align-center justify-center" Style="gap: 0.219rem">
+            <AuthorizeView Roles="AdminRole, CoordinatorRole">
+                <MudItem></MudItem>
+                <MudItem></MudItem>
+            </AuthorizeView>
+            <MudItem>
+                <MudImage Src="@getImage(_news.Image)" ObjectPosition="ObjectPosition.Center" Height="350" Width="1000" ObjectFit="ObjectFit.Cover" />
+                <AuthorizeView Roles="AdminRole, CoordinatorRole">
+                    <ToolButton _placement="Placement.Right" _text="Editar imagen" _icon="@Icons.Filled.Edit" onClick="EditingImage" />
+                </AuthorizeView>
+            </MudItem>
+        </MudGrid>
+    }
+    @if (_newsImageMessage is not null)
+    {
+        <Alert Color="_newsAlertColor">
+            @_newsImageMessage
+        </Alert>
+    }
+    <br />
+    @*TITLE*@
+    @if (isEditingTitle)
+    {
+        <div class="d-flex" style="display: block; margin-left: auto; margin-right: auto; width: 100%; align-items: center;">
+            <MudTextField @bind-Value="auxTitle" id="TitleField" Variant="Variant.Outlined" Style="font-size: 2.125rem;" FullWidth="true" />
+            <ToolButton _placement="Placement.Right" _text="Cancelar" _icon="@Icons.Filled.Cancel" onClick="EditingTitle" />
+            <ToolButton _placement="Placement.Right" _text="Guardar" _icon="@Icons.Filled.Check" onClick="ChangeTitle" />
+        </div>
+    }
+    else
+    {
+        <MudGrid Justify="Justify.Center">
+            <MudItem>
+                <MudText Align="Align.Center" id="Title" Typo="Typo.h1">@_news.Title</MudText>
+            </MudItem>
+            <MudItem>
+                <AuthorizeView Roles="AdminRole, CoordinatorRole">
+                    <ToolButton _placement="Placement.Right" _text="Editar título" _icon="@Icons.Filled.Edit" onClick="EditingTitle" />
+                </AuthorizeView>
+            </MudItem>
+        </MudGrid>
+        <br>
+    }
+    @if (_newsTitleMessage is not null)
+    {
+        <Alert Color="_newsAlertColor">
+            @_newsTitleMessage
+        </Alert>
+    }
+    <br/>
+    @*DESCRIPTION*@
+    @if (isEditingDescription)
+    {
+        <div class="d-flex" style="width: 100%;">
+            <MudTextField @bind-Value="auxDescription" id="DescriptionField" Variant="Variant.Outlined" Lines="8" />
+            <ToolButton _placement="Placement.Right" _text="Cancelar" _icon="@Icons.Filled.Cancel" onClick="EditingDescription" />
+            <ToolButton _placement="Placement.Right" _text="Guardar" _icon="@Icons.Filled.Check" onClick="ChangeDescription" />
+        </div>
+    }
+    else
+    {
+        <div class="d-flex" style="display: block; margin-left: auto; margin-right: auto; width: 100%;">
+            <MudText Align="Align.Justify" id="Description" Typo="Typo.body2" Style="width: 100%">@_news.Description</MudText>
+            <AuthorizeView Roles="AdminRole, CoordinatorRole">
+                <ToolButton _placement="Placement.Right" _text="Editar Descripción" _icon="@Icons.Filled.Edit" onClick="EditingDescription" />
+            </AuthorizeView>
+        </div>
+        <br>
+    }
+    @if (_newsDescriptionMessage is not null)
+    {
+        <Alert Color="_newsAlertColor">
+            @_newsDescriptionMessage
+        </Alert>
+    }
+    <br>
+}
+
+@code {
+    [Parameter]
+    public GroupNews? _news { get; set; } = null!;
+    [Parameter]
+    public EventCallback<string> OnTitleEdit { get; set; }
+    [Parameter]
+    public EventCallback<string> OnDescriptionEdit { get; set; }
+    [Parameter]
+    public EventCallback<byte[]> OnImageEdit { get; set; }
+
+    public string? _newsTitleMessage { get; set; } = null;
+    public string? _newsDescriptionMessage { get; set; } = null;
+    public string? _newsImageMessage { get; set; } = null;
+    private string? auxTitle { get; set; } = null!;
+    private string? auxDescription { get; set; } = null!;
+    private byte[]? auxImage { get; set; } = null!;
+
+    public Alert.AlertColor _newsAlertColor = Alert.AlertColor.Danger;
+
+    private bool isEditingTitle = false;
+    private bool isEditingDescription = false;
+    private bool isEditingImage = false;
+
+    private List<IBrowserFile> loadedFiles = new();
+
+    public String getImage(byte[]? img)
+    {
+        return img != null ? ImageService.ConvertByteToImage(img) : "/Images/DefaultImages/newsDefault.jpg";
+    }
+
+    private void EditingTitle()
+    {
+        if (!isEditingTitle)
+        {
+            auxTitle = _news!.Title;
+        }
+        isEditingTitle = !isEditingTitle;
+    }
+
+    private void ChangeTitle()
+    {
+        if(auxTitle.Length() < 282)
+        {
+            OnTitleEdit.InvokeAsync(auxTitle);
+            isEditingTitle = !isEditingTitle;
+            _newsTitleMessage = null;
+        }
+        else
+        {
+            _newsTitleMessage = "La título excede la cantidad de valores máximos. Intente de nuevo.";
+        }
+    }
+
+    private void EditingDescription()
+    {
+        if (!isEditingDescription)
+        {
+            auxDescription = _news!.Description;
+        }
+        isEditingDescription = !isEditingDescription;
+    }
+
+    private void ChangeDescription()
+    {
+        if (auxDescription.Length() < 793)
+        {
+            OnDescriptionEdit.InvokeAsync(auxDescription);
+            isEditingDescription = !isEditingDescription;
+            _newsDescriptionMessage = null;
+        }
+        else
+        {
+            _newsDescriptionMessage = "La descripción excede la cantidad de valores máximos. Intente de nuevo.";
+        }
+    }
+
+    private void EditingImage()
+    {
+        if (!isEditingImage)
+        {
+            auxImage = _news!.Image;
+        }
+        isEditingImage = !isEditingImage;
+    }
+
+    private void ChangeImage()
+    {
+        OnImageEdit.InvokeAsync(auxImage);
+        isEditingImage = !isEditingImage;
+    }
+
+    private async Task HandleSelection(InputFileChangeEventArgs e)
+    {
+        loadedFiles.Clear();
+        loadedFiles.Add(e.File);
+
+        foreach (var file in loadedFiles)
+        {
+            Stream stream = file.OpenReadStream();
+            MemoryStream ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            stream.Close();
+
+            auxImage = ms.ToArray();
+            ms.Close();
+            StateHasChanged();
+        }
+    }
+}

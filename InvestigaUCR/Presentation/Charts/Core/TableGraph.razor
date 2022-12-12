@@ -1,0 +1,39 @@
+﻿@using Domain.Shared.Charts.Entities
+<MudPaper Class="mx-auto pa-3 d-flex justify-center flex-grow-1 gap-4" Elevation="0">
+     <MudItem Class="d-flex align-content-center gap-4" Style="width:200px height:100%;">
+        <MudSimpleTable Style="overflow-x: auto;" Elevation="0">
+             <thead>
+                 <tr>
+                     @foreach (var h in _headings!)
+                     {
+                         <th>@h</th>
+                     }
+                 </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in _values!)
+                {
+                    <tr>
+                        @foreach (var x in row)
+                        {
+                            <td>@x</td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </MudSimpleTable>
+       </MudItem>
+ </MudPaper>
+
+@code {
+    [Parameter]
+    public Table? table { get; set; }
+    private List<string>? _headings { get; set; }
+    private List<List<string>>? _values { get; set; }
+    int a = 0;
+    protected override async Task OnInitializedAsync()
+    {
+        _headings = table!.Labels;
+        _values = table!.Values;
+    }
+}

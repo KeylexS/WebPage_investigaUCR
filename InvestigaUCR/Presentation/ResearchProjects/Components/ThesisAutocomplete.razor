@@ -1,0 +1,39 @@
+﻿@using Domain.Theses.Entities
+
+<MudAutocomplete T="Thesis" Label="@label" Value="_thesis" ValueChanged="@OnValueChanged" SearchFunc="@SearchTheses"
+                 ResetValueOnEmptyText="false" AdornmentIcon="@Icons.Material.Filled.Group" AdornmentColor="Color.Primary" AnchorOrigin=" Origin.BottomCenter"
+                 CoerceText="false" CoerceValue="false" ToStringFunc="@(t=> t==null?null : t.Title)" />
+
+@code {
+    public Thesis? _thesis { get; set; }
+    [Parameter]
+    public Thesis? thesis { get; set; }
+    [Parameter]
+    public EventCallback<Thesis> thesisChanged { get; set; }
+    [Parameter]
+    public IEnumerable<Thesis>? theses { get; set; }
+    [Parameter]
+    public string? label { get; set; }
+
+    private async Task<IEnumerable<Thesis>> SearchTheses(String value)
+    {
+        await Task.Delay(5); // for API call lag emulation
+        List<Thesis> filteredTheses = new List<Thesis>();
+        @if (theses!.Any())
+        {
+            @foreach (var t in theses!)
+            {
+                filteredTheses.Add(t);
+            }
+        }
+        if (string.IsNullOrEmpty(value))
+            return filteredTheses;
+        return filteredTheses.Where(x => x.Title.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    async Task OnValueChanged(Thesis _thesis)
+    {
+        thesis = _thesis;
+        await thesisChanged.InvokeAsync(thesis);
+    }
+}

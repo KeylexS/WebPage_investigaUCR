@@ -1,0 +1,110 @@
+﻿@page "/Perfil"
+@using Domain.Core.Exceptions
+@using Domain.Users.Entities
+@using Presentation.Core.Layout
+@using Application.Users;
+@using Microsoft.AspNetCore.Components.Authorization
+@using Presentation.Users.Components
+@inject IUserService UserService
+@layout AccountLayout
+
+@*
+    PIIB22II02-1225 MC-PL-5.13 User account details | PIIB22II02-1228 Show user name in account details
+*@
+
+@if (userEmail != "")
+{
+    <MudText Align="Align.Center" Typo="Typo.h1">Mi Perfil</MudText>
+    <br>
+    <MudText Typo="Typo.h2">Usuario</MudText>
+    <MudText Typo="Typo.h3">@userEmail</MudText>
+    <br>
+    <UserEditName OnNameEdit="ChangeName" _userAccount="_userAccount" />
+    <br>
+    <UserEditLastName OnNameEdit="ChangeLastName" _userAccount="_userAccount" />
+    <br>
+    <MudText Typo="Typo.h2">Descripcion de perfil</MudText>
+    <MudTextField T="string" Variant="Variant.Outlined" @bind-Value="sampleText" InputType="InputType.Text" Text="@_userAccount!.Descripcion" Lines="5" />
+}
+else
+{
+    <MudText Typo="Typo.h3">Usted no se encuentra autenticado</MudText>
+}
+
+@code {
+    private string? userEmail { get; set; }
+    private UserAccount? _userAccount;
+    string sampleText = "";
+    UserEditName pageNameUserData = new UserEditName();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        userEmail = await UserService.GetCurrentUserEmail();
+        if (userEmail != "") {
+            _userAccount = await UserService.GetCurrentUserAccount();
+        }
+    }
+
+    private async void ChangeName(string _text)
+    {
+        try
+        {
+            await UserService.SaveUserName(_userAccount!, _text);
+            pageNameUserData._userNameMessage = "El usuario asociada a sido modificado.";
+            pageNameUserData._userAccountAlertColor = Alert.AlertColor.Success;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageNameUserData._userNameMessage = null;
+            pageNameUserData._userAccountAlertColor = Alert.AlertColor.Danger;
+            StateHasChanged();
+        }
+        catch (DomainException e)
+        {
+            pageNameUserData._userNameMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageNameUserData._userNameMessage = null;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            pageNameUserData._userNameMessage = "Ocurrió un error. Intente de nuevo.";
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageNameUserData._userNameMessage = null;
+            StateHasChanged();
+        }
+    }
+
+    private async void ChangeLastName(string _text)
+    {
+        try
+        {
+            await UserService.SaveUserLastName(_userAccount!, _text);
+            pageNameUserData._userNameMessage = "El usuario asociada a sido modificado.";
+            pageNameUserData._userAccountAlertColor = Alert.AlertColor.Success;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageNameUserData._userNameMessage = null;
+            pageNameUserData._userAccountAlertColor = Alert.AlertColor.Danger;
+            StateHasChanged();
+        }
+        catch (DomainException e)
+        {
+            pageNameUserData._userNameMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageNameUserData._userNameMessage = null;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            pageNameUserData._userNameMessage = "Ocurrió un error. Intente de nuevo.";
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageNameUserData._userNameMessage = null;
+            StateHasChanged();
+        }
+    }
+}

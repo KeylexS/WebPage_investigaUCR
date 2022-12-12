@@ -1,0 +1,127 @@
+﻿@using Application.ResearchProjects
+@using Domain.ResearchProjects.Entities
+@using Domain.Core.Exceptions
+@using Presentation.Core.Components
+
+@inject IGroupService GroupService;
+@inject IResearchProjectsService ProjectService;
+
+<MudDialog>
+    <DialogContent>
+        <MudContainer Style="max-height: 500px; overflow-y: scroll">
+            <Loading IsLoading="_isLoading">
+                <MudSelect T="string" MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))" HelperText="@helperText" Label="Seleccione las personas investigadoras" MultiSelection="true" @bind-Value="_project" @bind-SelectedValues="selectedProjects">
+                    @if (isAdding)
+                    {
+                        @foreach (var project in _researchProjects!.OrderBy(x => x.Id.ToString() + " " + x.Name))
+                        {
+                            if (!_group.ResearchProjects.Contains(project))
+                            {
+                                <MudSelectItem T="string" Value="project.Id.ToString()">@getProjectName(project)</MudSelectItem>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        @foreach (var project in _group.ResearchProjects.OrderBy(x => x.Id.ToString() + " " + x.Name))
+                        {
+                            <MudSelectItem T="string" Value="project.Id.ToString()">@getProjectName(project)</MudSelectItem>
+                        }
+                    }
+                </MudSelect>
+            </Loading>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudToolBar Class="d-flex justify-start flex-grow-1 gap-4">
+            <MudButton OnClick="Close" Color="Color.Primary">Cancelar</MudButton>
+            <MudButton OnClick="SelectedProjects" Color="Color.Primary" Variant="Variant.Filled">Confirmar</MudButton>
+        </MudToolBar>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = null!;
+    [Parameter]
+    public Group _group { get; set; } = null!;
+    [Parameter]
+    public EventCallback<IEnumerable<ResearchProject>> ModifyProjects { get; set; }
+    [Parameter]
+    public bool isAdding { get; set; } = true;
+
+    private bool _isLoading { get; set; }
+    private string? _project { get; set; } = null!;
+    public IEnumerable<ResearchProject>? _researchProjects { get; set; } = null!;
+    private IEnumerable<string> selectedProjects { get; set; } = null!;
+    
+    void Close() => MudDialog.Close(DialogResult.Ok(true));
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProjects();
+    }
+
+    private async Task LoadProjects()
+    {
+        _isLoading = true;
+        _researchProjects = await GroupService.GetAllProjectsAsync();
+        _isLoading = false;
+    }
+
+    private string getProjectName(ResearchProject project)
+    {
+        string toShow = "";
+        toShow = project.Id.ToString() + ":" + project.Name;
+        return toShow;
+    }
+
+    private string GetMultiSelectionText(List<string> selectedValues)
+    {
+        if (selectedProjects is not null)
+        {
+            if (selectedProjects.Count() > 0)
+                return $"Proyecto{(selectedProjects!.Count() > 1 ? "s seleccionados" : " seleccionado")}: {getAllNames()}";
+        }
+        return $"Seleccione los proyectos de investigación";
+    }
+
+    private string getAllNames()
+    {
+        string aux = "";
+        foreach (var project in selectedProjects)
+        {
+            ResearchProject auxProject = _researchProjects!.Where(x => x.Id.ToString() == project).Single();
+            aux += auxProject + auxProject.Id.ToString() + ":" + auxProject.Name + ", ";
+        }
+        return aux;
+    }
+
+    private string helperText
+    {
+        get
+        {
+            if (selectedProjects is not null)
+            {
+                if (selectedProjects.Count() > 0)
+                {
+                    return selectedProjects.Count() == 1 ? $"Se ha seleccionado 1 proyecto" : $"Se han seleccionado {selectedProjects.Count()} proyectos";
+                }
+            }
+            return "";
+        }
+    }
+
+    private async Task SelectedProjects()
+    {
+        if (selectedProjects is not null)
+        {
+            List<ResearchProject> aux = new List<ResearchProject>();
+            foreach (var project in selectedProjects)
+            {
+                aux.Add(_researchProjects!.Where(x => x.Id.ToString() == project).Single());
+            }
+            await ModifyProjects.InvokeAsync(aux.AsEnumerable());
+        }
+        Close();
+    }
+}

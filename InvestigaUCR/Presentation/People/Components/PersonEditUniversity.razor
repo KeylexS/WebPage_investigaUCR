@@ -1,0 +1,98 @@
+﻿@using Application.Users
+@using Application.Users.Implementation
+@using Domain.People.Entities
+@using Domain.Users.Entities
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IUserService UserService
+
+@if (isEditingUniversity)
+{
+    <MudTextField @bind-Value="auxUniversity" IconSize="Size.Small" MaxLength="90" Variant="Variant.Outlined" Style="font-size: 1rem;" FullWidth="true" />
+    <ToolButton _placement="Placement.Right" _text="Cancelar" _icon="@Icons.Filled.Cancel" onClick="EditingUniversity" />
+    <ToolButton _placement="Placement.Right" _text="Guardar" _icon="@Icons.Filled.Check" onClick="ChangeUniversity" />
+}
+else
+{
+    <MudGrid Class="d-flex align-center justify-center" Style="gap: 29px;">
+    @if (userEmail == _person!.Id.ToString())
+    {
+        <MudItem></MudItem><MudItem></MudItem>
+    }
+    else
+    {
+        <AuthorizeView Roles="AdminRole">
+            <MudItem></MudItem><MudItem></MudItem>
+        </AuthorizeView>
+    }
+    @if (userEmail == _person.Id.ToString())
+    {
+        <MudItem>
+            <MudText Align="Align.Center" Typo="Typo.h3"> @_person?.University.ToString() </MudText>
+        </MudItem>
+        <MudItem>
+            <ToolButton _placement="Placement.Right" _text="Editar nombre" _icon="@Icons.Filled.Edit" onClick="EditingUniversity" />
+        </MudItem>
+    }
+    else
+    {
+        if (userEmail != "")
+        {
+            <MudItem>
+                <MudText Align="Align.Center" Typo="Typo.h3"> @_person?.University.ToString() </MudText>
+            </MudItem>
+            <MudItem>
+                <ToolButton _placement="Placement.Right" _text="Editar nombre" _icon="@Icons.Filled.Edit" onClick="EditingUniversity" />
+            </MudItem>
+        }
+        else
+        {
+            <MudItem>
+                <MudText Align="Align.Center" Typo="Typo.h3"> @_person?.University.ToString() </MudText>
+            </MudItem>
+        }
+    }
+
+    </MudGrid>
+
+}
+@if (_personUniversityMessage is not null)
+{
+    <Alert Color="_personAlertColor">
+        @_personUniversityMessage
+    </Alert>
+}
+
+@code {
+    [Parameter] public EventCallback<string> OnUniversityEdit { get; set; }
+    [Parameter] public Person? _person { get; set; } = null!;
+    private bool isEditingUniversity = false;
+    public string? _personUniversityMessage { get; set; } = null;
+    public Alert.AlertColor _personAlertColor = Alert.AlertColor.Danger;
+    private string auxUniversity { get; set; } = null!;
+    private string? userEmail { get; set; }
+    private UserAccount? _userAccount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        userEmail = await UserService.GetCurrentUserEmail();
+        if (userEmail != "")
+        {
+            _userAccount = await UserService.GetCurrentUserAccount();
+        }
+    }
+
+    private void EditingUniversity()
+    {
+        if (!isEditingUniversity)
+        {
+            auxUniversity = _person!.University.ToString();
+        }
+        isEditingUniversity = !isEditingUniversity;
+    }
+
+    private void ChangeUniversity()
+    {
+        OnUniversityEdit.InvokeAsync(auxUniversity);
+        isEditingUniversity = !isEditingUniversity;
+    }
+}

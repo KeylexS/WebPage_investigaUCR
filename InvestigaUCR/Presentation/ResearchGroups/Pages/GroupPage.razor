@@ -1,0 +1,425 @@
+﻿@page "/grupos/{GroupId}"
+@using Application.People
+@using Application.Users
+@using Application.Theses
+@using Domain.Core.Exceptions
+@using Domain.People.DTOs
+@using Domain.People.Entities
+@using Domain.Users.Entities
+@using Domain.Publications.Entities
+@using Domain.Theses.Entities
+@using Presentation.Core.Components
+@using Presentation.ResearchGroups.Components
+@inject IUserService UserService;
+@inject IGroupService GroupService;
+@inject ICoordinatorService CoordinatorServices;
+@inject IResearcherService ResearcherServices;
+
+<Loading IsLoading="_isLoading">
+    <GroupPageData _group="_group" OnNameEdit="ChangeName" OnDescriptionEdit="ChangeDescription" OnImageEdit="ChangeImage" 
+                   ChangeCoordinator="ChangeCoordinator" AddResearchers="AddResearchers" DeleteResearchers="RemoveResearchers" AddProjects="AddProjects" RemoveProjects="RemoveProjects"
+                   AddPublications="AddPublications" DeletePublications="DeletePublications" AddTheses="AddTheses" DeleteTheses="DeleteTheses" @ref="pageData" />
+</Loading>
+
+
+@code {
+    /// <summary>
+    /// The id of a specific group
+    /// </summary>
+    [Parameter]
+    public String GroupId { get; set; } = null!;
+    private Group? _group;
+    private bool _isLoading = true;
+    GroupPageData pageData = new GroupPageData();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadGroup();
+        _isLoading = false;
+    }
+
+    /// <summary>
+    /// Method that calls a service to search the group by id
+    /// </summary>
+    /// <returns></returns>
+    public async Task LoadGroup()
+    {
+        _group = await GroupService.GetGroupByIdAsync(GroupId);
+    }
+
+    private async void ChangeName(string _text)
+    {
+        try
+        {
+            ResearchGroupName _name = ResearchGroupName.TryCreate(_text).Success();
+            await GroupService.SaveGroupName(_group!, _name);
+            pageData._groupNameMessage = "El nombre del grupo de investigación ha sido modificado.";
+            pageData._groupAlertColor = Alert.AlertColor.Success;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupNameMessage = null;
+            pageData._groupAlertColor = Alert.AlertColor.Danger;
+            StateHasChanged();
+        }
+        catch (DomainException e)
+        {
+            pageData._groupNameMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupNameMessage = null;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            pageData._groupNameMessage = "Ocurrió un error. Intente de nuevo.";                        
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupNameMessage = null;
+            StateHasChanged();
+        }
+    }
+
+    private async void ChangeDescription(string _text)
+    {
+        try
+        {
+            ResearchGroupDescription _description = ResearchGroupDescription.TryCreate(_text).Success();
+            await GroupService.SaveGroupDescription(_group!, _description);
+            pageData._groupDescriptionMessage = "La descripción del grupo de investigación ha sido modificada.";
+            pageData._groupAlertColor = Alert.AlertColor.Success;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupDescriptionMessage = null;
+            pageData._groupAlertColor = Alert.AlertColor.Danger;
+            StateHasChanged();
+        }
+        catch (DomainException e)
+        {
+            pageData._groupDescriptionMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupDescriptionMessage = null;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            pageData._groupDescriptionMessage = "Ocurrió un error. Intente de nuevo.";                        
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupDescriptionMessage = null;
+            StateHasChanged();
+        }
+    }
+
+    private async void ChangeImage(byte[] _image)
+    {
+        try
+        {
+            await GroupService.SaveGroupImage(_group!, _image);      
+            pageData._groupImageMessage = "La imagen del grupo de investigación ha sido modificada.";
+            pageData._groupAlertColor = Alert.AlertColor.Success;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupImageMessage = null;
+            pageData._groupAlertColor = Alert.AlertColor.Danger;
+            StateHasChanged();
+        }
+        catch (DomainException e)
+        {
+            pageData._groupImageMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupImageMessage = null;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            pageData._groupImageMessage = "Ocurrió un error. Intente de nuevo.";                        
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupImageMessage = null;
+            StateHasChanged();
+        }  
+    }
+
+    private async void ChangeCoordinator(Person? coordinator)
+    {
+        try
+        {
+            await GroupService.ChangeCoordinator(_group!, coordinator);
+            pageData._groupCoordinatorMessage = "La persona coordinadora del grupo ha sido modificada.";
+            pageData._groupAlertColor = Alert.AlertColor.Success;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupCoordinatorMessage = null;
+            pageData._groupAlertColor = Alert.AlertColor.Danger;
+            StateHasChanged();
+        }
+        catch (DomainException e)
+        {
+            pageData._groupCoordinatorMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupCoordinatorMessage = null;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            pageData._groupCoordinatorMessage = "Ocurrió un error. Intente de nuevo.";                        
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupCoordinatorMessage = null;
+            StateHasChanged();
+        }  
+    }
+
+    private async void AddResearchers(IEnumerable<Person> people)
+    {
+        try
+        {
+            await GroupService.AddResearchers(_group!, people.ToList());
+            pageData._groupResearchersMessage = "Las personas investigadoras seleccionadas han sido agregadas.";
+            pageData._groupAlertColor = Alert.AlertColor.Success;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupResearchersMessage = null;
+            pageData._groupAlertColor = Alert.AlertColor.Danger;
+            StateHasChanged();
+        }
+        catch (DomainException e)
+        {
+            pageData._groupResearchersMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupResearchersMessage = null;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            pageData._groupResearchersMessage = "Ocurrió un error. Intente de nuevo.";
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupResearchersMessage = null;
+            StateHasChanged();
+        }
+    }
+
+    private async void RemoveResearchers(IEnumerable<Person> people)
+    {
+        try
+        {
+            await GroupService.RemoveResearchers(_group!, people.ToList());
+            pageData._groupResearchersMessage = "Las personas investigadoras seleccionadas han sido removidas.";
+            pageData._groupAlertColor = Alert.AlertColor.Success;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupResearchersMessage = null;
+            pageData._groupAlertColor = Alert.AlertColor.Danger;
+            StateHasChanged();
+        }
+        catch (DomainException e)
+        {
+            pageData._groupResearchersMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupResearchersMessage = null;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            pageData._groupResearchersMessage = "Ocurrió un error. Intente de nuevo.";
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupResearchersMessage = null;
+            StateHasChanged();
+        }
+    }
+
+    private async void AddProjects(IEnumerable<ResearchProject> projects)
+    {
+        try
+        {
+            await GroupService.AddProjectsToGroup(_group!, projects.ToList());
+            pageData._groupProjectsMessage = "Los proyectos de investigación seleccionados han sido agregados.";
+            pageData._groupAlertColor = Alert.AlertColor.Success;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupProjectsMessage = null;
+            pageData._groupAlertColor = Alert.AlertColor.Danger;
+            StateHasChanged();
+        }
+        catch (DomainException e)
+        {
+            pageData._groupProjectsMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupProjectsMessage = null;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            pageData._groupProjectsMessage = "Ocurrió un error. Intente de nuevo.";
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupProjectsMessage = null;
+            StateHasChanged();
+        }
+    }
+
+
+    private async void RemoveProjects(IEnumerable<ResearchProject> projects)
+    {
+        try
+        {
+            await GroupService.RemoveProjectsofGroup(_group!, projects.ToList());
+            pageData._groupProjectsMessage = "Los proyectos de investigación seleccionados han sido removidos.";
+            pageData._groupAlertColor = Alert.AlertColor.Success;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupProjectsMessage = null;
+            pageData._groupAlertColor = Alert.AlertColor.Danger;
+            StateHasChanged();
+        }
+        catch (DomainException e)
+        {
+            pageData._groupProjectsMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupProjectsMessage = null;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            pageData._groupProjectsMessage = "Ocurrió un error. Intente de nuevo.";
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupProjectsMessage = null;
+            StateHasChanged();
+        }
+    }
+
+    private async void AddPublications(IEnumerable<Publication> publication)
+    {
+        try
+        {
+            await GroupService.AddPublications(_group!, publication.ToList());
+            pageData._groupPublicationsMessage = "Las publicaciones seleccionadas han sido agregadas.";
+            pageData._groupAlertColor = Alert.AlertColor.Success;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupPublicationsMessage = null;
+            pageData._groupAlertColor = Alert.AlertColor.Danger;
+            StateHasChanged();
+        }
+        catch (DomainException e)
+        {
+            pageData._groupPublicationsMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupPublicationsMessage = null;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            pageData._groupPublicationsMessage = "Ocurrió un error. Intente de nuevo.";
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupPublicationsMessage = null;
+            StateHasChanged();
+        }
+    }
+
+    private async void DeletePublications(IEnumerable<Publication> publications)
+    {
+        try
+        {
+            await GroupService.RemovePublications(_group!, publications.ToList());
+            pageData._groupPublicationsMessage = "Las publicaciones seleccionadas han sido removidas.";
+            pageData._groupAlertColor = Alert.AlertColor.Success;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupPublicationsMessage = null;
+            pageData._groupAlertColor = Alert.AlertColor.Danger;
+            StateHasChanged();
+        }
+        catch (DomainException e)
+        {
+            pageData._groupPublicationsMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupPublicationsMessage = null;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            pageData._groupPublicationsMessage = "Ocurrió un error. Intente de nuevo.";
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupPublicationsMessage = null;
+            StateHasChanged();
+        }
+    }
+
+    private async void AddTheses(IEnumerable<Thesis> thesis)
+    {
+        try
+        {
+            await GroupService.AddTheses(_group!, thesis.ToList());
+            pageData._groupThesesMessage = "Las tesis seleccionadas han sido agregadas.";
+            pageData._groupAlertColor = Alert.AlertColor.Success;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupThesesMessage = null;
+            pageData._groupAlertColor = Alert.AlertColor.Danger;
+            StateHasChanged();
+        }
+        catch (DomainException e)
+        {
+            pageData._groupThesesMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupThesesMessage = null;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            pageData._groupThesesMessage = "Ocurrió un error. Intente de nuevo.";
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupThesesMessage = null;
+            StateHasChanged();
+        }
+    }
+
+    private async void DeleteTheses(IEnumerable<Thesis> thesis)
+    {
+        try
+        {
+            await GroupService.RemoveTheses(_group!, thesis.ToList());
+            pageData._groupThesesMessage = "Las tesis seleccionadas han sido removidas.";
+            pageData._groupAlertColor = Alert.AlertColor.Success;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupThesesMessage = null;
+            pageData._groupAlertColor = Alert.AlertColor.Danger;
+            StateHasChanged();
+        }
+        catch (DomainException e)
+        {
+            pageData._groupThesesMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupThesesMessage = null;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            pageData._groupThesesMessage = "Ocurrió un error. Intente de nuevo.";
+            StateHasChanged();
+            await Task.Delay(5000);
+            pageData._groupThesesMessage = null;
+            StateHasChanged();
+        }
+    }
+}

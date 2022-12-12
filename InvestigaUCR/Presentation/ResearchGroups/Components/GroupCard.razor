@@ -1,0 +1,53 @@
+﻿@inject IImageService ImageService
+@*User Story: SD-RG-1.5 & TT: PIIB22II02-303 Create the component*@
+@if (!_groups!.Any())
+{
+    <MudText Align="Align.Center" Color=Color.Warning Typo="Typo.body2" Class="text-danger">No hay grupos de investigación registrados actualmente.</MudText>
+}
+else
+{
+    @*User Story: SD-RG-1.5 & TT: PIIB22II02-458 Adjust groups card*@
+    <MudGrid Spacing="5" Justify="Justify.Center">
+        @foreach (var group in _groups!)
+        {
+            @*User Story: SD-RG-1.5 & TT: PIIB22II02-458 Adjust groups card*@
+            <MudItem>
+                    <MudCard Outlined="true" Elevation="0" Style=" height: 400px; width: 500px;">
+                    <MudCardHeader>
+                        @*PIIB22II02-350 SD-RG-1.6 Show the custom image for each groups in research groups list && TT: PIIB22II02-385 Put the image in the mudcard*@
+                        <MudImage Src="@getImage(group.Image)" Elevation="0" Class="rounded-circle" Width="225" Height="225" ObjectFit="ObjectFit.Cover" Style="display: block; margin-left: auto; margin-right: auto; border-radius: 50%;" />
+                    </MudCardHeader>
+                    @*User Story: SD-RG-1.5 & TT: PIIB22II02-605 Fix Group Card Name and Description*@
+                    <MudCardContent>
+                        <MudText Align="Align.Center" Style="min-height:45px">
+                            @*User Story: SD-RG-1.5 & TT: PIIB22II02-605 Fix Group Card Name and Description*@
+                            <MudLink Typo="Typo.h3" Style="display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden" Href="@($"/grupos/{group.Id.Value}")">@group.Name.Value</MudLink>
+                        </MudText> 
+                        @*User Story: SD-RG-1.5 & TT: PIIB22II02-605 Fix Group Card Name and Description*@
+                        <MudText  Align="Align.Center" Style="display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden"  GutterBottom="true" Typo="Typo.body2">@group.Description.Value</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+
+}
+
+
+@code {
+    /// <summary>
+    /// The list of all the groups from the database
+    /// </summary>
+    [Parameter]
+    public IEnumerable<GroupDTO>? _groups { get; set; } = null!;
+
+    /// <summary>
+    /// Method that return the image of a group.
+    /// </summary>
+    /// <param name="img">An array of bytes with the possible image</param>
+    /// <returns>A string with the image of the group</returns>
+    public String getImage(byte[]? img)
+    {
+        return img != null ? ImageService.ConvertByteToImage(img) : "/Images/DefaultImages/groupDefault.png";
+    }
+}

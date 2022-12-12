@@ -1,0 +1,274 @@
+﻿@using Blazored.FluentValidation
+@using Domain.Core.Exceptions
+@using Domain.Core.Helpers
+@using Domain.News.DTOs
+@using Domain.News.Entities
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Hosting
+@using Microsoft.Extensions.Logging
+@using Application.News
+@using Presentation.News.Models
+@inject IWebHostEnvironment Environment
+@inject INewsService NewsService
+@inject IImageService ImageService
+@inject IGroupService GroupService
+
+@if (_newsEditMessage is not null)
+{
+    <Alert Color="_newsEditAlertColor">
+        @_newsEditMessage
+    </Alert>
+}
+<EditForm OnValidSubmit="HandleSubmit" Model="@Model">
+    <FluentValidationValidator />
+    <h3 style="text-align: center;">Añadir una noticia</h3>
+    <MudDialog>
+        <DialogContent>
+            <MudContainer Style="max-height: 500px; overflow-y: scroll">
+                <MudImage Src="@getImage(Model.Image)" Elevation="0" Class="rounded-lg" Width="330" Height="220" ObjectFit="ObjectFit.Cover" Style="display: block; margin-left: auto; margin-right: auto; border-radius: 50%;" />
+                <MudPaper Class="d-flex justify-center py-2 px-1 mt-6" Elevation="0" Outlined="false">
+                    <InputFile id="fileInput" OnChange="HandleSelection" accept="image/png, image/jpeg, image/jpg" hidden />
+                    <MudButton HtmlTag="label"
+                               Variant="Variant.Filled"
+                               Color="Color.Success"
+                               StartIcon="@Icons.Filled.CloudUpload"
+                               Disabled="@off"
+                               for="fileInput">
+                        Añadir imagen
+                    </MudButton>
+                </MudPaper>
+                <br>
+                <div class="form-news">
+                    <MudGrid>
+                        <MudItem xs="6">
+                            <MudTextField T="string" @bind-Value="Model.Id"
+                                          Label="Identificador" Immediate="true" Variant="Variant.Outlined" Clearable="true"
+                                          Required="true" RequiredError="El identificador es necesario." Disabled="@off" Adornment="Adornment.Start"
+                                          AdornmentText="CITIC-" />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudTextField T="DateTime?" @bind-Value="Model.PublicationDate"
+                                Label="Fecha de publicación" Immediate="true" Variant="Variant.Outlined" Clearable="true"
+                                Format="yyyy-MM-dd" InputType="InputType.Date"
+                                Required="true" RequiredError="La fecha de publicación es necesaria." Disabled="@off"/>
+                        </MudItem>
+                    </MudGrid>
+                </div>
+                <br>
+                <MudGrid>
+                    <MudItem xs="6">
+                        <MudTextField T="string" @bind-Value="Model.Author"
+                                      Label="Autor" Immediate="true" Variant="Variant.Outlined" Clearable="true"
+                                      Disabled="@off" />
+                        <ValidationMessage For="@(() => Model.Author)" />
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudAutocomplete T="string" Label="Grupo de investigación" @bind-Value="_groupName" SearchFunc="@SearchGroups"
+                                         AdornmentIcon="@Icons.Material.Filled.Group" AdornmentColor="Color.Primary" AnchorOrigin=" Origin.BottomCenter" />
+                    </MudItem>
+                </MudGrid>
+                <br>
+                <div class="form-news">
+                    <MudTextField T="string" @bind-Value="Model.Title"
+                                  Label="Título" Immediate="true" Variant="Variant.Outlined" Clearable="true"
+                                  Required="true" RequiredError="El título es necesario." Disabled="@off" />
+                </div>
+                <br>
+                <div class="form-news">
+                    <MudTextField T="string" @bind-Value="Model.Description"
+                                  Label="Descripción" Immediate="true" Variant="Variant.Outlined" Clearable="true"
+                                  Lines="10"
+                                  Required="true" RequiredError="La descripción es necesaria." Disabled="@off" />
+                </div>
+                <br>
+            </MudContainer>
+        </DialogContent>
+        <DialogActions>
+            <MudButton Style="block; margin-left: auto; margin-right: auto;" Color="Color.Primary" OnClick="Close" Disabled="@off">Cancelar</MudButton>
+            <MudButton Style="block; margin-left: auto; margin-right: auto;" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" Disabled="@off">Añadir</MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>
+
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = null!;
+
+    [Parameter]
+    public IEnumerable<GroupDTO>? _groups { get; set; } = null!;
+    [Parameter]
+    public IEnumerable<NewsDTO>? _news { get; set; } = null!;
+
+    private NewsModel Model { get; set; } = new();
+    private List<IBrowserFile> loadedFiles = new();
+    private static string prefixId = "CITIC-";
+
+    private string? _newsEditMessage = null;
+    private Alert.AlertColor _newsEditAlertColor = Alert.AlertColor.Danger;
+    private bool off = false;
+
+    private string _groupName { get; set; } = string.Empty;
+
+    void Close() => MudDialog.Close(DialogResult.Ok(true));
+
+    /// <summary>
+    /// Return the a custom image or the default image.
+    /// </summary>
+    /// <param name="img">Array of bytes with the data of the image</param>
+    /// <returns></returns>
+    public String getImage(byte[]? img)
+    {
+        return img != null ? ImageService.ConvertByteToImage(img) : "/Images/DefaultImages/newsDefault.jpg";
+    }
+
+    /// <summary>
+    /// Method <c>HandleSubmit</c> Handle the submit of the form to create a new news item.
+    /// </summary>
+    /// <returns></returns>
+    private async Task HandleSubmit()
+    {
+        await SaveGroupName();
+        _newsEditMessage = null;
+        bool titleValue = validateTitle(Model.Title);
+        bool descriptionValue = validateDescription(Model.Description);
+        if (titleValue == true && descriptionValue == true)
+        {
+            try
+            {
+                off = true;
+                StateHasChanged();
+                string id = prefixId + (Model.Id!).ToUpper();
+                var news = new GroupNews(
+                    id,
+                    Model.Title,
+                    Model.Description,
+                    Model.Author,
+                    Model.PublicationDate,
+                    Model.Group,
+                    Model.Image);
+                if (!_news.Exists(n => n.Id == news.Id))
+                {
+                    await NewsService.AddNews(news);
+                    _newsEditAlertColor = Alert.AlertColor.Success;
+                    CreateMessage("Noticia añadida con éxito.");
+                }
+                else
+                {
+                    _newsEditAlertColor = Alert.AlertColor.Danger;
+                    CreateMessage("Ya existe una noticia con ese mismo Id. Intente de nuevo.");
+                    throw new Exception("Ya existe una noticia con ese mismo ID");
+                }
+                Model = new NewsModel();
+                Close();
+            }
+            catch (DomainException e)
+            {
+                off = true;
+                CreateMessage(e.Message);
+            }
+            catch (Exception)
+            {
+                _newsEditAlertColor = Alert.AlertColor.Danger;
+                CreateMessage("Ocurrió un error. Intente de nuevo.");
+            }
+        }
+        else
+        {
+            _newsEditAlertColor = Alert.AlertColor.Danger;
+            if(titleValue == false)
+            {
+                CreateMessage("El título excede la cantidad de carácteres máximos. Intente de nuevo");
+            }
+            else
+            {
+                CreateMessage("La descripción excede la cantidad de carácteres máximos. Intente de nuevo");
+            }
+        }
+    }
+
+    private bool validateTitle(string? title)
+    {
+        bool validate = false;
+        if (title is not null && title.Length() < 282)
+        {
+            validate = true;
+        }
+        return validate;
+    }
+
+    private bool validateDescription(string? description)
+    {
+        bool validate = false;
+        if (description is not null && description.Length() < 793)
+        {
+            validate = true;
+        }
+        return validate;
+    }
+
+
+    /// <summary>
+    /// Method <c>HandleSelection</c> Handles the selection of an image with the input file.
+    /// </summary>
+    /// <param name="e">Arguments casted by the interaction with the component</param>
+    /// <returns></returns>
+    private async Task HandleSelection(InputFileChangeEventArgs e)
+    {
+        loadedFiles.Clear();
+        loadedFiles.Add(e.File);
+
+        foreach (var file in loadedFiles)
+        {
+            Stream stream = file.OpenReadStream();
+            MemoryStream ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            stream.Close();
+
+            Model.Image = ms.ToArray();
+            ms.Close();
+            StateHasChanged();
+        }
+    }
+
+    public async void CreateMessage(string message)
+    {
+        _newsEditMessage = message;
+        StateHasChanged();
+        await Task.Delay(3000);
+        _newsEditMessage = null;
+        StateHasChanged();
+    }
+
+    private async Task<IEnumerable<string>> SearchGroups(string value)
+    {
+        await Task.Delay(5);
+        List<string> names = new List<string>();
+
+        if (_groups != null) {
+            foreach (var group in _groups!)
+            {
+                names.Add(group.Id.Value + ": " + group.Name.Value);
+            }
+        }
+
+        // if text is null or empty, show complete list
+        if (string.IsNullOrEmpty(value))
+            return names;
+        return names.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    private async Task SaveGroupName()
+    {
+        StateHasChanged();
+        if (_groupName is not null)
+        {
+            string? id = _groupName.Split(":")[0];
+            Model.Group = await GroupService.GetGroupByIdAsync(id);
+        }
+        else
+        {
+            Model.Group = null;
+        }
+        StateHasChanged();
+    }
+}

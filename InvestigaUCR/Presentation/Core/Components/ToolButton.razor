@@ -1,0 +1,18 @@
+﻿<MudTooltip Placement="_placement" Text="@_text">
+    <MudIconButton Icon="@_icon" OnClick="OnClickMethod" id="ToolButton"/>
+</MudTooltip>
+
+@code {
+    [Parameter]
+    public string _text { get; set; } = null!;
+    [Parameter]
+    public string _icon { get; set; } = null!;
+    [Parameter]
+    public Placement _placement { get; set; } = Placement.Right;
+    [Parameter]
+    public EventCallback onClick { get; set; }
+
+    public void OnClickMethod(){
+        onClick.InvokeAsync();
+    }
+}

@@ -1,0 +1,54 @@
+﻿@page "/tesis"
+@using Application.Theses
+@using Domain.Theses.Entities
+@using Application.Theses.Implementations
+@using Presentation.Core.Components
+@using Presentation.Theses.Components
+
+@inject ITheses Theses
+<div class="container">
+        <MudItem Style="position:relative; top:4%; max-width:300px; width:auto; left:10%; margin-left:auto; display:flex">
+        <MudTextField @bind-Value="_searchText" Immediate="true" Label="Buscar tesis" Clearable="true"
+                      Variant="Variant.Outlined" Adornment="Adornment.End"
+                      AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Secondary" />
+    </MudItem>
+    <MudText Align="Align.Center" Typo="Typo.h1">Tesis</MudText>
+    <br /><br />
+    <Loading IsLoading="_isLoading">
+        @if (_theses!.Any() && !_filteredTheses!.Any())
+        {
+            <MudText Align="Align.Center" Color=Color.Warning Typo="Typo.body2" Class="text-danger">No se encontraron publicaciones que coincidan con el texto ingresado.</MudText>
+        }
+        else
+        {
+            <ThesesList _theses="_filteredTheses" />
+        }
+    </Loading>
+</div>
+
+@code {
+    private bool _isLoading { get; set; }
+
+    private IEnumerable<Thesis> _theses = Enumerable.Empty<Thesis>();
+    private string _searchText = "";
+    private IEnumerable<Thesis> _filteredTheses
+    {
+        get
+        {
+            return Theses.GetFilteredTheses(_searchText, _theses);
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadStocks();
+    }
+
+    private async Task LoadStocks()
+    {
+        _isLoading = true;
+        _theses = await Theses.GetThesesAsync();
+        _isLoading = false;
+    }
+
+}
+

@@ -1,0 +1,133 @@
+﻿@using Application.Theses
+@using Domain.Theses.Entities
+@using Domain.Core.Exceptions
+@using Presentation.Core.Components
+
+@inject IGroupService GroupService;
+
+<MudDialog>
+    <DialogContent>
+        <MudContainer Style="max-height: 500px; overflow-y: scroll">
+            <Loading IsLoading="_isLoading">
+                <MudSelect T="string" MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))" HelperText="@helperText" Label="Seleccione las tesis" MultiSelection="true" @bind-Value="_thesis" @bind-SelectedValues="selectedTheses">
+                    @if (isAdding)
+                    {
+                        @foreach (var thesis in _theses!.OrderBy(x => x.Id + ": " + x.Title))
+                        {
+                            if (!_group.Thesis.Contains(thesis))
+                            {
+                                <MudSelectItem T="string" Value="thesis.Title">@getThesisName(thesis)</MudSelectItem>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        @foreach (var thesis in _group.Thesis.OrderBy(x => x.Id + ": " + x.Title))
+                        {
+                            <MudSelectItem T="string" Value="thesis.Title">@getThesisName(thesis)</MudSelectItem>
+                        }
+                    }
+                </MudSelect>
+            </Loading>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudToolBar Class="d-flex justify-start flex-grow-1 gap-4">
+            <MudButton OnClick="Close" Color="Color.Primary">Cancelar</MudButton>
+            <MudButton OnClick="SelectTheses" Color="Color.Primary" Variant="Variant.Filled">Confirmar</MudButton>
+        </MudToolBar>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = null!;
+    [Parameter]
+    public Group _group { get; set; } = null!;
+    [Parameter]
+    public EventCallback<IEnumerable<Thesis>> ModifyTheses { get; set; }
+    [Parameter]
+    public bool isAdding { get; set; } = true;
+
+    private bool _isLoading { get; set; } = false;
+    private string? _thesis { get; set; } = null!;
+    private IEnumerable<Thesis>? _theses { get; set; } = null!;
+    private IEnumerable<string> selectedTheses { get; set; } = null!;
+
+    private string helperText
+    {
+        get
+        {
+            if (selectedTheses is not null)
+            {
+                if (selectedTheses.Count() > 0)
+                {
+                    return selectedTheses.Count() == 1 ? $"Se ha seleccionado 1 tesis" : $"Se han seleccionado {selectedTheses.Count()} tesis";
+                }
+            }
+            return "";
+        }
+    }
+
+    void Close() => MudDialog.Close(DialogResult.Ok(true));
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTheses();
+    }
+
+    private async Task LoadTheses()
+    {
+        _isLoading = true;
+        _theses = await GroupService.GetAllThesesAsync();
+        _isLoading = false;
+    }
+
+    private async Task SelectTheses()
+    {
+        if (selectedTheses is not null)
+        {
+            List<Thesis> aux = new List<Thesis>();
+            foreach (var thesis in selectedTheses)
+            {
+                aux.Add(_theses!.Where(x => x.Title == thesis).Single());
+            }
+            await ModifyTheses.InvokeAsync(aux.AsEnumerable());
+        }
+        Close();
+    }
+
+    private string getThesisName(Thesis thesis)
+    {
+        return thesis.Id + ": " + thesis.Title;
+    }
+
+    /// <summary>
+    /// Method <c>GetMultiSelectionText</c> Return the helper text string
+    /// </summary>
+    /// <param name="selectedValues"></param>
+    /// <returns>Helper text</returns>
+    private string GetMultiSelectionText(List<string> selectedValues)
+    {
+        if (selectedTheses is not null)
+        {
+            if (selectedTheses.Count() > 0)
+                return $"Tesis{(selectedTheses!.Count() > 1 ? " seleccionadas" : " seleccionada")}: {getAllNames()}";
+        }
+        return $"Seleccione las tesis";
+    }
+
+    /// <summary>
+    /// Method <c>getAllNames</c> Return an string with the name of all the theses selected
+    /// </summary>
+    /// <returns>String with the name of all the theses selected</returns>
+    private string getAllNames()
+    {
+        string aux = "";
+        foreach (var thesis in selectedTheses)
+        {
+            Thesis auxThesis = _theses!.Where(x => x.Title == thesis).Single();
+            aux += auxThesis.Id + ": " + auxThesis.Title;
+        }
+        return aux;
+    }
+}

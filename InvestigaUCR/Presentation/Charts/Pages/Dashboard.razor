@@ -1,0 +1,97 @@
+﻿@page "/estadisticas"
+@using Presentation.Core.Components
+@using Presentation.Charts.Components
+@inject IChartService ChartsService
+@inject IGroupService GroupService
+@using Domain.Shared.Charts.Entities
+@using Presentation.Charts.Core
+@using Application.Shared
+@using System.Diagnostics
+
+<MudText Elevation="0" Style="padding-right:10px; padding-top:30px; padding-bottom:30px" Align=" Align.Center" Typo="Typo.h1">
+    Cuadro de Control
+</MudText>
+
+
+<Loading IsLoading="_isLoading">
+    <ColumnGraph _barChart="_barChart"> </ColumnGraph>
+    <br />
+    <ProjectsByYearByAreaTable></ProjectsByYearByAreaTable>
+   @* <Barchart _barChart="_groupsPublicationBarChart" _onChange="onNewDate"
+                               _graphName="Publicaciones de los grupos de investigación" x_Axis="Grupo de investigación" y_Axis="Cant.Publicaciones"></Barchart>*@
+    <GanttChartGroupProjects _onChange="onNewGroup" groups="groups" group="group"></GanttChartGroupProjects>
+    <br/>
+    <PieChart titulo="Cantidad de personas en los grupos" _barChart="_groupsPieChart"> </PieChart>
+</Loading>
+
+
+
+@code {
+    private bool _isLoading { get; set; } = true;
+
+    public BarChart? _barChart { get; set; } = null!;
+
+    public BarChart _groupsPublicationBarChart { get; set; } = null!;
+
+    private Group group { get; set; } = null!;
+    public BarChart _groupsPieChart { get; set; } = null!;
+
+
+    public IEnumerable<GroupDTO> groups { get; set; } = null!;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDashboard();
+    }
+
+    private async Task LoadDashboard()
+    {
+
+        _barChart = await ChartsService.GetResearchProjectsChartAsync();
+        _groupsPublicationBarChart = await GroupService.GetResearchGroupPublicationsChartAsynca(2012,2022);
+        group = await ChartsService.getResearchGroupWhitProjects("CRCUCRCITICESE");
+        groups = await GroupService.GetGroupAsync();
+
+        _groupsPieChart = await ChartsService.getPieChartAmountOfPeopleGroup();
+
+        _isLoading = false;
+    }
+
+    public async void onNewDate((int,int) tuple)
+    {
+        try
+        {
+            _groupsPublicationBarChart = await GroupService.GetResearchGroupPublicationsChartAsynca(tuple.Item1, tuple.Item2);
+        }
+        catch
+        {
+            Console.WriteLine("Error");
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+        
+        StateHasChanged();
+    }
+
+    public async void onNewGroup(GroupDTO newGroup)
+    {
+        try
+        {
+            group = await ChartsService.getResearchGroupWhitProjects(newGroup.Id.ToString());
+        }
+        catch
+        {
+            Console.WriteLine("Error");
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+}
+
+
+

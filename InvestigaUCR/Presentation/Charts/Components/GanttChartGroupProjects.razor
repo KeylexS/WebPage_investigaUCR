@@ -1,0 +1,117 @@
+﻿@using Presentation.Core.Components
+@using Presentation.Charts.Components
+@inject IChartService ChartsService
+@inject IGroupService GroupService
+@using Domain.Shared.Charts.Entities
+@using Presentation.Charts.Core
+@using Application.Shared
+@using System.Diagnostics
+
+<ApexChart @ref="chart"
+           TItem="ResearchProject"
+           Title="Proyectos del grupo de investigacion"
+           Options=options
+           Height="350"
+           XAxisType="XAxisType.Datetime">
+
+    <ApexRangeSeries TItem="ResearchProject"
+                     Items="_projects"
+                     XValue="@(e => e.Name)"
+                     Name="Proyectos"
+                     YMinValue="@(e =>e.Start_date.ToUnixTimeMilliseconds())"
+                     YMaxValue="@(e =>e.End_date.ToUnixTimeMilliseconds())" />
+</ApexChart>
+<MudText Class="mx-auto pa-3 d-flex justify-center flex-grow-1 gap-4" Elevation="0" Align="Align.Center" Color="Color.Warning" font="bold 16px Helvetica">Años</MudText>
+
+<MudPaper Class="mx-auto pa-3 d-flex justify-center flex-grow-1 gap-4" Elevation="0">
+    <MudItem Class="d-flex align-content-center gap-4" Style="width:200px height:100%;">
+        <MudSelect @bind-Value="selectedGroup" T="GroupDTO" Label="Grupo de Investigación" AnchorOrigin="Origin.BottomCenter" SelectedValuesChanged="@(() => _onChange.InvokeAsync(ChangeStatus()))">
+            @foreach (var item in groups)
+            {
+                <MudSelectItem Value="@item">@item.Name.ToString()</MudSelectItem>
+            }
+        </MudSelect>
+        <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" OnClick="UpdateChartSeries">Filtrar por grupo</MudButton>
+    </MudItem>
+</MudPaper>
+
+@code {
+    [Parameter]
+    public Group group { get; set; } = null!;
+    [Parameter]
+    public IEnumerable<GroupDTO> groups { get; set; } = null!;
+    [Parameter]
+    public EventCallback<GroupDTO> _onChange { get; set; }
+
+
+    private IEnumerable<ResearchProject> _projects { get; set; } = null!;
+    private ApexChart<ResearchProject>? chart;
+
+    private ApexChartOptions<ResearchProject>? options;
+
+    private GroupDTO selectedGroup { get; set; } = null!;
+
+    private bool IsTaskRunning = false, projectLoaded = false, resetValueOnEmptyText = false, coerceText = false, coerceValue = false;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDashboard();
+    }
+
+
+    private async Task LoadDashboard()
+    {
+        options = new ApexChartOptions<ResearchProject>
+            {
+                PlotOptions = new PlotOptions
+                {
+                    Bar = new PlotOptionsBar
+                    {
+                        Horizontal = true,
+                        BarHeight = "15px"
+                    }
+                },
+                Tooltip = new ApexCharts.Tooltip
+                {
+                    X = new TooltipX
+                    {
+                        Format = "dd MMM yyyy HH:mm"
+                    },
+                }
+            };
+        options.Title = new Title
+            {
+                Style = new TitleStyle
+                {
+                    FontSize = "24px",
+                    FontFamily = "Helvetica",
+                    FontWeight = ""
+                }
+            };
+        options.Title.Align = ApexCharts.Align.Center;
+        options.Yaxis = new List<YAxis>();
+        options.Yaxis.Add(new YAxis
+            {
+                Title = new AxisTitle { Text = "Proyectos", Style = new AxisTitleStyle { FontSize = "16px", FontFamily = "Helvetica", FontWeight = "Bold" } },
+            });
+
+        _projects = group._researchProjects;
+    }
+
+    public GroupDTO ChangeStatus()
+    {
+        return selectedGroup;
+    }
+
+    protected override async void OnParametersSet()
+    {
+        await LoadDashboard();
+    }
+
+    private async Task UpdateChartSeries()
+    {
+        await chart!.UpdateSeriesAsync(true);
+    }
+
+}

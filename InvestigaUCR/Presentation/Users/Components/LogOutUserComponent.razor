@@ -1,0 +1,28 @@
+﻿@inject IDialogService DialogService
+@using Application.Users;
+@using Domain.Core.Exceptions
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Mvc
+@inject IUserService UserService
+@inject NavigationManager NavigationManager
+@inject IDialogService DialogService
+
+<MudNavLink Class="" OnClick="OnLogOutUserClicked">
+    <MudIconButton Class="" ButtonType="ButtonType.Submit" Icon="@Icons.Filled.Logout" OnClick="OnLogOutUserClicked">
+    </MudIconButton>Cerrar sesion
+</MudNavLink>
+
+@code {
+    public string? _userDeleteMessage { get; set; } = null;
+    public Alert.AlertColor _userAlertColor = Alert.AlertColor.Danger;
+
+    public async void OnLogOutUserClicked()
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("ContentText", "Esta seguro que desea cerrar sesion");
+        parameters.Add("ButtonText", "Cerrar sesion");
+        parameters.Add("Color", Color.Error);
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        DialogService.Show<DialogLogOut>("Cerrar sesion", parameters, options);
+    }
+}

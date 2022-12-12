@@ -1,0 +1,371 @@
+{
+  "id": "8674d2fa-c463-4d32-a8b2-1112c0cca727",
+  "version": "2.0",
+  "name": "UITestPeople",
+  "url": "https://localhost:7075/personas",
+  "tests": [{
+    "id": "14572602-26e3-4931-bc2b-b5a0179e818d",
+    "name": "PeopleTab_TitleAndCard",
+    "commands": [{
+      "id": "1a86de1b-38eb-46f9-9a09-90cb1447ca6c",
+      "comment": "",
+      "command": "open",
+      "target": "/personas",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "ac51830f-347a-41f0-b5e8-2808c71fcb3c",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1376x784",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "67137a81-23e6-425f-897e-84dc4fecded7",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.mud-typography-h1",
+      "targets": [
+        ["css=.mud-typography-h1", "css:finder"],
+        ["xpath=//h1", "xpath:position"],
+        ["xpath=//h1[contains(.,'Personas')]", "xpath:innerText"]
+      ],
+      "value": "Personas"
+    }, {
+      "id": "ec925ecb-482d-4591-bef6-a70f270fac01",
+      "comment": "",
+      "command": "assertTitle",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "5a61fd11-124f-498f-a82e-b6810fac536e",
+      "comment": "",
+      "command": "assertText",
+      "target": "linkText=Lic. Leonardo Villalobos",
+      "targets": [
+        ["linkText=Lic. Leonardo Villalobos", "linkText"],
+        ["css=.mud-grid-item:nth-child(14) .mud-typography:nth-child(2) > .mud-typography", "css:finder"],
+        ["xpath=//a[contains(@href, '/personas/lyon.villalobos@gmail.com')]", "xpath:href"],
+        ["xpath=//div[14]/div/div/h3/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Lic. Leonardo Villalobos')]", "xpath:innerText"]
+      ],
+      "value": "Lic. Leonardo Villalobos"
+    }, {
+      "id": "c6f3c09a-508d-4b42-9fc4-e9437c714dd3",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.mud-grid-item:nth-child(14) .mud-typography:nth-child(3)",
+      "targets": [
+        ["css=.mud-grid-item:nth-child(14) .mud-typography:nth-child(3)", "css:finder"],
+        ["xpath=//div[14]/div/div/p[2]", "xpath:position"]
+      ],
+      "value": "Universidad de Costa Rica"
+    }, {
+      "id": "52f88ac3-3037-451f-8cb9-1ca12a31a684",
+      "comment": "",
+      "command": "assertText",
+      "target": "linkText=lyon.villalobos@gmail.com",
+      "targets": [
+        ["linkText=lyon.villalobos@gmail.com", "linkText"],
+        ["css=.mud-grid-item:nth-child(14) .mud-typography:nth-child(4) > .mud-typography", "css:finder"],
+        ["xpath=//a[contains(text(),'lyon.villalobos@gmail.com')]", "xpath:link"],
+        ["xpath=//div[14]/div/div/p[3]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'lyon.villalobos@gmail.com')]", "xpath:innerText"]
+      ],
+      "value": "lyon.villalobos@gmail.com"
+    }]
+  }, {
+    "id": "45431313-bc2a-4cb1-8a91-b41ed02a6e31",
+    "name": "PersonTab_Titles",
+    "commands": [{
+      "id": "36132850-d441-4b0e-a676-5e1f96f4757f",
+      "comment": "",
+      "command": "open",
+      "target": "https://localhost:7075/personas/lyon.villalobos@gmail.com",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "e059e0dc-9486-41e9-86c7-2549a79bc631",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1376x784",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "d6910493-e9a2-4713-85d4-42969df4e124",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.mud-typography-h2:nth-child(1)",
+      "targets": [
+        ["css=.mud-typography-h2:nth-child(1)", "css:finder"],
+        ["xpath=//h2", "xpath:position"],
+        ["xpath=//h2[contains(.,'Lic. Leonardo Villalobos Arias')]", "xpath:innerText"]
+      ],
+      "value": "Lic. Leonardo Villalobos Arias"
+    }, {
+      "id": "1e8c1a3d-2849-4c62-865b-0f04e1ca10e1",
+      "comment": "",
+      "command": "assertTitle",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "2e837628-094d-441f-a37f-798fe9688060",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.mud-typography-h3:nth-child(6)",
+      "targets": [
+        ["css=.mud-typography-h3:nth-child(6)", "css:finder"],
+        ["xpath=//h3", "xpath:position"],
+        ["xpath=//h3[contains(.,'Universidad de Costa Rica')]", "xpath:innerText"]
+      ],
+      "value": "Universidad de Costa Rica"
+    }, {
+      "id": "e70160fc-28cf-46e4-87b9-6c65026764f7",
+      "comment": "",
+      "command": "assertTitle",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "c61b9b47-8f09-4d15-91a3-fa56680b90a2",
+      "comment": "",
+      "command": "assertText",
+      "target": "linkText=lyon.villalobos@gmail.com",
+      "targets": [
+        ["linkText=lyon.villalobos@gmail.com", "linkText"],
+        ["css=.mud-link-underline-always", "css:finder"],
+        ["xpath=//a[contains(text(),'lyon.villalobos@gmail.com')]", "xpath:link"],
+        ["xpath=//h4/a", "xpath:position"],
+        ["xpath=//a[contains(.,'lyon.villalobos@gmail.com')]", "xpath:innerText"]
+      ],
+      "value": "lyon.villalobos@gmail.com"
+    }, {
+      "id": "48e9b058-0d85-4324-9c22-c545d3e5c024",
+      "comment": "",
+      "command": "assertTitle",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "37fbaa03-9676-4793-bbfc-76bf080905fd",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=projects",
+      "targets": [
+        ["id=projects", "id"],
+        ["css=#projects", "css:finder"],
+        ["xpath=//h2[@id='projects']", "xpath:attributes"],
+        ["xpath=//h2[2]", "xpath:position"],
+        ["xpath=//h2[contains(.,'Proyectos')]", "xpath:innerText"]
+      ],
+      "value": "Proyectos"
+    }, {
+      "id": "599b4c39-434f-4726-86d2-37f9886d7432",
+      "comment": "",
+      "command": "assertTitle",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "9b5d9211-6815-489c-95ea-8fe1f6d66bd6",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=publications",
+      "targets": [
+        ["id=publications", "id"],
+        ["css=#publications", "css:finder"],
+        ["xpath=//h2[@id='publications']", "xpath:attributes"],
+        ["xpath=//h2[3]", "xpath:position"],
+        ["xpath=//h2[contains(.,'Publicaciones')]", "xpath:innerText"]
+      ],
+      "value": "Publicaciones"
+    }, {
+      "id": "dc23c580-2235-4273-a425-49c1ce64a023",
+      "comment": "",
+      "command": "assertTitle",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "722d86a8-9da1-43c2-b82e-49ff8f82b329",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=researchGroups",
+      "targets": [
+        ["id=researchGroups", "id"],
+        ["css=#researchGroups", "css:finder"],
+        ["xpath=//h2[@id='researchGroups']", "xpath:attributes"],
+        ["xpath=//h2[4]", "xpath:position"],
+        ["xpath=//h2[contains(.,'Grupos de Investigación')]", "xpath:innerText"]
+      ],
+      "value": "Grupos de Investigación"
+    }, {
+      "id": "c9c949d7-7a23-44de-ad38-680c177bb480",
+      "comment": "",
+      "command": "assertTitle",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "a26a3ab8-8442-4195-a2b7-88074ce0be2a",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=theses",
+      "targets": [
+        ["id=theses", "id"],
+        ["css=#theses", "css:finder"],
+        ["xpath=//h2[@id='theses']", "xpath:attributes"],
+        ["xpath=//h2[5]", "xpath:position"],
+        ["xpath=//h2[contains(.,'Tesis')]", "xpath:innerText"]
+      ],
+      "value": "Tesis"
+    }, {
+      "id": "b7341ff1-b076-4663-bd3a-0519f4628a6b",
+      "comment": "",
+      "command": "assertTitle",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }]
+  }, {
+    "id": "c1e2bb83-7cd7-4851-bce7-a1c34163479c",
+    "name": "PersonTab_Breadcrumb",
+    "commands": [{
+      "id": "fcaf0010-b27a-4804-be5f-826ebaed33e8",
+      "comment": "",
+      "command": "open",
+      "target": "https://localhost:7075/personas",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "ee8e0e0a-c086-4547-b399-54bb2e2afba2",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1376x784",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "d2cdc122-8ed7-4a07-8b3a-c889e8c25f01",
+      "comment": "",
+      "command": "assertText",
+      "target": "linkText=Inicio",
+      "targets": [
+        ["linkText=Inicio", "linkText"],
+        ["css=.mud-breadcrumb-item:nth-child(1) > a", "css:finder"],
+        ["xpath=//a[contains(text(),'Inicio')]", "xpath:link"],
+        ["xpath=//a[contains(@href, '//localhost:7075')]", "xpath:href"],
+        ["xpath=//li/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Inicio')]", "xpath:innerText"]
+      ],
+      "value": "Inicio"
+    }, {
+      "id": "11e5e08c-13fd-40b2-9243-899eb77ba369",
+      "comment": "",
+      "command": "assertTitle",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "52203fd8-8c97-42c3-9762-ad457410ade4",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.mud-disabled",
+      "targets": [
+        ["css=.mud-disabled", "css:finder"],
+        ["xpath=//li[3]", "xpath:position"],
+        ["xpath=//li[contains(.,'Personas')]", "xpath:innerText"]
+      ],
+      "value": "Personas"
+    }, {
+      "id": "5ab4c2ee-ca71-457a-9fc7-4711dcae8518",
+      "comment": "",
+      "command": "assertTitle",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "84bc1e49-46d9-4831-9936-88a06b5a5309",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Lic. Leonardo Villalobos",
+      "targets": [
+        ["linkText=Lic. Leonardo Villalobos", "linkText"],
+        ["css=.mud-grid-item:nth-child(14) .mud-typography:nth-child(2) > .mud-typography", "css:finder"],
+        ["xpath=//a[contains(@href, '/personas/lyon.villalobos@gmail.com')]", "xpath:href"],
+        ["xpath=//div[14]/div/div/h3/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Lic. Leonardo Villalobos')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "6fec0772-8b3f-4850-ba32-8cefe1ab3c1e",
+      "comment": "",
+      "command": "assertText",
+      "target": "linkText=Inicio",
+      "targets": [
+        ["linkText=Inicio", "linkText"],
+        ["css=.mud-breadcrumb-item:nth-child(1) > a", "css:finder"],
+        ["xpath=//a[contains(text(),'Inicio')]", "xpath:link"],
+        ["xpath=//a[contains(@href, '//localhost:7075')]", "xpath:href"],
+        ["xpath=//li/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Inicio')]", "xpath:innerText"]
+      ],
+      "value": "Inicio"
+    }, {
+      "id": "feb409dc-3005-4302-b010-e2c9b7ffcdfc",
+      "comment": "",
+      "command": "assertTitle",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "01a8ffee-30c0-4357-9d3a-27e58054a58f",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.mud-breadcrumb-item:nth-child(3) > a",
+      "targets": [
+        ["css=.mud-breadcrumb-item:nth-child(3) > a", "css:finder"],
+        ["xpath=//a[contains(text(),'Personas')]", "xpath:link"],
+        ["xpath=//a[contains(@href, '//localhost:7075/personas')]", "xpath:href"],
+        ["xpath=//li[3]/a", "xpath:position"]
+      ],
+      "value": "Personas"
+    }, {
+      "id": "3a822269-490f-4b1b-a03d-5f29aa172230",
+      "comment": "",
+      "command": "assertTitle",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "774bf96d-2998-4d1b-9b90-6ca0a04c64c6",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.mud-breadcrumb-item:nth-child(5)",
+      "targets": [
+        ["css=.mud-breadcrumb-item:nth-child(5)", "css:finder"],
+        ["xpath=//li[5]", "xpath:position"],
+        ["xpath=//li[contains(.,'Lyon.villalobos@gmail.com')]", "xpath:innerText"]
+      ],
+      "value": "Lyon.villalobos@gmail.com"
+    }, {
+      "id": "9bced6a6-9007-4330-8a11-665896864ec1",
+      "comment": "",
+      "command": "assertTitle",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }]
+  }],
+  "suites": [{
+    "id": "2b5b44de-59cd-46f2-933f-90d7f76cdc22",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["14572602-26e3-4931-bc2b-b5a0179e818d"]
+  }],
+  "urls": ["https://localhost:7075/", "https://localhost:7075/personas/lyon.villalobos@gmail.com", "https://localhost:7075/personas"],
+  "plugins": []
+}

@@ -1,0 +1,744 @@
+﻿@using Application.Users
+@using Domain.People.DTOs
+@using Domain.People.Entities
+@using Domain.Publications.Entities
+@using Domain.Theses.Entities
+@using Microsoft.AspNetCore.Components.Forms
+@using Presentation.People.Components
+@using Presentation.Theses.Components
+@inject IImageService ImageService
+@inject IGroupService GroupService
+@inject IDialogService DialogService
+@inject IDialogService DialogService
+@inject IGroupService GroupService;
+@inject NavigationManager Navigation
+@inject IUserService UserService
+
+@if (_group is null)
+{
+    <h4 class="text-danger">No hay grupos de investigación registrados actualmente.</h4>
+}
+else
+{
+
+    <MudGrid Justify="Justify.FlexEnd" Spacing="1">
+        <MudItem>
+            @*US: PIIB22II02-379 SD-RG-3.1 Access people in the group menu & TT: PIIB22II02-734 Put the option in the list of options*@
+
+            <button class="btn btn" onclick="document.getElementById('people').scrollIntoView({behavior:'smooth'})">Personas</button>
+
+        </MudItem>
+        <MudItem>
+            @*US: PIIB22II02-387 SD-RG-3.2 Access projects of the group & TT: PIIB22II02-732 Put the option in the list of options*@
+
+            <button class="btn btn" onclick="document.getElementById('projects').scrollIntoView({behavior:'smooth'})">Proyectos</button>
+        </MudItem>
+        <MudItem>
+            @*US: PIIB22II02-388 SD-RG-3.3 Access publications of the group & TT: PIIB22II02-737 Put the option in the list of options*@
+
+            <button class="btn btn" onclick="document.getElementById('publications').scrollIntoView({behavior:'smooth'})">Publicaciones</button>
+        </MudItem>
+        <MudItem>
+            @*US: PIIB22II02-388 SD-RG-3.3 Access publications of the group & TT: PIIB22II02-737 Put the option in the list of options*@
+
+            <button class="btn btn" onclick="document.getElementById('theses').scrollIntoView({behavior:'smooth'})">Tesis</button>
+        </MudItem>
+    </MudGrid>
+    @if (isEditingImage)
+    {
+        <MudGrid Class="d-flex align-center justify-center" Style="gap: 29px;">
+            <MudItem></MudItem>
+            <MudItem></MudItem>
+            <MudItem></MudItem>
+            <MudItem>
+                <MudImage Src="@getImage(auxImage)" Elevation="0" Class="rounded-circle" Width="300" Height="300" ObjectFit="ObjectFit.Cover" Style="border-radius: 50%; " />
+                <ToolButton _placement="Placement.Right" _text="Cancelar" _icon="@Icons.Filled.Cancel" onClick="EditingImage" />
+                <MudTooltip Placement="Placement.Right" Text="Subir">
+                    <InputFile id="fileInput" OnChange="HandleSelection" accept="image/png, image/jpeg, image/jpg" hidden />
+                    <MudIconButton Icon="@Icons.Filled.Upload"
+                           HtmlTag="label"
+                           for="fileInput" />
+                </MudTooltip>
+                <ToolButton _placement="Placement.Right" _text="Subir" _icon="@Icons.Filled.Check" onClick="ChangeImage" />
+            </MudItem>
+        </MudGrid>
+    }
+    else
+    {
+        <MudGrid Class="d-flex align-center justify-center" Style="gap: 0.219rem">
+            <AuthorizeView Roles="AdminRole, CoordinatorRole">
+                <MudItem></MudItem>
+                <MudItem></MudItem>
+            </AuthorizeView>
+            <MudItem>
+                <MudImage Src="@getImage(_group.Image)" Elevation="0" Class="rounded-circle" Width="300" Height="300" ObjectFit="ObjectFit.Cover" Style="border-radius: 50%;" />
+                @if (_isCoordinator)
+                {
+                    <ToolButton _placement="Placement.Right" _text="Editar imagen" _icon="@Icons.Filled.Edit" onClick="EditingImage" />
+                    <ToolButton _placement="Placement.Right" _text="Eliminar Grupo" _icon="@Icons.Filled.DeleteForever" onClick="OnDeleteGroupClicked" />
+                }
+                else
+                {
+                    <AuthorizeView Roles="AdminRole">
+                        <ToolButton _placement="Placement.Right" _text="Editar imagen" _icon="@Icons.Filled.Edit" onClick="EditingImage" />
+                        <ToolButton _placement="Placement.Right" _text="Eliminar Grupo" _icon="@Icons.Filled.DeleteForever" onClick="OnDeleteGroupClicked" />
+                    </AuthorizeView>
+                }
+            </MudItem>
+        </MudGrid>
+    }
+    @if (_groupImageMessage is not null)
+    {
+        <Alert Color="_groupAlertColor">
+            @_groupImageMessage
+        </Alert>
+    }
+    <br>
+    <br>
+    @*User story SD-RG-1.3 & TT: PIIB22II02-541 Add group's name on the page*@
+    @if (isEditingName)
+    {
+        <div class="d-flex" style="display: block; margin-left: auto; margin-right: auto; width: 100%; align-items: center;">
+            <MudTextField @bind-Value="auxName" id="NameField" Variant="Variant.Outlined" Style="font-size: 2.125rem;" FullWidth="true" />
+            <ToolButton _placement="Placement.Right" _text="Cancelar" _icon="@Icons.Filled.Cancel" onClick="EditingName" />
+            <ToolButton _placement="Placement.Right" _text="Guardar" _icon="@Icons.Filled.Check" onClick="ChangeName" />
+        </div>
+    }
+    else
+    {
+        <MudGrid Justify="Justify.Center">
+            <MudItem>
+                <MudText Align="Align.Center" id="Name" Typo="Typo.h1">@_group.Name.Value</MudText>
+            </MudItem>
+            <MudItem>
+                @if (_isCoordinator)
+                {
+                    <ToolButton _placement="Placement.Right" _text="Editar nombre" _icon="@Icons.Filled.Edit" onClick="EditingName" />
+                }
+                else
+                {
+                    <AuthorizeView Roles="AdminRole">
+                        <ToolButton _placement="Placement.Right" _text="Editar nombre" _icon="@Icons.Filled.Edit" onClick="EditingName" />
+                    </AuthorizeView>
+                }
+            </MudItem>
+        </MudGrid>
+        <br>
+    }
+    @if (_groupNameMessage is not null)
+    {
+        <Alert Color="_groupAlertColor">
+            @_groupNameMessage
+        </Alert>
+    }
+    @*User story SD-RG-1.3 & TT: PIIB22II02-542 Add group's description on the page*@
+    @if (isEditingDescription)
+    {
+        <div class="d-flex" style="width: 100%;">
+            <MudTextField @bind-Value="auxDescription" Variant="Variant.Outlined" Lines="8" />
+            <ToolButton _placement="Placement.Right" _text="Cancelar" _icon="@Icons.Filled.Cancel" onClick="EditingDescription" />
+            <ToolButton _placement="Placement.Right" _text="Guardar" _icon="@Icons.Filled.Check" onClick="ChangeDescription" />
+        </div>
+    }
+    else
+    {
+        <div class="d-flex" style="display: block; margin-left: auto; margin-right: auto; width: 100%;">
+            <MudText Align="Align.Justify" Typo="Typo.body2" Style="width: 100%">@_group.Description.Value</MudText>
+            @if (_isCoordinator)
+            {
+                <ToolButton _placement="Placement.Right" _text="Editar Descripción" _icon="@Icons.Filled.Edit" onClick="EditingDescription" />
+            }
+            else
+            {
+                <AuthorizeView Roles="AdminRole">
+                    <ToolButton _placement="Placement.Right" _text="Editar Descripción" _icon="@Icons.Filled.Edit" onClick="EditingDescription" />
+                </AuthorizeView>
+            }
+        </div>
+        <br>
+    }
+    @if (_groupDescriptionMessage is not null)
+    {
+        <Alert Color="_groupAlertColor">
+            @_groupDescriptionMessage
+        </Alert>
+    }
+    <br>
+    <br>
+    <MudPaper Class="d-flex flex-grow-1 gap-4 justify-center" Elevation="0">
+        @foreach (var area in _group.ResearchArea)
+        {
+            <Tag OnTagSelected="removeArea" tagName="@area.Name" />
+        }
+        @if (_isCoordinator)
+        {
+            <MudTooltip Text="agregar área">
+                <MudIconButton OnClick="@((e) => openDialog(_group))" Icon="@Icons.Material.Filled.AddCircle"></MudIconButton>
+            </MudTooltip>
+
+        }
+        else
+        {
+            <AuthorizeView Roles="AdminRole">
+                <MudTooltip Text="agregar área">
+                    <MudIconButton OnClick="@((e) => openDialog(_group))" Icon="@Icons.Material.Filled.AddCircle" aria-label="agregar área"></MudIconButton>
+                </MudTooltip>
+            </AuthorizeView>
+        }
+    </MudPaper>
+    <br>
+    @*US: PIIB22II02-379 SD-RG-3.1 Access people in the group menu & TT: PIIB22II02-735 Create the reference to the fragment of the page.*@
+    @*COORDINATOR.*@
+    @*PIIB22II02-153 MC-PL-1.6 Organize card of the coordinator role in a research group Task: PIIB22II02-1078 Add component to groups.*@
+    <MudPaper Class="d-flex flex-grow-1 gap-4 justify-center" Style="align-items: center" Elevation="0">
+        <MudText id="people" Typo="Typo.h2">Coordinador</MudText>
+        @if (_isCoordinator)
+        {
+            <ToolButton _icon="@Icons.Filled.Edit" _text="Asignar persona coordinadora" onClick="openCoordinatorDialog" />
+            @if (_group.Coordinator is not null)
+            {
+                <ToolButton _icon="@Icons.Filled.Delete" _text="Desasignar persona coordinadora" onClick="unassignCoordinator" />
+            }
+        }
+        else
+        {
+            <AuthorizeView Roles="AdminRole">
+                <ToolButton _icon="@Icons.Filled.Edit" _text="Asignar persona coordinadora" onClick="openCoordinatorDialog" />
+                @if (_group.Coordinator is not null)
+                {
+                    <ToolButton _icon="@Icons.Filled.Delete" _text="Desasignar persona coordinadora" onClick="unassignCoordinator" />
+                }
+            </AuthorizeView>
+        }
+
+        <br>
+    </MudPaper>
+    <br>
+    <CoordinatorCard _coordinator="_group.Coordinator" />
+    <br>
+    @if (_groupCoordinatorMessage is not null)
+    {
+        <Alert Color="_groupAlertColor">
+            @_groupCoordinatorMessage
+        </Alert>
+    }
+    @*RESEARCHERS.*@
+    <MudPaper Class="d-flex flex-grow-1 gap-4 justify-center" Style="align-items: center" Elevation="0">
+        <MudText id="people" Align="Align.Center" Typo="Typo.h2">Investigadores</MudText>
+        @if (_isCoordinator)
+        {
+            <ToolButton _icon="@Icons.Filled.AddCircle" _text="Añadir personas investigadoras" onClick="openAddResearchersDialog" />
+            @if (_group.Person.Count() > 0)
+            {
+                <ToolButton _icon="@Icons.Filled.RemoveCircle" _text="Eliminar personas investigadoras" onClick="openDeleteResearchersDialog" />
+            }
+        }
+        else
+        {
+            <AuthorizeView Roles="AdminRole">
+                <ToolButton _icon="@Icons.Filled.AddCircle" _text="Añadir personas investigadoras" onClick="openAddResearchersDialog" />
+                @if (_group.Person.Count() > 0)
+                {
+                    <ToolButton _icon="@Icons.Filled.Delete" _text="Eliminar personas investigadoras" onClick="openDeleteResearchersDialog" />
+                }
+            </AuthorizeView>
+        }
+        <br>
+    </MudPaper>
+    <br>
+    <MudPaper Class="d-flex flex-grow-1 gap-4 justify-center" Elevation="0">
+        @if (isOpenResearcher)
+        {
+            <ResearcherList _researchers="_group.Person" />
+
+        }
+        else if (_group.Person.ToList().Count > 0)
+        {
+            <ResearcherList _researchers="_group.Person.Take(4).OrderBy(x => x.Name.Value+' '+x.LastName1.Value+' '+x.LastName2.Value)" />
+        }
+        else
+        {
+            <MudText Align="Align.Center" Color=Color.Warning Typo="Typo.body2" Class="text-danger">No se encontraron investigadores asociados.</MudText>
+        }
+    </MudPaper>
+    @if (_group.Person.ToList().Count > 4)
+    {
+        <br>
+        <br>
+        <MudPaper Class="d-flex flex-grow-1 gap-4 justify-center" Elevation="0">
+            <SeeMoreButton onClick="onClickResearcher" />
+        </MudPaper>
+    }
+    <br>
+    @if (_groupResearchersMessage is not null)
+    {
+        <Alert Color="_groupAlertColor">
+            @_groupResearchersMessage
+        </Alert>
+        <br>
+    }
+    <br>
+    @*RESEARCH PROJECTS*@
+    <MudPaper Class="d-flex flex-grow-1 gap-4 justify-center" Elevation="0">
+        <MudText id="projects" Typo="Typo.h2" Align="Align.Center">
+            Proyectos de Investigación
+            <MudTooltip Placement="Placement.Right" Text="Los proyectos están ordenados cronológicamente">
+                <MudIconButton Icon="@Icons.Filled.Info" />
+            </MudTooltip>
+        </MudText>
+        @if (_isCoordinator)
+        {
+            <MudTooltip Text="Agregar proyecto">
+                <MudIconButton OnClick="((e) => openProjectsDialog(_group))" Icon="@Icons.Material.Filled.AddCircle" aria-label="agregar proyecto"></MudIconButton>
+            </MudTooltip>
+            <MudTooltip Text="Eliminar Proyecto">
+                <MudIconButton OnClick="((e) => openProjectsRemoveDialog(_group))" Icon="@Icons.Material.Filled.RemoveCircle" aria-label="eliminar proyecto"></MudIconButton>
+            </MudTooltip>
+        }
+        else
+        {
+            <AuthorizeView Roles="AdminRole">
+                <MudTooltip Text="Agregar proyecto">
+                    <MudIconButton OnClick="((e) => openProjectsDialog(_group))" Icon="@Icons.Material.Filled.AddCircle" aria-label="agregar proyecto"></MudIconButton>
+                </MudTooltip>
+            </AuthorizeView>
+            <AuthorizeView Roles="AdminRole">
+                <MudTooltip Text="Eliminar Proyecto">
+                    <MudIconButton OnClick="((e) => openProjectsRemoveDialog(_group))" Icon="@Icons.Material.Filled.RemoveCircle" aria-label="eliminar proyecto"></MudIconButton>
+                </MudTooltip>
+            </AuthorizeView>
+        }
+
+    </MudPaper>
+    <br>
+    @*PIIB22II02-500 SD-RG-3.5 Show a preview of the research project on the research group page TT: PIIB22II02-729 Add projects to the group page*@
+    <MudPaper Class="d-flex flex-grow-1 gap-4 justify-center" Elevation="0">
+        @if (isOpenProjects)
+        {
+            <ResearchProjectsList _researchProjects="@_group.ResearchProjects.OrderByDescending(s => s.Start_date)" />
+        }
+        else if (_group.ResearchProjects.Count > 0)
+        {
+            <ResearchProjectsList _researchProjects="@_group.ResearchProjects.OrderByDescending(s => s.Start_date).Take(2)" />
+        }
+        else
+        {
+            <MudText Align="Align.Center" Color=Color.Warning Typo="Typo.body2" Class="text-danger">No se encontraron proyectos asociados.</MudText>
+        }
+    </MudPaper>
+    @if (_group.ResearchProjects.Count > 2)
+    {
+        <br>
+        <MudPaper Class="d-flex flex-grow-1 gap-4 justify-center" Elevation="0">
+            <SeeMoreButton onClick="onClickProjects" />
+        </MudPaper>
+    }
+    <br>
+    <br>
+    @*STUDENT
+    @*US: PIIB22II02-388 SD-RG-3.3 Access publications of the group & TT: PIIB22II02-738 Create the reference to the fragment of the page*@
+    <MudPaper Class="d-flex flex-grow-1 gap-4 justify-center" Elevation="0">
+        <MudText id="publications" Align="Align.Center" Typo="Typo.h2">Publicaciones</MudText>
+        @if (_isCoordinator)
+        {
+            <ToolButton _icon="@Icons.Filled.AddCircle" _text="Añadir publicaciones" onClick="openAddPublicationsDialog" />
+            @if (_group.Publications.Count() > 0)
+            {
+                <ToolButton _icon="@Icons.Filled.RemoveCircle" _text="Eliminar publicaciones" onClick="openDeletePublicationsDialog" />
+            }
+        }
+        else
+        {
+            <AuthorizeView Roles="AdminRole">
+                <ToolButton _icon="@Icons.Filled.AddCircle" _text="Añadir publicaciones" onClick="openAddPublicationsDialog" />
+                @if (_group.Publications.Count() > 0)
+                {
+                    <ToolButton _icon="@Icons.Filled.RemoveCircle" _text="Eliminar publicaciones" onClick="openDeletePublicationsDialog" />
+                }
+            </AuthorizeView>
+        }
+
+    </MudPaper>
+    <br>
+    @*US: PIIB22II02 - 504 SD - RG - 3.6 Show a preview of the publications on the research group page TT: PIIB22II02 - 756 Add publications to the group page*@
+    <MudPaper Class="d-flex flex-grow-1 gap-4 justify-center" Elevation="0">
+        @if (isOpenPublications)
+        {
+            <PublicationsList _publications="@_group.Publications" />
+        }
+        else if (_group.Publications.Count > 0)
+        {
+            <PublicationsList _publications="@_group.Publications.Take(2)" />
+        }
+        else
+        {
+            <MudText Align="Align.Center" Color=Color.Warning Typo="Typo.body2" Class="text-danger">No se encontraron publicaciones asociadas.</MudText>
+        }
+    </MudPaper>
+    @if (_group.Publications.Count > 2)
+    {
+        <br>
+        <MudPaper Class="d-flex flex-grow-1 gap-4 justify-center" Elevation="0">
+            <SeeMoreButton onClick="onClickPubliucations" />
+        </MudPaper>
+    }
+    <br>
+    <br>
+    <MudPaper Class="d-flex flex-grow-1 gap-4 justify-center" Elevation="0">
+        <MudText id="theses" Align="Align.Center" Typo="Typo.h2">Tesis</MudText>
+        @if (_isCoordinator)
+        {
+            <ToolButton _icon="@Icons.Filled.AddCircle" _text="Añadir tesis" onClick="openAddThesesDialog" />
+            @if (_group.Thesis.Count() > 0)
+            {
+                <ToolButton _icon="@Icons.Filled.RemoveCircle" _text="Eliminar tesis" onClick="openDeleteThesesDialog" />
+            }
+        }
+        else
+        {
+            <AuthorizeView Roles="AdminRole">
+                <ToolButton _icon="@Icons.Filled.AddCircle" _text="Añadir tesis" onClick="openAddThesesDialog" />
+                @if (_group.Thesis.Count() > 0)
+                {
+                    <ToolButton _icon="@Icons.Filled.RemoveCircle" _text="Eliminar tesis" onClick="openDeleteThesesDialog" />
+                }
+            </AuthorizeView>
+        }
+    </MudPaper>
+    <br>
+    <MudPaper Class="d-flex flex-grow-1 gap-4 justify-center" Elevation="0">
+        @if (isOpenTheses)
+        {
+            <ThesesList _theses="@_group.Thesis" />
+        }
+        else if (_group.Thesis.Count > 0)
+        {
+            <ThesesList _theses="@_group.Thesis.Take(2)" />
+        }
+        else
+        {
+            <MudText Align="Align.Center" Color=Color.Warning Typo="Typo.body2" Class="text-danger">No se encontraron tesis asociadas.</MudText>
+        }
+    </MudPaper>
+    @if (_group.Thesis.Count > 2)
+    {
+        <br>
+        <MudPaper Class="d-flex flex-grow-1 gap-4 justify-center" Elevation="0">
+            <SeeMoreButton onClick="onClickTheses" />
+        </MudPaper>
+    }
+}
+
+
+<AnchorNavigation />
+@code {
+
+    /// <summary>
+    /// An instance of a Group entity
+    /// </summary>
+    [Parameter]
+    public Group? _group { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback<string> OnNameEdit { get; set; }
+    [Parameter]
+    public EventCallback<string> OnDescriptionEdit { get; set; }
+    [Parameter]
+    public EventCallback<byte[]> OnImageEdit { get; set; }
+    [Parameter]
+    public EventCallback<Person?> ChangeCoordinator { get; set; }
+    [Parameter]
+    public EventCallback<IEnumerable<Person>> AddResearchers { get; set; }
+    [Parameter]
+    public EventCallback<IEnumerable<Person>> DeleteResearchers { get; set; }
+    [Parameter]
+    public EventCallback<IEnumerable<ResearchProject>> AddProjects { get; set; }
+    [Parameter]
+    public EventCallback<IEnumerable<ResearchProject>> RemoveProjects { get; set; }
+    [Parameter]
+    public EventCallback<IEnumerable<Publication>> AddPublications { get; set; }
+    [Parameter]
+    public EventCallback<IEnumerable<Publication>> DeletePublications { get; set; }
+    [Parameter]
+    public EventCallback<IEnumerable<Thesis>> AddTheses { get; set; }
+    [Parameter]
+    public EventCallback<IEnumerable<Thesis>> DeleteTheses { get; set; }
+
+    public bool _isCoordinator { get; set; } = false;
+
+    public string? _groupImageMessage { get; set; } = null;
+    public string? _groupNameMessage { get; set; } = null;
+    public string? _groupDescriptionMessage { get; set; } = null;
+    public string? _groupCoordinatorMessage { get; set; } = null;
+    public string? _groupResearchersMessage { get; set; } = null;
+    public string? _groupProjectsMessage { get; set; } = null;
+    public string? _groupPublicationsMessage { get; set; } = null;
+    public string? _groupThesesMessage { get; set; } = null;
+    public Alert.AlertColor _groupAlertColor = Alert.AlertColor.Danger;
+
+    private bool isOpenResearcher = false;
+    private bool isOpenProjects = false;
+    private bool isOpenPublications = false;
+    private bool isOpenPeople = false;
+    private bool isOpenTheses = false;
+    private bool isEditingName = false;
+    private bool isEditingDescription = false;
+    private bool isEditingImage = false;
+    private string auxName { get; set; } = null!;
+    private string auxDescription { get; set; } = null!;
+    private byte[]? auxImage { get; set; } = null!;
+    private List<IBrowserFile> loadedFiles = new();
+
+
+    /// <summary>
+    /// Method that is used by the SeeMoreButton component.
+    /// </summary>
+    /// <param name="isOpen">The new value of isOpenResearcher</param>
+    public void onClickResearcher(bool isOpen)
+    {
+        this.isOpenResearcher = isOpen;
+    }
+
+    /// <summary>
+    /// Method that is used by the SeeMoreButton component.
+    /// </summary>
+    /// <param name="isOpen">The new value of isOpenProjects</param>
+    public void onClickProjects(bool isOpen)
+    {
+        this.isOpenProjects = isOpen;
+    }
+
+    /// <summary>
+    /// Method that is used by the SeeMoreButton component.
+    /// </summary>
+    /// <param name="isOpen">The new value of isOpenPublications</param>
+    public void onClickPubliucations(bool isOpen)
+    {
+        this.isOpenPublications = isOpen;
+    }
+
+    /// <summary>
+    /// Method that is used by the SeeMoreButton component.
+    /// </summary>
+    /// <param name="isOpen">The new value of isOpenPublications</param>
+    public void onClickPeople(bool isOpen)
+    {
+        this.isOpenPeople = isOpen;
+    }
+
+    /// <summary>
+    /// Method that is used by the SeeMoreButton component.
+    /// </summary>
+    /// <param name="isOpen">The new value of isOpenTheses</param>
+    public void onClickTheses(bool isOpen)
+    {
+        this.isOpenTheses = isOpen;
+    }
+
+    /// <summary>
+    /// Method that return the image of a group.
+    /// </summary>
+    /// <param name="img">An array of bytes with the possible image</param>
+    /// <returns>A string with the image of the group</returns>
+    public String getImage(byte[]? img)
+    {
+        return img != null ? ImageService.ConvertByteToImage(img) : "/Images/DefaultImages/groupDefault.png";
+    }
+
+    private void EditingName()
+    {
+        if (!isEditingName)
+        {
+            auxName = _group!.Name.Value;
+        }
+        isEditingName = !isEditingName;
+    }
+
+    private void ChangeName()
+    {
+        OnNameEdit.InvokeAsync(auxName);
+        isEditingName = !isEditingName;
+    }
+
+    private void EditingDescription()
+    {
+        if (!isEditingDescription)
+        {
+            auxDescription = _group!.Description.Value;
+        }
+        isEditingDescription = !isEditingDescription;
+    }
+
+    private void ChangeDescription()
+    {
+        OnDescriptionEdit.InvokeAsync(auxDescription);
+        isEditingDescription = !isEditingDescription;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        string userAccount = await UserService.GetCurrentUserEmail();
+        if (_group!.Coordinator != null)
+            if (userAccount == _group.Coordinator.Id)
+            {
+                _isCoordinator = true;
+            }
+    }
+
+    private void EditingImage()
+    {
+        if (!isEditingImage)
+        {
+            auxImage = _group!.Image;
+        }
+        isEditingImage = !isEditingImage;
+    }
+
+    private void ChangeImage()
+    {
+        OnImageEdit.InvokeAsync(auxImage);
+        isEditingImage = !isEditingImage;
+    }
+
+    private async Task HandleSelection(InputFileChangeEventArgs e)
+    {
+        loadedFiles.Clear();
+        loadedFiles.Add(e.File);
+
+        foreach (var file in loadedFiles)
+        {
+            Stream stream = file.OpenReadStream();
+            MemoryStream ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            stream.Close();
+
+            auxImage = ms.ToArray();
+            ms.Close();
+            StateHasChanged();
+        }
+    }
+
+    private async Task openProjectsDialog(Group group)
+    {
+        var parameters = new DialogParameters { ["_group"] = group, ["ModifyProjects"] = AddProjects, };
+        DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var dialog = DialogService.Show<AddProjectDialog>("", parameters, maxWidth);
+        var result = await dialog.Result;
+        StateHasChanged();
+    }
+
+    private async Task openProjectsRemoveDialog(Group group)
+    {
+        var parameters = new DialogParameters { ["_group"] = group, ["ModifyProjects"] = RemoveProjects, ["isAdding"] = false };
+        DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var dialog = DialogService.Show<AddProjectDialog>("", parameters, maxWidth);
+        var result = await dialog.Result;
+        StateHasChanged();
+    }
+
+    private async Task openDialog(Group group)
+    {
+        var parameters = new DialogParameters { ["_group"] = group };
+        //parameters.Add("_group", _group);
+        var dialog = DialogService.Show<AddAreasCheckbox>("", parameters);
+        var result = await dialog.Result;
+        StateHasChanged();
+    }
+
+    private async Task openAddPublicationsDialog()
+    {
+        DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var parameters = new DialogParameters { ["_group"] = _group, ["ModifyPublications"] = AddPublications, };
+        var dialog = DialogService.Show<AddPublicationsDialog>("", parameters, maxWidth);
+        var result = await dialog.Result;
+        StateHasChanged();
+    }
+
+    private async Task openDeletePublicationsDialog()
+    {
+        DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var parameters = new DialogParameters { ["_group"] = _group, ["ModifyPublications"] = DeletePublications, ["isAdding"] = false };
+        var dialog = DialogService.Show<AddPublicationsDialog>("", parameters, maxWidth);
+        var result = await dialog.Result;
+        StateHasChanged();
+    }
+
+    private async Task openAddThesesDialog()
+    {
+        DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var parameters = new DialogParameters { ["_group"] = _group, ["ModifyTheses"] = AddTheses, };
+        var dialog = DialogService.Show<AddThesisDialog>("", parameters, maxWidth);
+        var result = await dialog.Result;
+        StateHasChanged();
+    }
+
+    private async Task openDeleteThesesDialog()
+    {
+        DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var parameters = new DialogParameters { ["_group"] = _group, ["ModifyTheses"] = DeleteTheses, ["isAdding"] = false };
+        var dialog = DialogService.Show<AddThesisDialog>("", parameters, maxWidth);
+        var result = await dialog.Result;
+        StateHasChanged();
+    }
+
+    private async Task openCoordinatorDialog()
+    {
+        DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var parameters = new DialogParameters { ["_group"] = _group, ["ChangeCoordinator"] = ChangeCoordinator, };
+        var dialog = DialogService.Show<AddCoordinatorDialog>("", parameters, maxWidth);
+        var result = await dialog.Result;
+        StateHasChanged();
+    }
+
+    private async Task openAddResearchersDialog()
+    {
+        DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var parameters = new DialogParameters { ["_group"] = _group, ["ModifyResearchers"] = AddResearchers, };
+        var dialog = DialogService.Show<AddResearchersDialog>("", parameters, maxWidth);
+        var result = await dialog.Result;
+        StateHasChanged();
+    }
+
+    private async Task openDeleteResearchersDialog()
+    {
+        DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var parameters = new DialogParameters { ["_group"] = _group, ["ModifyResearchers"] = DeleteResearchers, ["isAdding"] = false };
+        var dialog = DialogService.Show<AddResearchersDialog>("", parameters, maxWidth);
+        var result = await dialog.Result;
+        StateHasChanged();
+    }
+
+    private async Task removeArea(string areaName)
+    {
+        await GroupService.RemoveAreaofGroup(_group!, _group!.ResearchArea.FirstOrDefault(a => a.Name == areaName)!);
+    }
+
+    private async Task unassignCoordinator()
+    {
+        await ChangeCoordinator.InvokeAsync(null);
+    }
+
+    private async void OnDeleteGroupClicked()
+    {
+        bool? result = await DialogService.ShowMessageBox(
+            "Advertencia",
+            "La eliminación del grupo no podrá deshacerse",
+            yesText: "Borrar Grupo!", cancelText: "Cancelar");
+        if (result != null)
+        {
+            try
+            {
+                await GroupService.DeleteResearchGroup(_group);
+            }
+            catch
+            {
+                Console.Write("Error");
+            }
+            finally
+            {
+                Navigation.NavigateTo("/grupos");
+            }
+
+        }
+    }
+}

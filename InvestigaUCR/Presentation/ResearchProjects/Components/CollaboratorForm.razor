@@ -1,0 +1,160 @@
+﻿    @using Domain.Core.Helpers
+    @using Domain.Core.ValueObjects
+    @using Domain.ResearchProjects.ValueObjects
+    @using Microsoft.AspNetCore.Components.Forms
+    @using Presentation.ResearchProjects.Models
+    @using Domain.ResearchProjects.Entities
+    @using Presentation.Core.Components
+    @using Application.ResearchProjects
+    @using Application.People
+    @using Domain.People.Entities
+    @inject IResearchProjectsService ResearchProjectService
+    @inject ICollaborateService CollaborateService
+    @inject NavigationManager _navigationManager
+    @inject IGroupService GroupService
+    @inject ISnackbar Snackbar
+
+
+
+    <Loading IsLoading="_isLoading">
+        <MudText Class="d-flex justify-center flex-grow-1"
+                 Style="padding-right:10px; padding-top:30px; padding-bottom:30px" Elevation="0" Justify="Justify.Center"
+                 Typo="Typo.h1">
+            Agregar nueva colaboración
+        </MudText>
+        <MudDialog>
+            <DialogContent>
+            <MudAutocomplete T="string" Label="Seleccione nuevo colaborador" @bind-Value="_collaboratorName" SearchFunc="@Search1"
+                                  AdornmentIcon="@Icons.Material.Filled.Group" AdornmentColor="Color.Primary" AnchorOrigin=" Origin.BottomCenter"
+                                 />
+            <MudSelect @bind-Value="_order"  T="int" Label="Seleccione el orden del Colaborador" AdornmentIcon="@Icons.Material.Filled.Group" AdornmentColor="Color.Primary" AnchorOrigin=" Origin.BottomCenter">
+
+                @foreach (int index in Enumerable.Range(1,_order))
+                {
+
+                    <MudSelectItem Value="@(index)">@(index+1)</MudSelectItem>
+                    
+                }
+                
+            </MudSelect>
+            </DialogContent>
+            <DialogActions>
+                                <MudToolBar Class="d-flex justify-start flex-grow-1 gap-4">
+                <MudButton OnClick="Close" Color="Color.Primary">Cancelar</MudButton>
+                <MudButton OnClick="HandleSubmit" Disabled="@ValidateRequiredValues()" Color="Color.Primary" Variant="Variant.Filled">Crear</MudButton>
+                </MudToolBar>
+            </DialogActions>
+        </MudDialog>
+    </Loading>
+
+@code {
+    [Parameter]
+    public IEnumerable<Collaborate>? _associatedCollaborates { get; set; } = Enumerable.Empty<Collaborate>();
+    [Parameter]
+    public ResearchProject _associatedResearchProject { get; set; } = null!;
+
+    private bool _isLoading { get; set; }
+
+    private string _collaboratorName { get; set; } = string.Empty;
+
+    private static string DefaultDragClass = "relative rounded-lg border-2 border-dashed pa-4 mt-4 mud-width-full mud-height-full";
+
+    private string DragClass = DefaultDragClass;
+
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    void Close() => MudDialog.Close(DialogResult.Ok(true));
+    void Exit() => MudDialog.Cancel();
+
+    public IEnumerable<Person>? _people { get; set; } = Enumerable.Empty<Person>();
+    public IEnumerable<ResearchProject>? _researchProject { get; set; } = Enumerable.Empty<ResearchProject>();
+    public IEnumerable<Collaborate>? _collaborates { get; set; } = Enumerable.Empty<Collaborate>();
+    public int _order { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadGroups();
+    }
+
+    private async Task LoadGroups()
+    {
+        _isLoading = true;
+        _people = await ResearchProjectService.GetAllPeopleAsyncfromRP();
+        _researchProject = await ResearchProjectService.GetResearchProjectsAsync();
+        _isLoading = false;
+        _order = _associatedCollaborates!.Count() + 1;
+    }
+
+    private async Task HandleSubmit()
+    {   
+        string pID = GetPersonId(_collaboratorName);
+        var auxP = _people!.FirstOrDefault(x => x.Id == pID)!;
+        var auxR    = _researchProject!.FirstOrDefault(x => x.Id == _associatedResearchProject.Id)!;
+        var auxC = new Collaborate(_associatedResearchProject.Id, auxR, pID, auxP, _order);
+        await CollaborateService.SaveCollab(auxC);
+        Exit();
+    }
+    public string GetPersonId(string name)
+    {
+        string auxName = "";
+        foreach(var person in _people!){
+            auxName = person.Name.ToString() + " " + person.LastName1.ToString() + " " + person.LastName2.ToString();
+            if(name == auxName){
+                return person.Id;
+            }
+        }
+        return null!;
+    }
+
+    public bool ValidateRequiredValues()
+    {
+        if (_collaboratorName != null)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    private async Task<IEnumerable<string>> Search1(string value)
+    {   
+        await Task.Delay(5);
+        List<string> names = new List<string>();
+
+
+        foreach (var person in _people!)
+        {
+            if (!@personExists(person))
+            {                   
+                names.Add(person.Name.ToString() + " " + person.LastName1.ToString() + " " + person.LastName2.ToString());
+            }
+        }
+        
+        // if text is null or empty, show complete list
+        if (string.IsNullOrEmpty(value))
+            return names;
+        return names.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    public bool personExists(Person person)
+    {
+        if (_associatedResearchProject.MainResearcher!.Id == person.Id)
+        {
+            return true;
+        }
+        foreach (var collaborate in _associatedCollaborates!)
+        {
+            if (person.Id == collaborate.PeopleId)
+            {
+                return true;
+            }
+
+        }
+        return false;
+    }
+    private void RefreshPage()
+    {
+        string projectID = "/proyectos/"+_associatedResearchProject.Id.ToString();
+        _navigationManager.NavigateTo(projectID, true);
+            
+        }
+    }

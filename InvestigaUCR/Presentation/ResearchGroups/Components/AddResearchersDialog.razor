@@ -1,0 +1,136 @@
+﻿@using Application.People
+@using Domain.People.Entities
+@inject IPeopleService PeopleService
+@inject IGroupService GroupService
+
+<MudDialog>
+    <DialogContent>
+        <MudContainer Style="max-height: 500px; overflow-y: scroll">
+            <Loading IsLoading="_isLoading">
+                <MudSelect T="string" MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))" HelperText="@helperText" Label="Seleccione las personas investigadoras" MultiSelection="true" @bind-Value="_person" @bind-SelectedValues="selectedPeople">
+                    @if (isAdding)
+                    {
+                        @foreach (var person in _people!.OrderBy(x => x.Name.Value + " " + x.LastName1.Value + " " + x.LastName2.Value))
+                        {
+                            if (!_group.Person.Contains(person))
+                            {
+                                <MudSelectItem T="string" Value="person.Id">@getFullName(person)</MudSelectItem>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        @foreach (var person in _group.Person.OrderBy(x => x.Name.Value + " " + x.LastName1.Value + " " + x.LastName2.Value))
+                        {
+                            <MudSelectItem T="string" Value="person.Id">@getFullName(person)</MudSelectItem>
+                        }
+                    }
+                </MudSelect>
+            </Loading>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudToolBar Class="d-flex justify-start flex-grow-1 gap-4">
+            <MudButton OnClick="Close" Color="Color.Primary">Cancelar</MudButton>
+            <MudButton OnClick="SelectPeople" Color="Color.Primary" Variant="Variant.Filled">Confirmar</MudButton>
+        </MudToolBar>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = null!;
+    [Parameter]
+    public Group _group { get; set; } = null!;
+    [Parameter]
+    public EventCallback<IEnumerable<Person>> ModifyResearchers { get; set; }
+    [Parameter]
+    public bool isAdding { get; set; } = true;
+
+    private string? _person { get; set; } = null!;
+    private IEnumerable<Person>? _people { get; set; } = null!;
+    private bool _isLoading { get; set; } = false;
+    private IEnumerable<string> selectedPeople { get; set; } = null!;
+
+    private string helperText
+    {
+        get
+        {
+            if (selectedPeople is not null)
+            {
+                if (selectedPeople.Count() > 0)
+                {
+                    return selectedPeople.Count() == 1 ? $"Se ha seleccionado 1 persona" : $"Se han seleccionado {selectedPeople.Count()} personas";
+                }
+            }
+            return "";
+        }
+    }
+
+    void Close() => MudDialog.Close(DialogResult.Ok(true));
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPeople();
+    }
+
+    private async Task LoadPeople()
+    {
+        _isLoading = true;
+        _people = await PeopleService.GetPeopleAsync();
+        _isLoading = false;
+    }
+
+    private async Task SelectPeople()
+    {
+        if (selectedPeople is not null)
+        {
+            List<Person> aux = new List<Person>();
+            foreach(var person in selectedPeople)
+            {
+                aux.Add(_people!.Where(x => x.Id == person).Single());
+            }
+            await ModifyResearchers.InvokeAsync(aux.AsEnumerable());
+        }
+        Close();
+    }
+
+    /// <summary>
+    /// Method <c>getFullName</c> Returns a person's full name
+    /// </summary>
+    /// <param name="person">Instance of the person</param>
+    /// <returns>Full name of a person</returns>
+    private string getFullName(Person person)
+    {
+        return person.Name.Value + " " + person.LastName1.Value + " " + person.LastName2.Value;
+    }
+
+    /// <summary>
+    /// Method <c>GetMultiSelectionText</c> Return the helper text string
+    /// </summary>
+    /// <param name="selectedValues"></param>
+    /// <returns>Helper text</returns>
+    private string GetMultiSelectionText(List<string> selectedValues)
+    {
+        if(selectedPeople is not null)
+        {
+            if (selectedPeople.Count() > 0)
+                return $"Persona{(selectedPeople!.Count() > 1 ? "s seleccionadas" : " seleccionada")}: {getAllNames()}";
+        }
+        return $"Seleccione las personas investigadoras";
+    }
+
+    /// <summary>
+    /// Method <c>getAllNames</c> Return an string with the name of all the people selected
+    /// </summary>
+    /// <returns>String with the name of all the people selected</returns>
+    private string getAllNames()
+    {
+        string aux = "";
+        foreach(var person in selectedPeople)
+        {
+            Person auxPerson = _people!.Where(x => x.Id == person).Single();
+            aux += auxPerson.Name.Value + " " + auxPerson.LastName1.Value + " " + auxPerson.LastName2.Value + ", ";
+        }
+        return aux;
+    }
+}

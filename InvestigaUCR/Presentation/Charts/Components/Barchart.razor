@@ -1,0 +1,82 @@
+﻿@using Presentation.Core.Components
+@inject IChartService ChartsService
+@using Domain.Shared.Charts.Entities
+@using Application.Shared
+@using System.Diagnostics
+
+<div>
+    <MudChart ChartType="ChartType.Bar" ChartSeries="@Series" XAxisLabels="@XAxisLabels" Width="100%" Height="350px" ChartOptions="@_options">
+        <CustomGraphics>
+            <style>
+                .heavy {
+                    font: bold 16px Helvetica;
+                }
+
+                .alternate {
+                    font: 24px Helvetica;
+                }
+            </style>
+            <text transform="rotate(-90,150,170)" class="heavy">@y_Axis</text>
+            <text x="105" y="20" class="alternate">@_graphName</text>
+        </CustomGraphics>
+    </MudChart>
+    <MudText Class="mx-auto pa-3 d-flex justify-center flex-grow-1 gap-4" Elevation="0" Align="Align.Center" Color="Color.Warning" font="bold 16px Helvetica">@x_Axis</MudText>
+
+    <MudPaper Class="mx-auto pa-3 d-flex justify-center flex-grow-1 gap-4" Elevation="0">
+        <MudItem Class="d-flex align-content-center gap-4" Style="width:200px height:100%;">
+            <MudNumericField @bind-Value="anno_min" Label="Rango de años desde" Variant="Variant.Outlined" Min="2012" Max="anno_max" Margin="Margin.Dense" @onchange="@(() => _onChange.InvokeAsync(ChangeStatus()))" />
+            <MudNumericField @bind-Value="anno_max" Label="Rango de años hasta" Variant="Variant.Outlined" Min="anno_min" Max="2022" Margin="Margin.Dense" @onchange="@(() => _onChange.InvokeAsync(ChangeStatus()))" />
+            <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => _onChange.InvokeAsync(ChangeStatus()))">Filtrar por año</MudButton>
+        </MudItem>
+    </MudPaper>
+
+</div>
+
+@code {
+    [Parameter]
+    public BarChart _barChart { get; set; } = null!;
+    [Parameter]
+    public string _graphName { get; set; } = null!;
+    [Parameter]
+    public string x_Axis { get; set; } = null!;
+    [Parameter]
+    public string y_Axis { get; set; } = null!;
+    public int anno_max { get; set; } = DateTime.Now.Year;
+    public int anno_min { get; set; } = 2012;
+    public List<ChartSeries> Series { get; set; } = null!;
+    public string[]? XAxisLabels;
+    private readonly ChartOptions _options = new();
+
+    [Parameter]
+    public EventCallback<(int, int)> _onChange { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDashboard();
+    }
+
+    private async Task LoadDashboard()
+    {
+        XAxisLabels = _barChart.Labels.ToArray();
+        this.Series = new List<ChartSeries>()
+        {
+            new ChartSeries() { Name = "Número de publicaciones del grupo de investigacion", Data =_barChart.Values.ToArray()},
+        };
+
+        _options.YAxisTicks = 1;
+        _options.YAxisLines = true;
+        _options.MaxNumYAxisTicks = 100;
+        _options.DisableLegend = true;
+    }
+
+    public (int, int) ChangeStatus()
+    {
+        return (anno_min, anno_max);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadDashboard();
+    }
+
+}

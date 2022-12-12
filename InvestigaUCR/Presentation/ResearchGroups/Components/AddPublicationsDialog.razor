@@ -1,0 +1,133 @@
+﻿@using Application.Publications
+@using Domain.Publications.Entities
+@using Domain.Core.Exceptions
+@using Presentation.Core.Components
+
+@inject IGroupService GroupService;
+
+<MudDialog>
+    <DialogContent>
+        <MudContainer Style="max-height: 500px; overflow-y: scroll">
+            <Loading IsLoading="_isLoading">
+                <MudSelect T="string" MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))" HelperText="@helperText" Label="Seleccione las publicaciones" MultiSelection="true" @bind-Value="_publication" @bind-SelectedValues="selectedPublications">
+                    @if (isAdding)
+                    {
+                        @foreach (var publication in _publications!.OrderBy(x => x.DOI + ": " + x.Name))
+                        {
+                            if (!_group.Publications.Contains(publication))
+                            {
+                                <MudSelectItem T="string" Value="publication.Name">@getPublicationName(publication)</MudSelectItem>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        @foreach (var publication in _group.Publications.OrderBy(x => x.DOI + ": " + x.Name))
+                        {
+                            <MudSelectItem T="string" Value="publication.Name">@getPublicationName(publication)</MudSelectItem>
+                        }
+                    }
+                </MudSelect>
+            </Loading>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudToolBar Class="d-flex justify-start flex-grow-1 gap-4">
+            <MudButton OnClick="Close" Color="Color.Primary">Cancelar</MudButton>
+            <MudButton OnClick="SelectPublications" Color="Color.Primary" Variant="Variant.Filled">Confirmar</MudButton>
+        </MudToolBar>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = null!;
+    [Parameter]
+    public Group _group { get; set; } = null!;
+    [Parameter]
+    public EventCallback<IEnumerable<Publication>> ModifyPublications { get; set; }
+    [Parameter]
+    public bool isAdding { get; set; } = true;
+
+    private bool _isLoading { get; set; } = false;
+    private string? _publication { get; set; } = null!;
+    private IEnumerable<Publication>? _publications { get; set; } = null!;
+    private IEnumerable<string> selectedPublications { get; set; } = null!;
+
+    private string helperText
+    {
+        get
+        {
+            if (selectedPublications is not null)
+            {
+                if (selectedPublications.Count() > 0)
+                {
+                    return selectedPublications.Count() == 1 ? $"Se ha seleccionado 1 publicación" : $"Se han seleccionado {selectedPublications.Count()} publicaciones";
+                }
+            }
+            return "";
+        }
+    }
+
+    void Close() => MudDialog.Close(DialogResult.Ok(true));
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPublications();
+    }
+
+    private async Task LoadPublications()
+    {
+        _isLoading = true;
+        _publications = await GroupService.GetAllPublicationsAsync();
+        _isLoading = false;
+    }
+
+    private async Task SelectPublications()
+    {
+        if (selectedPublications is not null)
+        {
+            List<Publication> aux = new List<Publication>();
+            foreach (var publication in selectedPublications)
+            {
+                aux.Add(_publications!.Where(x => x.Name == publication).Single());
+            }
+            await ModifyPublications.InvokeAsync(aux.AsEnumerable());
+        }
+        Close();
+    }
+
+    private string getPublicationName(Publication publication)
+    {
+        return publication.DOI + ": " + publication.Name;
+    }
+
+    /// <summary>
+    /// Method <c>GetMultiSelectionText</c> Return the helper text string
+    /// </summary>
+    /// <param name="selectedValues"></param>
+    /// <returns>Helper text</returns>
+    private string GetMultiSelectionText(List<string> selectedValues)
+    {
+        if (selectedPublications is not null)
+        {
+            if (selectedPublications.Count() > 0)
+                return $"Publicacion{(selectedPublications!.Count() > 1 ? "es seleccionadas" : " seleccionada")}: {getAllNames()}";
+        }
+        return $"Seleccione las publicaciones";
+    }
+
+    /// <summary>
+    /// Method <c>getAllNames</c> Return an string with the name of all the publications selected
+    /// </summary>
+    /// <returns>String with the name of all the publications selected</returns>
+    private string getAllNames()
+    {
+        string aux = "";
+        foreach (var publication in selectedPublications)
+        {
+            Publication auxPublication = _publications!.Where(x => x.Name == publication).Single();
+            aux += auxPublication.DOI + ": " + auxPublication.Name;
+        }
+        return aux;
+    }
+}

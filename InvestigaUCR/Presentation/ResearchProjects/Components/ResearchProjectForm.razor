@@ -1,0 +1,358 @@
+﻿@inject IGroupService GroupService
+@inject IPeopleService PeopleService
+@inject IResearchProjectsService ResearchProjectService
+@inject IPublications PublicationsService
+@inject ISnackbar Snackbar
+@inject IImageService ImageService
+@inject NavigationManager _navigationManager
+
+@using Application.People
+@using Application.Publications
+
+
+@using Domain.Core.Exceptions
+@using Domain.Core.Helpers
+@using Domain.People.Entities
+@using Domain.ResearchProjects.ValueObjects
+@using Microsoft.AspNetCore.Components.Forms
+@using Presentation.ResearchProjects.Models
+@using Domain.ResearchProjects.Entities
+@using Domain.Publications.Entities
+@using Presentation.Core.Components
+@using Application.ResearchProjects
+
+<Loading IsLoading="_isLoading">
+    <MudDialogProvider FullWidth="true"
+                       MaxWidth="MaxWidth.ExtraLarge"
+                       CloseButton="true"
+                       DisableBackdropClick="true"
+                       NoHeader="true"
+                       Position="DialogPosition.Center"
+                       CloseOnEscapeKey="true" />
+    <MudDialog Style="max-height: 600px; overflow-y: scroll">
+        <DialogContent>
+            @if (_projectCreateMessage is not null)
+            {
+                <Alert Color="_projectCreateAlertColor">
+                    @_projectCreateMessage
+                </Alert>
+            }
+            <MudText Class="d-flex justify-center flex-grow-1"
+                     Style="padding-right:10px; padding-top:30px; padding-bottom:30px" Elevation="0" Justify="Justify.Center"
+                     Typo="Typo.h1">
+                Agregar un nuevo proyecto de investigación
+            </MudText>
+            <MudImage Src="@getImage(Model.Image)" Elevation="0" Class="rounded-circle" Width="225" Height="225" ObjectFit="ObjectFit.Cover" Style="display: block; margin-left: auto; margin-right: auto; border-radius: 50%;" />
+            <MudPaper Class="d-flex justify-center py-2 px-1 mt-6" Elevation="0" Outlined="false">
+                <InputFile id="fileInput" OnChange="HandleSelection" accept="image/png, image/jpeg, image/jpg" hidden />
+                <MudButton HtmlTag="label"
+                           Variant="Variant.Filled"
+                           Color="Color.Success"
+                           StartIcon="@Icons.Filled.CloudUpload"
+                           for="fileInput">
+                    Añadir imagen
+                </MudButton>
+            </MudPaper>
+            <MudText Typo="Typo.body2"> Identificador </MudText>
+            <MudTextField Mask="@(new PatternMask("000-**-000"))"
+                          Required="true" RequiredError="Escriba un identificador"
+                          @bind-Value="Model.Id" Variant="@Variant.Outlined" Clearable />
+            <MudText Typo="Typo.body2"> Nombre </MudText>
+            <MudTextField MaxLength="300" Lines="3"
+                          Required="true" RequiredError="Escriba un nombre"
+                          @bind-Value="Model.Name" Variant="@Variant.Outlined" Clearable />
+            <MudGrid Class="d-flex justify-center flex-grow-1 gap-4" Style="padding-left:12px; padding-right:12px; padding-top:30px; padding-bottom:20px" Justify="Justify.Center">
+                <MudTextField T="DateTime?" Variant="@Variant.Outlined" Format="yyyy-MM-dd" Label="Fecha de inicio" InputType="InputType.Date"
+                              Required="true" RequiredError="Escoga una fecha de inicio"
+                              @bind-Value="Model.Start_date" />
+                <MudTextField T="DateTime?" Variant="@Variant.Outlined" Format="yyyy-MM-dd" Label="Fecha de finalización" InputType="InputType.Date" Required="true" RequiredError="Escoga una fecha de finalización"
+                              @bind-Value="Model.End_date" />
+            </MudGrid>
+            <MudText Typo="Typo.body2"> Descripción </MudText>
+            <MudTextField Lines="5"
+                          @bind-Value="Model.Description" Variant="@Variant.Outlined" Clearable />
+            <MudSelect T="string" MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))" HelperText="@helperText" Label="Seleccione las publicaciones asociadas" MultiSelection="true" @bind-Value="_publication" @bind-SelectedValues="selectedPublications">
+                @foreach (var publication in _publications!)
+                {
+
+                    <MudSelectItem T="string" Value="publication.Name">@publication.Name</MudSelectItem>
+
+                }
+            </MudSelect>
+
+            <MudAutocomplete T="Person" Label="Seleccione el investigador principal del proyecto" @bind-Value="_mainResearcher" SearchFunc="@SearchPeople"
+                             ResetValueOnEmptyText="@resetValueOnEmptyText" AdornmentIcon="@Icons.Material.Filled.PersonAdd" AdornmentColor="Color.Primary" AnchorOrigin=" Origin.BottomCenter"
+                             CoerceText="@coerceText" CoerceValue="@coerceValue" ToStringFunc="@(p=> p==null?null : p.Name.Value + " " + p.LastName1.Value + " " + p.LastName2.Value)" />
+
+            <MudAutocomplete T="GroupDTO" Label="Seleccione el grupo al que pertenece el proyecto" @bind-Value="_group" SearchFunc="@SearchGroup"
+                             ResetValueOnEmptyText="@resetValueOnEmptyText" AdornmentIcon="@Icons.Material.Filled.Group" AdornmentColor="Color.Primary" AnchorOrigin=" Origin.BottomCenter"
+                             CoerceText="@coerceText" CoerceValue="@coerceValue" ToStringFunc="@(g=> g==null?null : g.Name.Value)" />
+
+
+
+        </DialogContent>
+        <DialogActions>
+            <MudToolBar Class="d-flex justify-start flex-grow-1 gap-4">
+                <MudButton OnClick="Close" Color="Color.Primary">Cancelar</MudButton>
+                <MudButton OnClick="Clicked" Disabled="@ValidateRequiredValues()" Color="Color.Primary" Variant="Variant.Filled">Crear</MudButton>
+                @if (@projectLoaded)
+                {
+                    <MudChip Color="Color.Success">El proyecto se cargo correctamente</MudChip>
+                }
+            </MudToolBar>
+        </DialogActions>
+    </MudDialog>
+</Loading>
+
+@code {
+    public IEnumerable<GroupDTO>? _groups { get; set; } = null!;
+    private IEnumerable<Person>? _people { get; set; } = null!;
+
+    private ResearchProjectModel Model { get; set; } = new();
+
+    private bool _isLoading { get; set; }
+
+    private GroupDTO? _group { get; set; }
+    private Person? _mainResearcher { get; set; }
+
+    private static string DefaultDragClass = "relative rounded-lg border-2 border-dashed pa-4 mt-4 mud-width-full mud-height-full";
+
+    private string DragClass = DefaultDragClass;
+
+    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
+
+    private List<IBrowserFile> loadedFiles = new();
+
+    private string? _projectCreateMessage = null;
+    private Alert.AlertColor _projectCreateAlertColor = Alert.AlertColor.Danger;
+
+    private bool IsTaskRunning = false, projectLoaded = false, resetValueOnEmptyText = false, coerceText = false, coerceValue = false;
+    private IEnumerable<string> selectedPublications { get; set; } = null!;
+    private string? _publication { get; set; } = null!;
+    private IEnumerable<Publication>? _publications = Enumerable.Empty<Publication>();
+    private IEnumerable<Publication>? _associatedPublications = Enumerable.Empty<Publication>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadGroups();
+        await LoadPeople();
+        await LoadPublications();
+    }
+
+    private async Task LoadGroups()
+    {
+        _isLoading = true;
+        _groups = await GroupService.GetGroupAsync();
+        _isLoading = false;
+    }
+
+    private async Task LoadPeople()
+    {
+        _isLoading = true;
+        _people = await PeopleService.GetPeopleAsync();
+        _isLoading = false;
+    }
+    private async Task LoadPublications()
+    {
+        _isLoading = true;
+        _publications = await PublicationsService.GetPublicationsAsync();
+        _associatedPublications = Enumerable.Empty<Publication>();
+        _isLoading = false;
+    }
+    void Close()
+    {
+        MudDialog?.Close(DialogResult.Ok(false));
+    }
+
+    private async Task HandleSubmit()
+    {
+        _projectCreateMessage = null;
+        string groupId = _group!.Id.Value;
+        Group? group = await GroupService.GetGroupByIdAsync(groupId);
+
+        var project = new ResearchProject
+        (
+            ResearchProjectId.TryCreate(Model.Id).Success(),
+            Model.Name!,
+            Model.Start_date.GetValueOrDefault(DateTime.Now),
+            Model.End_date.GetValueOrDefault(DateTime.Now),
+            Model.Description!,
+            Model.Image
+        );
+        if(selectedPublications != null!){
+            foreach (var publication in selectedPublications)
+            {
+                _associatedPublications = _associatedPublications.Append(_publications!.Where(p => p.Name == publication).ToList());
+            }
+        }
+        try{
+            await ResearchProjectService.AddResearchProject(project, group!, _mainResearcher!, _associatedPublications!.ToList()!);
+            _projectCreateAlertColor = Alert.AlertColor.Success;
+            _projectCreateMessage = "Proyecto de investigación añadido correctamente";
+            StateHasChanged();
+            await Task.Delay(5000);
+            _projectCreateMessage = null;
+            StateHasChanged();
+            Model = new ResearchProjectModel();
+
+        }catch(DomainException e){
+            _projectCreateAlertColor = Alert.AlertColor.Success;
+            _projectCreateMessage = e.ToString();
+            StateHasChanged();
+            await Task.Delay(5000);
+            _projectCreateMessage = null;
+            StateHasChanged();
+        }catch(Exception){
+            _projectCreateAlertColor = Alert.AlertColor.Danger;
+            _projectCreateMessage = "Ocurrió un error. Intente de nuevo.";
+            StateHasChanged();
+            await Task.Delay(5000);
+            _projectCreateMessage = null;
+        }
+    }
+
+    public bool ValidateRequiredValues()
+    {
+        if (Model.Id != null && Model.Name != null && _group != null && _mainResearcher != null
+        && Model.Start_date != null && Model.End_date != null && !IsTaskRunning)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    private async Task<IEnumerable<GroupDTO>> SearchGroup(String value)
+    {
+        projectLoaded = false;
+        await Task.Delay(5);
+        List<GroupDTO> names = new List<GroupDTO>();
+        @if (!_groups!.Any())
+        {
+            //names.Add("No hay Grupos de Investigación registrados actualmente");
+        }
+        else
+        {
+            @foreach (var g in _groups!)
+            {
+                names.Add(g);
+            }
+        }
+        // if text is null or empty, show complete list
+        if (string.IsNullOrEmpty(value))
+            return names;
+        return names.Where(x => x.Name.Value.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    private async Task<IEnumerable<Person>> SearchPeople(String value)
+    {
+        projectLoaded = false;
+        await Task.Delay(5);
+        List<Person> names = new List<Person>();
+        @if (!_people!.Any())
+        {
+            //names.Add("No hay personas registradas actualmente");
+        }
+        else
+        {
+            @foreach (var p in _people!)
+            {
+                names.Add(p);
+            }
+        }
+        // if text is null or empty, show complete list
+        if (string.IsNullOrEmpty(value))
+            return names;
+        return names.Where(x => x.Name.Value.Contains(value, StringComparison.InvariantCultureIgnoreCase)
+        || x.LastName1.Value.Contains(value, StringComparison.InvariantCultureIgnoreCase)
+        || x.LastName2.Value.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    private async Task HandleSelection(InputFileChangeEventArgs e)
+    {
+        loadedFiles.Clear();
+        loadedFiles.Add(e.File);
+
+        foreach (var file in loadedFiles)
+        {
+            Stream stream = file.OpenReadStream();
+            MemoryStream ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            stream.Close();
+
+            Model.Image = ms.ToArray();
+            ms.Close();
+            StateHasChanged();
+        }
+    }
+
+    async void Clicked()
+    {
+        IsTaskRunning = true;
+        await HandleSubmit();
+        IsTaskRunning = true;
+        projectLoaded = true;
+        MudDialog?.Close(DialogResult.Ok(true));
+    }
+
+    public String getImage(byte[]? img)
+    {
+        return img != null ? ImageService.ConvertByteToImage(img) : "/Images/DefaultImages/researchProject.jpg";
+    }
+
+    private string getId(string name)
+    {
+        string id = "";
+        @if (_groups!.Any())
+        {
+            @foreach (var group in _groups!)
+            {
+                if (name == group.Name.ToString())
+                {
+                    id = group.Id.ToString();
+                }
+            }
+        }
+        return id;
+    }
+
+    private void RefreshPage()
+    {
+        string refUrl = "/proyectos/";
+        _navigationManager.NavigateTo(refUrl, true);
+    }
+
+    private string GetMultiSelectionText(List<string> selectedValues)
+    {
+        if (selectedPublications is not null)
+        {
+            if (selectedPublications.Count() > 0)
+                return $"Publicacion{(selectedPublications!.Count() > 1 ? "es seleccionadas" : " seleccionada")}: {getPublicationNames()}";
+        }
+        return $"Seleccione las publicaciones relacionadas";
+    }
+
+    private string getPublicationNames()
+    {
+        string aux = "";
+        foreach (var publication in selectedPublications)
+        {
+            aux += publication + " ";
+        }
+        return aux;
+    }
+
+    private string helperText
+    {
+        get
+        {
+            if (selectedPublications is not null)
+            {
+                if (selectedPublications.Count() > 0)
+                {
+                    return selectedPublications.Count() == 1 ? $"Se ha seleccionado 1 publicación" : $"Se han seleccionado {selectedPublications.Count()} publicaciones";
+                }
+            }
+            return "";
+        }
+    }
+}

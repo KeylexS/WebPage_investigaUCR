@@ -1,0 +1,104 @@
+﻿@using Application.Theses
+@using Application.ResearchProjects
+@using Domain.Theses.Entities
+@using Domain.Core.Exceptions
+
+@inject NavigationManager _navigationManager
+@inject ITheses ThesesService
+@inject IResearchProjectsService ResearchProjectsService
+@inject IDialogService DialogService
+
+@if (_projectEditMessage is not null)
+{
+    <Alert Color="_projectEditAlertColor">
+        @_projectEditMessage
+    </Alert>
+}
+
+<Loading IsLoading="_isLoading">
+    <MudText Class="d-flex justify-center flex-grow-1"
+             Style="padding-right:10px; padding-top:30px; padding-bottom:30px" Elevation="0" Justify="Justify.Center"
+             Typo="Typo.h1">
+        Agregar tesis
+    </MudText>
+    <MudDialog>
+        <DialogContent>
+            <ThesisAutocomplete theses="_theses" @bind-thesis="_thesis" label="Seleccione la tesis que desea asociar al proyecto"></ThesisAutocomplete>
+        </DialogContent>
+        <DialogActions>
+            <MudToolBar Class="d-flex justify-start flex-grow-1 gap-4">
+                <MudButton OnClick="Close" Color="Color.Primary">Cancelar</MudButton>
+                <MudButton OnClick="Clicked" Disabled="@ValidateRequiredValues()" Color="Color.Primary" Variant="Variant.Filled">Agregar</MudButton>
+            </MudToolBar>
+        </DialogActions>
+    </MudDialog>
+</Loading>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = null!;
+    [Parameter]
+    public ResearchProject? project { get; set; }
+
+    IEnumerable<Thesis>? _theses { get; set; }
+    Thesis? _thesis { get; set; } = null;
+    private bool _isLoading { get; set; }
+    private bool _isTaskRunning = false;
+    private string? _projectEditMessage = null;
+    private Alert.AlertColor _projectEditAlertColor = Alert.AlertColor.Danger;
+
+    void Close() => MudDialog.Close(DialogResult.Ok(true));
+    void Exit() => MudDialog.Cancel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadThesis();
+    }
+    private async Task LoadThesis()
+    {
+        _isLoading = true;
+        var allTheses = await ThesesService.GetThesesAsync();
+        _theses = allTheses.Where(t => !project!.Theses.Any(t2 => t2.Id == t.Id));
+        _isLoading = false;
+    }
+
+    public bool ValidateRequiredValues()
+    {
+        if (_thesis == null || _isTaskRunning == true)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    async Task Clicked()
+    {
+        _isTaskRunning = true;
+        await HandleSubmit();
+        _isTaskRunning = false;
+        StateHasChanged();
+    }
+
+    private async Task HandleSubmit()
+    {
+        _projectEditMessage = null;
+        StateHasChanged();
+        try
+        {
+            await ResearchProjectsService.AddThesisToProject(_thesis!, project!);
+            _projectEditMessage = "Proyecto de investigación actualizado con éxito.";
+            _projectEditAlertColor = Alert.AlertColor.Success;
+            StateHasChanged();
+            await Task.Delay(3000);
+            _projectEditMessage = null;
+            StateHasChanged();
+        }
+        catch (DomainException e)
+        {
+            _projectEditMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(3000);
+            _projectEditMessage = null;
+            StateHasChanged();
+        }
+    }
+}

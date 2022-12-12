@@ -1,0 +1,26 @@
+﻿@page
+@using Microsoft.AspNetCore.Identity
+@attribute [IgnoreAntiforgeryToken]
+@using Application.Users;
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> userManager
+@inject IUserService UserService
+
+@*
+    PIIB22II02-476 MC-PL-3.3 Delete user | PIIB22II02-1315 Show delete button and Add functionality for delete user.
+*@
+
+@functions
+{
+    [HttpPost]
+    public async Task<IActionResult> OnPost()
+    {
+        if (SignInManager.IsSignedIn(User))
+        {
+            var user = await userManager.GetUserAsync(User);
+            await SignInManager.SignOutAsync();
+            await userManager.DeleteAsync(user);
+        }
+        return Redirect("/");
+    }
+}

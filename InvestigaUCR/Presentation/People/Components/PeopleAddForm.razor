@@ -1,0 +1,150 @@
+﻿@using Domain.Core.Exceptions
+@using Domain.Core.ValueObjects
+@using Domain.People.ValueObjects
+@using Microsoft.AspNetCore.Components.Forms
+@using Domain.People.Entities
+@using Application.People
+@using Presentation.People.Models
+@using System.ComponentModel.DataAnnotations
+@inject IImageService ImageService
+@inject IPeopleService PeopleService
+@inject NavigationManager NavigationManager
+@*
+    PIIB22II02-900 MC-PL-6.1 Add people | PIIB22II02-1243 Add people in presentation
+*@
+<EditForm OnValidSubmit="HandleSubmit" Model="@Model">
+    <FluentValidationValidator />
+    <h3 style="text-align: center;">Agregar una persona</h3>
+    <MudDialog>
+        <DialogContent>
+            <MudContainer Style="max-height: 500px; overflow-y: scroll">
+                <MudImage Src="@getImage(Model.ProfilePicture)" Elevation="0" Class="rounded-circle" Width="225" Height="225" ObjectFit="ObjectFit.Cover" Style="display: block; margin-left: auto; margin-right: auto; border-radius: 50%;" />
+                <MudPaper Class="d-flex justify-center py-2 px-1 mt-6" Elevation="0" Outlined="false">
+                    <InputFile id="fileInput" OnChange="HandleSelection" accept="image/png, image/jpeg, image/jpg" hidden />
+                    <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Success" StartIcon="@Icons.Filled.CloudUpload" Disabled="@off" for="fileInput">
+                        Añadir imagen
+                    </MudButton>
+                </MudPaper>
+                <br>
+                <div class="form-group">
+                    <MudTextField T="string" @bind-Value="Model.Id" Immediate="true" Variant="Variant.Outlined" Label="Correo" Clearable="true" Required="true" RequiredError="El correo es necesario." InputType="InputType.Email" MaxLength="90" Disabled="@off"  />
+                    <ValidationMessage For="@(() => Model.Id)" />
+                </div>
+                <br>
+                <div class="form-group">
+                    <MudGrid>
+                        <MudItem>
+                            <MudTextField T="string" @bind-Value="Model.Name" Immediate="true" MaxLength="30" Variant="Variant.Outlined" Label="Nombre" Clearable="true" Required="true" RequiredError="El nombre es necesario." />
+                            <ValidationMessage For="@(() => Model.Name)" />
+                        </MudItem>
+                        <MudItem>
+                            <MudTextField T="string" @bind-Value="Model.LastName1" Immediate="true" MaxLength="30" Variant="Variant.Outlined" Label="Primer apellido" Clearable="true" Required="true" RequiredError="El correo es necesario." />
+                            <ValidationMessage For="@(() => Model.LastName1)" />
+                        </MudItem>
+                        <MudItem>
+                            <MudTextField T="string" @bind-Value="Model.LastName2" Immediate="true" MaxLength="30" Variant="Variant.Outlined" Label="Segundo apellido" Clearable="true" Required="false"/>
+                            <ValidationMessage For="@(() => Model.LastName2)" />
+                        </MudItem>
+                        <br>
+                        <MudItem xs="12" sm="6" md="4">
+                            <MudAutocomplete T="string" Label="Grado academico" MaxLength="20" @bind-Value="@Model.HighestDegree" SearchFunc="@SearchDegree" Variant="Variant.Outlined"/>
+                        </MudItem>
+                        <br>
+                        <MudItem>
+                            <MudTextField T="string" @bind-Value="Model.University" Immediate="true" MaxLength="90" Variant="Variant.Outlined" Label="Universidad" Clearable="true" Required="false" />
+                            <ValidationMessage For="@(() => Model.University)" />
+                        </MudItem>
+                    </MudGrid>
+                </div>
+            </MudContainer>
+        </DialogContent>
+        <DialogActions>
+            <MudButton Style="block; margin-left: auto; margin-right: auto;" Color="Color.Primary" OnClick="Close" Disabled="@off">Cancelar</MudButton>
+            <MudButton Style="block; margin-left: auto; margin-right: auto;" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" Disabled="@off">Añadir</MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>
+
+@code {
+    [Parameter] public EventCallback<Person> OnValidSubmit { get; set; }
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = null!;
+    private PersonModel Model { get; set; } = new();
+    private bool off = false;
+    private string[] degrees = { "Dr.", "Dra.", "Lic.", "Lda", "Bach.", "MSc." };
+    private string? _personEditMessage = null;
+    private Alert.AlertColor _personEditAlertColor = Alert.AlertColor.Danger;
+    private List<IBrowserFile> loadedFiles = new();
+
+    private async Task<IEnumerable<string>> SearchDegree(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+            return degrees;
+        return degrees.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    void Close()
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+        NavigationManager.NavigateTo("/personas", true);
+    }
+
+    public String getImage(byte[]? img)
+    {
+        return img != null ? ImageService.ConvertByteToImage(img) : "/Images/DefaultImages/profile_photo.png";
+    }
+
+    //Upload image
+    private async Task HandleSelection(InputFileChangeEventArgs e)
+    {
+        loadedFiles.Clear();
+        loadedFiles.Add(e.File);
+        foreach (var file in loadedFiles)
+        {
+            Stream stream = file.OpenReadStream();
+            MemoryStream ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            stream.Close();
+            Model.ProfilePicture = ms.ToArray();
+            ms.Close();
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        _personEditMessage = null;
+        try
+        {
+            off = true;
+            StateHasChanged();
+            var person = new Person(Model.Id!, RequiredString.TryCreate(Model.Name).Success(),
+                    RequiredString.TryCreate(Model.LastName1).Success(), RequiredString.TryCreate(Model.LastName2).Success(),
+                    PersonHighestDegree.TryCreate(Model.HighestDegree).Success(), RequiredString.TryCreate(Model.University).Success(), Model.ProfilePicture);
+            await PeopleService.AddPerson(person);
+            _personEditAlertColor = Alert.AlertColor.Success;
+            CreateMessage("La persona ha sido añadida con exito.");
+            Model = new PersonModel();
+            Close();
+        }
+        catch (DomainException e)
+        {
+            off = true;
+            CreateMessage(e.Message);
+        }
+        catch (Exception)
+        {
+            off = true;
+            _personEditAlertColor = Alert.AlertColor.Danger;
+            CreateMessage("Ocurrió un error. Intente de nuevo.");
+        }
+    }
+
+    public async void CreateMessage(string message)
+    {
+        _personEditMessage = message;
+        StateHasChanged();
+        await Task.Delay(3000);
+        _personEditMessage = null;
+        StateHasChanged();
+    }
+}

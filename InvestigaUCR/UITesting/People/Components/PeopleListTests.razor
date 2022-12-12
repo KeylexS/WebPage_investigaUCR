@@ -1,0 +1,152 @@
+﻿@using Application.Shared.ImageConverter
+@using Domain.Core.Helpers
+@using Domain.Core.ValueObjects
+@using Domain.People.DTOs
+@using Domain.People.Entities
+@using Domain.People.ValueObjects
+@using Presentation.People.Components
+
+@inherits TestContext
+
+@code {
+    internal class FallbackServiceProvider : IServiceProvider
+    {
+        public object GetService(Type serviceType)
+        {
+            return new ImageService();
+        }
+    }
+
+    internal class ImageService : IImageService
+    {
+        public string ConvertByteToImage(byte[] img)
+        {
+            return "/Images/DefaultImages/profile_photo.png";
+        }
+
+        public byte[] ConvertImageToByte(string url)
+        {
+            throw new NotImplementedException();
+        }
+    }
+    
+    public IEnumerable<Person> GetResearcher()
+    {
+        return new List<Person>
+        {
+            new Person("email1", RequiredString.TryCreate("Edgar").Success(),
+                RequiredString.TryCreate("Casasola").Success(), RequiredString.TryCreate("Murillo").Success(),
+                PersonHighestDegree.TryCreate("Dr.").Success(), RequiredString.TryCreate("Universidad de Costa Rica").Success(), null),
+            new Person("email2", RequiredString.TryCreate("Name1").Success(),
+                RequiredString.TryCreate("Lastname1_1").Success(), RequiredString.TryCreate("Lastname2_1").Success(),
+                PersonHighestDegree.TryCreate("Dr.").Success(), RequiredString.TryCreate("Universidad de Costa Rica").Success(), null),
+
+            new Person("email3", RequiredString.TryCreate("Name2").Success(),
+                RequiredString.TryCreate("Lastname1_2").Success(), RequiredString.TryCreate("Lastname2_2").Success(),
+                PersonHighestDegree.TryCreate("Dr.").Success(), RequiredString.TryCreate("Universidad de Costa Rica").Success(), null),
+
+            new Person("email4", RequiredString.TryCreate("Name3").Success(),
+                RequiredString.TryCreate("Lastname1_3").Success(), RequiredString.TryCreate("Lastname2_3").Success(),
+                PersonHighestDegree.TryCreate("Dr.").Success(), RequiredString.TryCreate("Universidad de Costa Rica").Success(), null)
+        }.AsEnumerable();
+    }
+
+    [Fact]
+    public void PeopleListHasImage()
+    {
+        Services.AddFallbackServiceProvider(new FallbackServiceProvider());
+
+        var researcher = GetResearcher();
+
+        var cut = Render(@<PeopleList _people="GetResearcher()"></PeopleList>);
+
+        var actualMudCard = cut.FindComponent<MudCard>();
+        var actualMudText = actualMudCard.FindComponents<MudText>().ElementAt(0);
+
+        actualMudText.MarkupMatches(@"<p class=""mud-typography mud-typography-body1 mud-typography-align-center"">
+          <img src=""/Images/DefaultImages/profile_photo.png"" class=""mud-image fluid object-fill object-center rounded-circle"" style=""align-content"" width=""100"" height=""100"">
+        </p>");
+    }
+
+    [Fact]
+    public void PeopleListHasName()
+    {
+        Services.AddFallbackServiceProvider(new FallbackServiceProvider());
+
+        var cut = Render(@<PeopleList _people="GetResearcher()"></PeopleList>);
+        var actualMudCard = cut.FindComponent<MudCard>();
+        var actualMudText = actualMudCard.FindComponents<MudText>().ElementAt(1);
+
+        actualMudText.MarkupMatches(@"<h3 class=""mud-typography mud-typography-h3 mud-typography-align-center"" style=""display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden"">
+          <a href=""/personas/email1"" class=""mud-typography mud-link mud-default-text mud-link-underline-hover mud-typography-h3"">Dr. Edgar Casasola</a>
+        </h3>");
+    }
+
+    [Fact]
+    public void PeopleListHasUniversity()
+    {
+        Services.AddFallbackServiceProvider(new FallbackServiceProvider());
+
+        var cut = Render(@<PeopleList _people="GetResearcher()"></PeopleList>);
+        var actualMudCard = cut.FindComponent<MudCard>();
+        var actualMudText = actualMudCard.FindComponents<MudText>().ElementAt(2);
+
+        actualMudText.MarkupMatches(@"<p class=""mud-typography mud-typography-body2 mud-typography-align-center"" style=""display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden"">Universidad de Costa Rica</p>");
+    }
+
+    [Fact]
+    public void PeopleListCardHasEmail()
+    {
+        Services.AddFallbackServiceProvider(new FallbackServiceProvider());
+
+        var cut = Render(@<PeopleList _people="GetResearcher()"></PeopleList>);
+        var actualMudCard = cut.FindComponent<MudCard>();
+        var actualMudText = actualMudCard.FindComponents<MudText>().ElementAt(3);
+
+        actualMudText.MarkupMatches(@"<p class=""mud-typography mud-typography-body2 mud-typography-align-center"" style=""display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden"">
+          <a class=""mud-typography mud-link mud-primary-text mud-link-underline-always mud-typography-body2"">email1</a>
+        </p>");
+    }
+
+    [Fact]
+    public void PeopleListCardExists()
+    {
+        Services.AddFallbackServiceProvider(new FallbackServiceProvider());
+
+        var cut = Render(@<PeopleList _people="GetResearcher()"></PeopleList>);
+        var actualMudCard = cut.FindComponent<MudCard>();
+
+        actualMudCard.MarkupMatches(@"<div class=""mud-paper mud-paper-outlined mud-card"" style="""">
+          <div class=""mud-card-content"">
+            <p class=""mud-typography mud-typography-body1 mud-typography-align-center"">
+              <img src=""/Images/DefaultImages/profile_photo.png"" class=""mud-image fluid object-fill object-center rounded-circle"" style=""align-content"" width=""100"" height=""100"">
+            </p>
+            <h3 class=""mud-typography mud-typography-h3 mud-typography-align-center"" style=""display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden"">
+              <a href=""/personas/email1"" class=""mud-typography mud-link mud-default-text mud-link-underline-hover mud-typography-h3"">Dr. Edgar Casasola</a>
+            </h3>
+            <p class=""mud-typography mud-typography-body2 mud-typography-align-center"" style=""display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden"">Universidad de Costa Rica</p>
+            <p class=""mud-typography mud-typography-body2 mud-typography-align-center"" style=""display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden"">
+              <a class=""mud-typography mud-link mud-primary-text mud-link-underline-always mud-typography-body2"">email1</a>
+            </p>
+          </div>
+        </div>");
+    }
+
+    public IEnumerable<Person> GetNullResearcher()
+    {
+        return new List<Person>
+        {
+        }.AsEnumerable();
+    }
+
+    [Fact]
+    public void PeopleListCardNotExists()
+    {
+        Services.AddFallbackServiceProvider(new FallbackServiceProvider());
+
+        var cut = Render(@<PeopleList _people="GetNullResearcher()"></PeopleList>);
+        var actualMudCard = cut.FindComponent<MudText>();
+
+        actualMudCard.MarkupMatches(@"<p class=""mud-typography mud-typography-body2 mud-error-text mud-typography-align-center text-danger"">No hay personas registradas actualmente.</p>");
+    }
+}

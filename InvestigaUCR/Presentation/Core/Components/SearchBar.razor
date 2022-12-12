@@ -1,0 +1,18 @@
+﻿<MudItem Style="position:relative; top:4%; max-width:300px; width:auto; left:10%; margin-left:auto; display:flex">
+    <MudTextField @bind-Value="searchText" Immediate="true" TextChanged="UpdateSearch" Label=@searchLabel
+                  Variant="Variant.Outlined" Adornment="Adornment.End"
+                  AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Secondary" />
+</MudItem>
+
+@code {
+    [Parameter]
+    public string? searchLabel { get; set; }
+    [Parameter]
+    public EventCallback<string> OnUpdateSearchText { get; set; }
+
+    private string searchText { get; set; } = "";
+    async Task UpdateSearch()
+    {
+        await OnUpdateSearchText.InvokeAsync(searchText);
+    }
+}

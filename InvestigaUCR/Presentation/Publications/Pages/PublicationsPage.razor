@@ -1,0 +1,212 @@
+﻿<!-- Story ID: PIIB22II02-894 HT-PB-3.6 Show title, type and date. -->
+<!-- Subtask ID: PIIB22II02-993 Create designated page for each publication. -->
+
+@page "/publicaciones/{DOI}"
+@using Application.Publications
+@using Application.ResearchProjects
+@using Domain.Core.Exceptions
+@using Domain.Publications.Entities
+@using Application.Publications.Implementations
+@using Presentation.Core.Components
+@using Presentation.Publications.Components
+@using Presentation.ResearchGroups.Components;
+
+@inject IResearchProjectsService ResearchProjectService
+@inject IGroupService GroupService
+@inject IPublications Publications
+
+<Loading IsLoading="_isLoading">
+    <PublicationsInfo publication="_publication" OnNameEdit="ChangeName" OnTypeEdit="ChangeType" OnDateEdit="ChangeDate" OnAbstractEdit="ChangeAbstract" OnReferenceEdit="ChangeReference" @ref="publicationInfo"> </PublicationsInfo>
+
+    <!--PIIB22II02-897 HT-PB-3.9 Show related groups-->
+    <!--GROUPS-->
+    <br>
+    <br>
+    <MudText Align="Align.Center" Typo="Typo.h2">Grupo de Investigación</MudText>
+    <br>
+    <br>
+    <MudPaper Class="d-flex flex-grow-1 gap-4 justify-center" Elevation="0">
+        @if (_groups != null)
+        {
+            <GroupCard _groups="@_groups" />
+        }
+        else
+        {
+            <MudText Align="Align.Center" Color=Color.Warning Typo="Typo.body2" Class="text-danger">No se encontraron grupos asociados.</MudText>
+        }
+    </MudPaper>
+</Loading>
+
+@code {
+    [Parameter]
+    public string? DOI { get; set; }
+    private bool _isLoading { get; set; }
+    private Publication? _publication;
+    private IEnumerable<GroupDTO>? _groups;
+    PublicationsInfo publicationInfo = new PublicationsInfo();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPublication();
+    }
+
+    private async Task LoadPublication()
+    {
+        _isLoading = true;
+        DOI = DOI.Replace("%S1%", "/");
+        _publication = await Publications.GetPublicationByDOIAsync(DOI);
+        _groups = await Publications.GetGroupByDOI(DOI);
+        _isLoading = false;
+    }
+    private async void ChangeName(String _text)
+    {
+        try
+        {
+            await Publications.SavePublicationName(_publication!, _text);
+            publicationInfo._publicationNameMessage = "El nombre de la publicacion ha sido modificado.";
+            publicationInfo._publicationAlertColor = Alert.AlertColor.Success;
+            StateHasChanged();
+            await Task.Delay(5000);
+            publicationInfo._publicationNameMessage = null;
+            publicationInfo._publicationAlertColor = Alert.AlertColor.Danger;
+            StateHasChanged();
+        }
+        catch (DomainException e)
+        {
+            publicationInfo._publicationNameMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(5000);
+            publicationInfo._publicationNameMessage = null;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            publicationInfo._publicationNameMessage = "Ocurrió un error. Intente de nuevo.";
+            StateHasChanged();
+            await Task.Delay(5000);
+            publicationInfo._publicationNameMessage = null;
+            StateHasChanged();
+        }
+    }
+    private async void ChangeType(String _text)
+    {
+        try
+        {
+            await Publications.SavePublicationType(_publication!, _text);
+            publicationInfo._publicationTypeMessage = "El tipo de la publicacion ha sido modificado.";
+            publicationInfo._publicationAlertColor = Alert.AlertColor.Success;
+            StateHasChanged();
+            await Task.Delay(5000);
+            publicationInfo._publicationTypeMessage = null;
+            publicationInfo._publicationAlertColor = Alert.AlertColor.Danger;
+            StateHasChanged();
+        }
+        catch (DomainException e)
+        {
+            publicationInfo._publicationTypeMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(5000);
+            publicationInfo._publicationTypeMessage = null;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            publicationInfo._publicationTypeMessage = "Ocurrió un error. Intente de nuevo.";
+            StateHasChanged();
+            await Task.Delay(5000);
+            publicationInfo._publicationTypeMessage = null;
+            StateHasChanged();
+        }
+    }
+    private async void ChangeDate(DateTime date)
+    {
+        try
+        {
+            await Publications.SavePublicationDate(_publication!, date);
+            publicationInfo._publicationTypeMessage = "El tipo de la publicacion ha sido modificado.";
+            publicationInfo._publicationAlertColor = Alert.AlertColor.Success;
+            StateHasChanged();
+            await Task.Delay(5000);
+            publicationInfo._publicationTypeMessage = null;
+            publicationInfo._publicationAlertColor = Alert.AlertColor.Danger;
+            StateHasChanged();
+        }
+        catch (DomainException e)
+        {
+            publicationInfo._publicationTypeMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(5000);
+            publicationInfo._publicationTypeMessage = null;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            publicationInfo._publicationTypeMessage = "Ocurrió un error. Intente de nuevo.";
+            StateHasChanged();
+            await Task.Delay(5000);
+            publicationInfo._publicationTypeMessage = null;
+            StateHasChanged();
+        }
+    }
+    private async void ChangeAbstract(String _text)
+    {
+        try
+        {
+            await Publications.SavePublicationAbstract(_publication!, _text);
+            publicationInfo._publicationAbstractMessage = "El tipo de la publicacion ha sido modificado.";
+            publicationInfo._publicationAlertColor = Alert.AlertColor.Success;
+            StateHasChanged();
+            await Task.Delay(5000);
+            publicationInfo._publicationAbstractMessage = null;
+            publicationInfo._publicationAlertColor = Alert.AlertColor.Danger;
+            StateHasChanged();
+        }
+        catch (DomainException e)
+        {
+            publicationInfo._publicationAbstractMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(5000);
+            publicationInfo._publicationAbstractMessage = null;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            publicationInfo._publicationAbstractMessage = "Ocurrió un error. Intente de nuevo.";
+            StateHasChanged();
+            await Task.Delay(5000);
+            publicationInfo._publicationAbstractMessage = null;
+            StateHasChanged();
+        }
+    }
+    private async void ChangeReference(String _text)
+    {
+        try
+        {
+            await Publications.SavePublicationReference(_publication!, _text);
+            publicationInfo._publicationReferenceMessage = "El proceeding de la publicacion ha sido modificado.";
+            publicationInfo._publicationAlertColor = Alert.AlertColor.Success;
+            StateHasChanged();
+            await Task.Delay(5000);
+            publicationInfo._publicationReferenceMessage = null;
+            publicationInfo._publicationAlertColor = Alert.AlertColor.Danger;
+            StateHasChanged();
+        }
+        catch (DomainException e)
+        {
+            publicationInfo._publicationReferenceMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(5000);
+            publicationInfo._publicationReferenceMessage = null;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            publicationInfo._publicationReferenceMessage = "Ocurrió un error. Intente de nuevo.";
+            StateHasChanged();
+            await Task.Delay(5000);
+            publicationInfo._publicationReferenceMessage = null;
+            StateHasChanged();
+        }
+    }
+   
+}

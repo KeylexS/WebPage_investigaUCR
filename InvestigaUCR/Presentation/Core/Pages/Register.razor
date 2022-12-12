@@ -1,0 +1,97 @@
+﻿@*PIIB22II02-750 MC-PL-5.2 Show Interface for user login. Greivin(Driver) & Sam(Navigator)*@
+@page "/Registro"
+@using System.ComponentModel.DataAnnotations
+@using System.Text.RegularExpressions
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Identity
+@using Presentation.Core.Models
+@using Domain.People.Entities
+@* @inject IUserService UserService;*@
+@inject NavigationManager Navigation
+
+<PageTitle>Registro</PageTitle>
+
+<MudText Align="Align.Center" Typo="Typo.h1">Registro</MudText>
+
+@*PIIB22II02-469 MC-PL-4.4 Show interface for user register*@
+<EditForm Model="@model" OnValidSubmit="OnValidSubmit" Class="py-10 d-flex flex-1">
+<MudGrid Justify="Justify.Center">
+    <MudItem xs="12" sm="7">
+            <MudCard Class="mud-theme-secondary pt-10 pl-13 pr-13 pb-13" Elevation="0">
+                <MudCardContent Class="pb-6">
+
+                    @*PIIB22II02-469 MC-PL-4.4 Show interface for user register*@
+                    <MudText Align="Align.Left" Color="Color.Warning" Typo="Typo.body1">Email</MudText>
+                    <MudTextField T="string" @bind-Value="model.Email" For="@(() => model.Email)" Variant="Variant.Filled" Margin="Margin.Dense" FullWidth="true" Style="@($" background:{Colors.Shades.White};")" InputType="InputType.Email" />
+                    @*PIIB22II02-469 MC-PL-4.4 Show interface for user register*@
+                    <MudText Align="Align.Left" Color="Color.Warning" Typo="Typo.body1">Contraseña</MudText>
+                    <MudTextField T="string" Variant="Variant.Filled" @bind-Value="model.Password" For="@(() => model.Password)" Margin="Margin.Dense" FullWidth="true" Style="@($" background:{Colors.Shades.White};")" InputType="InputType.Password" />
+                   
+                </MudCardContent>
+              
+                <MudCardActions>
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" FullWidth="true">Registrarse</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+</EditForm>
+
+@*PIIB22II02-469 MC-PL-4.4 Show interface for user register*@
+@code {
+    RegisterModel model = new RegisterModel();
+    //bool success;
+
+    private string? InputEmail { get; set; }
+
+    private string? InputPassword { get; set; }
+
+    private void OnValidSubmit()
+    {
+        //success = true;
+        var user = new IdentityUser { UserName = model.Email, Email = model.Email};
+        // UserManager.CreateAsync(user, model.Password);
+        // UserService.CreateUserAsync(user, model.Password);
+        // UserService.LoginUser(user, model.Password);
+        Navigation.NavigateTo("/");
+    }
+
+
+
+   @*PIIB22II02-469 MC-PL-4.4 Show interface for user register*@
+    private IEnumerable<string> NameStrength(string pw)
+    {
+        if (string.IsNullOrWhiteSpace(pw))
+        {
+            yield return "Debe ingresar un nombre";
+            yield break;
+        }
+    }
+    @*PIIB22II02-469 MC-PL-4.4 Show interface for user register*@
+    private IEnumerable<string> LastName1Strength(string pw)
+    {
+        if (string.IsNullOrWhiteSpace(pw))
+        {
+            yield return "Debe ingresar un apellido";
+            yield break;
+        }
+    }
+    @*PIIB22II02-469 MC-PL-4.4 Show interface for user register*@
+         private IEnumerable<string> EmailStrength(string pw)
+    {
+        if (string.IsNullOrWhiteSpace(pw))
+        {
+            yield return "Debe ingresar un email";
+            yield break;
+        }
+    }
+    @*PIIB22II02-469 MC-PL-4.4 Show interface for user register*@
+    private IEnumerable<string> PasswordStrength(string pw)
+    {
+        if (string.IsNullOrWhiteSpace(pw))
+        {
+            yield return "Debe ingresar una contraseña";
+            yield break;
+        }
+    }
+}

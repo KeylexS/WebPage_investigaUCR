@@ -1,0 +1,97 @@
+﻿@*User Story: SD-RG-1.5 & TT: PIIB22II02-303 Create the component*@
+@*US: PIIB22II02-277 SD-RG-1.5 Show the name and description of groups in the list of groups*@
+@page "/"
+@page "/grupos"
+@using Presentation.ResearchGroups.Components
+@using Presentation.Core.Components
+@inject IDialogService DialogService
+
+
+@inject IGroupService GroupService
+@*SD-RG-1.5 & TT:PIIB22II02-283 Make the page for the list*@
+<div class="container">
+    <MudItem Style="position:relative; top:4%; max-width:300px; width:auto; left:10%; margin-left:auto; display:flex">
+        <MudTextField @bind-Value="_searchText" Immediate="true" Label="Buscar grupos por nombre" Clearable="true"
+                      Variant="Variant.Outlined" Adornment="Adornment.End"
+                      AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Secondary" />
+    </MudItem>
+
+    <MudText Align="Align.Center" Typo="Typo.h1">Grupos de Investigación 
+        <AuthorizeView Roles="AdminRole, CoordinatorRole">
+            <ToolButton onClick="OpenDialog" _icon="@Icons.Filled.AddCircle" _text="Añadir un grupo nuevo"/>
+        </AuthorizeView>
+    </MudText>
+    @*SD-RG-1.5 & TT:PIIB22II02-458 Adjust groups cards*@
+    <br /><br />
+    @*SD-RG-1.5 & TT:PIIB22II02-454 Add loading to the page*@
+    <Loading IsLoading="_isLoading">
+        @if (_groups!.Any() && !_filteredGroups!.Any())
+        {
+            <MudText Align="Align.Center" Color=Color.Warning Typo="Typo.body2" Class="text-danger">No se encontraron grupos que coincidan con el texto ingresado.</MudText>
+        }
+        else
+        {
+            <GroupCard _groups="_filteredGroups" />
+        }
+    </Loading>
+</div>
+
+@code {
+    private void OpenDialog()
+    {
+        DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+        DialogService.Show<GroupForm>("",maxWidth);
+    }
+
+    private string _searchText = "";
+
+    private bool _isLoading { get; set; }
+
+    private IEnumerable<GroupDTO>? _groups;
+
+    private List<GroupDTO> _filteredGroups
+    {
+        get
+        {
+            if (_groups is not null)
+            {
+                return _groups.ToList()
+                .Where(group =>
+                    group.Name.Value.ToLower().Contains(_searchText.ToLower())
+                    || StandardizeText(group.Name.Value.ToLower()).Contains(_searchText.ToLower()))
+                .ToList();
+            }
+            else
+            {
+                return new List<GroupDTO>();
+            }
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadGroups();
+    }
+
+    /// <summary>
+    /// Method that calls a service to load all the groups from the database into a list of GroupDTOs
+    /// </summary>
+    /// <returns></returns>
+    private async Task LoadGroups()
+    {
+        _isLoading = true;
+        _groups = await GroupService.GetGroupAsync();
+        _isLoading = false;
+    }
+
+    private String StandardizeText(String Text)
+    {
+        return Text.Replace('á', 'a')
+                   .Replace('é', 'e')
+                   .Replace('í', 'i')
+                   .Replace('ó', 'o')
+                   .Replace('ú', 'u')
+                   .Replace('ü', 'u')
+                   .Replace('ñ', 'n');
+    }
+}

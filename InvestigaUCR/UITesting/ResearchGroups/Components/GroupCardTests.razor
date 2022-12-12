@@ -1,0 +1,85 @@
+﻿@using Application.ResearchGroups
+@using Application.Shared.ImageConverter
+@using Domain.Core.Helpers
+@using Domain.ResearchGroups.DTOs;
+@using Domain.ResearchGroups.Entities;
+@using Domain.ResearchGroups.ValueObjects;
+@using Domain.ResearchProjects.Entities;
+@using Domain.Publications.Entities;
+@using Domain.ResearchAreas.Entities;
+@using MudBlazor
+@using Presentation.ResearchGroups.Components
+@using Xunit
+@using Bunit
+@inherits TestContext
+
+@code {
+    internal class FallbackServiceProvider : IServiceProvider
+    {
+        public object GetService(Type serviceType)
+        {
+            return new ImageService();
+        }
+    }
+
+    internal class ImageService : IImageService
+    {
+        public string ConvertByteToImage(byte[] img)
+        {
+            return "/Images/DefaultImages/groupDefault.png";
+        }
+
+        public byte[] ConvertImageToByte(string url)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    [Fact]
+    public void GroupCardImageComponentTest()
+    {
+        Services.AddFallbackServiceProvider(new FallbackServiceProvider());
+
+        var group1 = new GroupDTO(ResearchGroupId.TryCreate("HCI").Success(), ResearchGroupName.TryCreate("Group1").Success(), ResearchGroupDescription.TryCreate("Description").Success(), null);
+        var objectList = new List<GroupDTO>() { group1 };
+
+        var cut = RenderComponent<GroupCard>(param => param.Add(p => p._groups, objectList));
+        var actualMudCard = cut.FindComponent<MudCard>();
+        var actualMudImage = actualMudCard.FindComponent<MudImage>();
+
+        actualMudImage.MarkupMatches(@"<img src=""/Images/DefaultImages/groupDefault.png"" class=""mud-image object-cover object-center rounded-circle"" style=""display: block; margin-left: auto; margin-right: auto; border-radius: 50%;"" width=""225"" height=""225"">");
+    }
+
+    //To do
+    [Fact]
+    public void GroupCardTitleComponentTest()
+    {
+        Services.AddFallbackServiceProvider(new FallbackServiceProvider());
+
+        var group1 = new GroupDTO(ResearchGroupId.TryCreate("HCI").Success(), ResearchGroupName.TryCreate("Group1").Success(), ResearchGroupDescription.TryCreate("Description").Success(), null);
+        var objectList = new List<GroupDTO>() { group1 };
+
+        var cut = RenderComponent<GroupCard>(param => param.Add(p => p._groups, objectList));
+        var actualMudCard = cut.FindComponent<MudCard>();
+        var actualMudTitle = actualMudCard.FindComponent<MudText>();
+
+        actualMudTitle.MarkupMatches(@"<p class=""mud-typography mud-typography-body1 mud-typography-align-center"" style=""min-height:45px"">
+                                            <a href=""/grupos/HCI"" class=""mud-typography mud-link mud-primary-text mud-link-underline-hover mud-typography-h3"" style=""display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden"">Group1</a>
+                                       </p>");
+    }
+
+    [Fact]
+    public void GroupCardDescriptionComponentTest()
+    {
+        Services.AddFallbackServiceProvider(new FallbackServiceProvider());
+
+        var group1 = new GroupDTO(ResearchGroupId.TryCreate("HCI").Success(), ResearchGroupName.TryCreate("Group1").Success(), ResearchGroupDescription.TryCreate("Description").Success(), null);
+        var objectList = new List<GroupDTO>() { group1 };
+
+        var cut = RenderComponent<GroupCard>(param => param.Add(p => p._groups, objectList));
+        var actualMudCard = cut.FindComponent<MudCard>();
+        var mudComponents = actualMudCard.FindComponents<MudText>();
+        var actualMudDescription = mudComponents.ElementAt(1);
+        actualMudDescription.MarkupMatches(@"<p class=""mud-typography mud-typography-body2 mud-typography-gutterbottom mud-typography-align-center"" style=""display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden"">Description</p>");
+    }
+}

@@ -1,0 +1,46 @@
+﻿@using Bunit
+@using Presentation.ResearchProjects.Components
+@using Domain.ResearchProjects.Entities
+@using Domain.ResearchProjects.ValueObjects
+@using Domain.Core.Helpers
+@using Application.ResearchProjects
+@using Application.Shared.ImageConverter
+@using MudBlazor
+@using Xunit
+@inherits TestContext
+
+@code {
+    public List<ResearchProject> GetTestResearchProjects()
+    {
+        System.DateTime date1 = new System.DateTime(2015, 3, 10, 2, 15, 10);
+        System.DateTime date2 = new System.DateTime(2015, 7, 15, 6, 30, 20);
+        var testData = new List<ResearchProject>
+            {
+                new ResearchProject(ResearchProjectId.TryCreate("123-A1-123").Success(), "Name1", date1, date2, "description1", null),
+                new ResearchProject(ResearchProjectId.TryCreate("123-A2-123").Success(), "Name2", date2, date1, "description2",  null),
+            };
+        return testData;
+    }
+
+    public ResearchProject GetTestResearchProjectsById()
+    {
+        System.DateTime date1 = new System.DateTime(2015, 3, 10, 2, 15, 10);
+        System.DateTime date2 = new System.DateTime(2015, 7, 15, 6, 30, 20);
+        var testData = new ResearchProject(ResearchProjectId.TryCreate("123-A1-123").Success(), "Name1", date1, date2, "description1", null);
+        return testData;
+    }
+
+    //[Fact]
+    //public void ResearchProjectListHasImage()
+    //{
+    //    // Arrange
+    //    var objectsList = GetTestResearchProjects();
+
+    //    // Act
+    //    var cut = Render(@<ResearchProjectsList _researchProjects=objectsList></ResearchProjectsList>);
+    //    var actualMudCard = cut.FindComponent<MudCard>();
+    //    var actualMudImage = actualMudCard.FindComponent<MudCardMedia>();
+
+    //    actualMudImage.MarkupMatches(@"<div elevation=""0"" class=""mud-card-media d-flex justify-space-around flex-grow-1 gap-4"" style=""background-image:url("" images="""" defaultimages="""" researchproject.jpg"");height:="""" 300px;;="""" height:="""" 190px;="""" width:="""" 558px;""=""""></div>");
+    //}
+}

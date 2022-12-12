@@ -1,0 +1,167 @@
+﻿@using Presentation.Core.Components;
+@inherits LayoutComponentBase
+@inject NavigationManager NavManager
+@using  Presentation.News.Components
+
+<link href="css/trueno/trueno.css" rel="stylesheet" />
+<link rel="stylesheet" href="css/mainlayout.css">
+<MudDialogProvider />
+
+<div class="pageContentWrapper">
+<MudLayout>
+    
+    <MudAppBar Color="Color.Primary" Fixed=false Style="padding-left: 30px; padding-right: 30px; padding-top:10px; padding-bottom:10px">
+       <MudImage Fluid="true" Src="/Images/Logos/UCR_logo.png" Width="350" Height="30"/>
+       <MudText Style="position:absolute; right:0;"><LoginDisplay /></MudText>
+    </MudAppBar>
+
+    <MudAppBar Elevation="0" Color="Color.Secondary" Fixed=false Style="padding-left: 30px; padding-right: 30px; padding-top:10px; padding-bottom:10px">
+        <MudImage Fluid="true" Src="/Images/Logos/citic_logo.png" Width="100" Height="69" />
+        <MudText Typo="Typo.body1" Color="Color.Dark" Style="padding-left:10px" Class="ml-3">Centro de Investigaciones en <br />Tecnologías de la <br />Información y Computación </MudText>
+        <MudSpacer/>
+        <NavMenu />
+    </MudAppBar>
+    <MudAppBar Elevation="0" Color="Color.Tertiary" Fixed=false Style="padding-left: 30px; padding-right: 30px">
+            <MudText Typo="Typo.body1" Color="Color.Dark" Style="padding-left:10px" Class="ml-3">
+                @if(@getBreadCrumbsItems()){
+                    <MudBreadcrumbs Items="_items"></MudBreadcrumbs>
+                }
+            </MudText>
+    </MudAppBar>
+    
+    <MudMainContent Class="pt-4 px-16">
+        <MudContainer Class="mt-2">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+</div>
+
+<footer class="footer">
+    <MudLayout>
+        <MudAppBar Color="Color.Warning" Fixed=false Style=" padding-left: 30px; padding-right: 30px; padding-top:10px; padding-bottom:10px">
+            <MudText Typo="Typo.subtitle2" Color="Color.Secondary">Derechos reservados © 2022 Universidad de Costa Rica</MudText>
+        </MudAppBar>
+    </MudLayout>
+</footer>
+
+<MudThemeProvider Theme="_myTheme" />
+
+
+@code {
+    private MudTheme _myTheme = new MudTheme
+        {
+    @* Space to set Color based on Look and Feel *@
+    Palette = new Palette()
+            {
+             /*Turquesa*/
+            Primary = "#005DA4",
+            /*Gris clarito*/
+            Secondary = "#D9D9D9",
+            /*Casi blanco*/
+            Tertiary = "#FAFAFA",
+            /*Gris oscuro*/
+            Warning = "#434546",
+            /*Negro*/
+            Dark = "#000000",
+            /*Turquesa oscuro*/
+            Info = "215175",
+        },
+    @* Space to set Typography *@
+    Typography = new Typography()
+        {
+            Default = new Default()
+            {
+                /*16px base 16px*/
+                FontFamily = new[] { "Trueno Regular", "Helvetica Neue", "Arial", "sans-serif" },
+                FontSize = "1rem"
+            },
+            H1 = new H1()
+            {
+                /*48px base 16px*/
+                FontSize = "2.125rem"
+            },
+            H2 = new H2()
+            {
+                /*32px base 16px*/
+                FontSize = "1.75rem"
+            },
+            H3 = new H3()
+            {
+                /*20px base 16px*/
+                FontSize = "1.1rem"
+            },
+            H4 = new H4()
+            {
+                /*18px base 16px*/
+                FontSize = "0.98rem"
+            },
+            Subtitle2 = new Subtitle2()
+            {
+                /*16px base 16px*/
+                FontSize = "0.875rem"
+            },
+            Body1 = new Body1(){
+                /*16px base 16px*/
+                FontSize = "1rem"
+            }
+        }
+    };
+}
+
+@code {
+    public List<BreadcrumbItem> _items = new List<BreadcrumbItem>();
+
+    /// <summary>
+    /// This method tries to send to another method that creates items of the Breadcrumb component, an array of strings with the fragments of the page url
+    /// </summary>
+    /// <returns> Returns true for the sole purpose of being able to use it in the layout</returns>
+
+    public bool getBreadCrumbsItems(){
+        string url = NavManager.Uri.ToString();
+        string[] _items = url.Split('/');
+        createItems(_items);
+        return true;
+    }
+
+    /// <summary>
+    /// This method create different items of a breadcrumb that allows to show the route of the page
+    /// </summary>
+    /// <param Name="_itemsArray"> Array of strings containing the fragments of the page path.</param>
+    public void createItems(string[] _itemsArray){
+        _items = new List<BreadcrumbItem>();
+        int n = 2;
+        string reference = "/";
+        BreadcrumbItem breadcrumb;
+        while (n < _itemsArray.Length)
+        {
+            reference += "/" + _itemsArray[n];
+            if(n == 2){
+                breadcrumb = new BreadcrumbItem("Inicio", href: reference);
+                _items.Add(breadcrumb);
+            }else if(n+1 == _itemsArray.Length)
+            {
+                breadcrumb = new BreadcrumbItem(UppercaseFirst(_itemsArray[n]), href: null, disabled: true);
+                _items.Add(breadcrumb);
+            }else{
+                breadcrumb = new BreadcrumbItem(UppercaseFirst(_itemsArray[n]), href: reference);
+                _items.Add(breadcrumb);
+            }
+            n++;
+        }
+    }
+    
+    /// <summary>
+    /// This method change the first letter of a word to uppercase
+    /// </summary>
+    /// <param Name="s"> String that contains the word whose first letter is going to be changed to uppercase.</param>
+    /// <returns> String that contains the word that receives, with the first capital letter</returns>
+    static string UppercaseFirst(string s)
+    {
+        if (string.IsNullOrEmpty(s))
+        {
+            return string.Empty;
+        }
+        return char.ToUpper(s[0]) + s.Substring(1);
+    }
+}

@@ -1,0 +1,95 @@
+﻿@using Application.News
+@using Domain.News.DTOs
+@using Domain.News.Entities
+@using Application.Shared.ImageConverter
+@using System
+@using System.Threading.Tasks
+
+@inject IImageService ImageService
+@inject INewsService NewsService
+
+<div class="container">
+    @if (!_groupNews!.Any())
+    {
+        <MudText Align="Align.Center" Color=Color.Warning Typo="Typo.body2" Class="text-danger">No hay noticias registradas actualmente.</MudText>
+    }
+    else {
+        @foreach (var news in _groupNews.OrderByDescending(n => n.PublicationDate)!)
+        {
+            <MudCard Outlined="true" Elevation="0">
+                <MudCardContent>
+                    <MudGrid Spacing="8" Justify="Justify.Center">
+                        <MudItem xs="12" sm="1">
+                            <MudPaper Elevation="0">
+                                <MudText Align="Align.End" Typo="Typo.h4">@NewsService.GetMonth(news)</MudText>
+                                <MudText Align="Align.End" Typo="Typo.h1">@NewsService.GetDay(news)</MudText>
+                                <MudText Align="Align.End" Typo="Typo.h4">@NewsService.GetYear(news)</MudText>
+                            </MudPaper>
+                        </MudItem>
+
+                        <MudItem xs="12" sm="10">
+                            <MudGrid Justify="Justify.FlexEnd" Style="height: 500px;">
+                                <MudItem xs="12" sm="12">
+                                    <MudDivider Vertical="true" />
+                                    <MudPaper Elevation="0">
+                                        <MudLink Href="@($"/noticias/{news.Id}")">
+                                            <MudText Typo="Typo.h2">@news.Title</MudText>
+                                        </MudLink>
+                                    </MudPaper>
+                                </MudItem>
+
+                                <MudItem Style="position: relative; bottom: 5%" xs="12" sm="4">
+                                    <MudPaper Elevation="0">
+                                        <MudImage Src="@getImage(news.Image)" ObjectPosition="ObjectPosition.Center" Height="210" Width="310" ObjectFit="ObjectFit.Cover" />
+                                    </MudPaper>
+                                </MudItem>
+                             
+                                <MudItem Style="position: relative; bottom: 5%" xs="12" sm="8">
+                                    <MudPaper Elevation="0">
+                                        <MudText Align="Align.Justify" Style="display:-webkit-box; -webkit-line-clamp:8; -webkit-box-orient:vertical; overflow:hidden">
+                                            @news.Description
+
+                                        </MudText>
+                                    </MudPaper>
+                                </MudItem>
+
+                                <br>
+                                <MudItem Style="position: relative; bottom: 18%" xs="12" sm="8">
+                                    <MudPaper Elevation="0">
+                                        <b>Grupo de investigación: </b>
+                                        @if (@news.Group is not null)
+                                        {
+                                            @news.Group.Name
+                                        }
+                                        else
+                                        {
+                                            string var = "No hay grupo registrado";
+                                            @var
+                                        }
+                                    </MudPaper>
+
+                                </MudItem>
+                            </MudGrid>
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+            </MudCard>
+            <br>
+        }
+    }
+</div>
+
+@code {
+    [Parameter]
+    public IEnumerable<NewsDTO> _groupNews { get; set; } = null!;
+
+    public byte[]? img;
+
+    /// <summary> Method that returns the image of a group. </summary>
+    /// <param name="img"> An array of bytes with the possible image. </param>
+    /// <returns> A string with the image of the group. </returns>
+    public String getImage(byte[]? img)
+    {
+        return img != null ? ImageService.ConvertByteToImage(img) : "/Images/DefaultImages/newsDefault.jpg";
+    }
+}

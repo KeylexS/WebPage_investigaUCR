@@ -1,0 +1,114 @@
+﻿@using Application.ResearchAreas
+@using Domain.ResearchAreas.Entities
+@using Domain.Core.Exceptions
+@using Presentation.Core.Components
+@inject IGroupService GroupService;
+<MudText Typo="Typo.h2" style="text-align:center; ">Añadir Areas </MudText>
+@if (_groupEditMessage is not null)
+{
+    <Alert Color="_groupEditAlertColor">
+        @_groupEditMessage
+    </Alert>
+}
+<MudDialog>
+    <DialogContent>
+        <Loading IsLoading="_isLoading">
+            @foreach (var area in _researchAreas!)
+            {
+                bool Checked = false;
+                if (_group.ResearchArea.Exists(a => a.Id == area.Id) || selectedAreas.Exists(a => a.Id == area.Id))
+                {
+                    Checked = true;
+
+                }
+                if (Checked == true)
+                {
+                    <div><MudCheckBox T="bool" Checked="@Checked" CheckedChanged="@((e)=>CheckboxClicked(area,e))" Label="@area.Name" /></div>
+                }
+                else
+                {
+                    <div><MudCheckBox Checked="@Checked" T="bool" CheckedChanged="@((e)=>CheckboxClicked(area,e))" Label="@area.Name" /></div>
+                }
+            }
+        </Loading>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Style="block; margin-left: auto; margin-right: auto;" Color="Color.Primary" OnClick="Close">Cancelar</MudButton>
+        <MudButton Style="block; margin-left: auto; margin-right: auto;" OnClick="(AddSelectedAreas)" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Añadir</MudButton>
+    </DialogActions>
+
+
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public Group _group { get; set; } = null!;
+    void Close() => MudDialog.Close(DialogResult.Ok(true));
+
+    private bool _isLoading { get; set; }
+
+    public IEnumerable<ResearchArea>? _researchAreas { get; set; } = null!;
+
+    public List<ResearchArea> selectedAreas { get; set; } = new List<ResearchArea>();
+    public IReadOnlyCollection<ResearchArea> SelectedAreas => selectedAreas.AsReadOnly();
+
+    public bool ReadOnly { get; set; } = false;
+    private string? _groupEditMessage = null;
+    private Alert.AlertColor _groupEditAlertColor = Alert.AlertColor.Danger;
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAreas();
+    }
+
+    private async Task LoadAreas()
+    {
+        _isLoading = true;
+        _researchAreas = await GroupService.GetAllAreasAsync();
+        _isLoading = false;
+    }
+
+    public void CheckboxClicked(ResearchArea selectedArea, object aChecked)
+    {
+        if ((bool)aChecked)
+        {
+            if (!selectedAreas.Exists(a => a.Name == selectedArea.Name))
+            {
+                selectedAreas.Add(selectedArea);
+            }
+        }
+        else
+        {
+            if (selectedAreas.Exists(a => a.Name == selectedArea.Name))
+            {
+                selectedAreas.Remove(selectedArea);
+            }
+        }
+        StateHasChanged();
+    }
+
+    public async Task AddSelectedAreas()
+    {
+        _groupEditMessage = null;
+        ReadOnly = true;
+        StateHasChanged();
+        try
+        {
+            await GroupService.AddAreaToGroup(_group, SelectedAreas.ToList());
+            _groupEditMessage = "Grupo de investigación actualizado con exito.";
+            _groupEditAlertColor = Alert.AlertColor.Success;
+            StateHasChanged();
+            await Task.Delay(3000);
+            _groupEditMessage = null;
+            StateHasChanged();
+        }
+        catch (DomainException e)
+        {
+            _groupEditMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(3000);
+            _groupEditMessage = null;
+            StateHasChanged();
+        }
+    }
+
+}

@@ -1,0 +1,360 @@
+﻿@using Domain.ResearchProjects.Entities
+@using Domain.Core.Exceptions
+@using Presentation.Core.Components
+@using Microsoft.AspNetCore.Components.Forms
+@using Application.ResearchProjects
+@using System
+@using System.Globalization
+@using System.Diagnostics
+@inject IImageService ImageService
+
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+@inject IResearchProjectsService ResearchProjectService
+
+    <MudPaper Width="100%" Elevation="0">
+        @if(isEditingImage)
+        {
+            <MudGrid Class="d-flex align-center justify-center" Style="gap: 29px;">
+            <MudItem></MudItem>      
+            <MudItem></MudItem>
+            <MudItem></MudItem> 
+            <MudItem>
+                <MudImage Src=@getImage(auxImage) ObjectPosition="ObjectPosition.Center" Height="228" Width="600" ObjectFit="ObjectFit.Cover" />
+                <ToolButton _placement="Placement.Right" _text="Cancelar" _icon="@Icons.Filled.Cancel" onClick="EditingImage" />            
+                <MudTooltip Placement="Placement.Right" Text="Subir">
+                    <InputFile id="fileInput" OnChange="HandleSelection" accept="image/png, image/jpeg, image/jpg" hidden/>
+                        <MudIconButton Icon="@Icons.Filled.Upload" 
+                                    HtmlTag="label"                              
+                                    for="fileInput"/>                    
+                </MudTooltip>
+                <ToolButton _placement="Placement.Right" _text="Subir" _icon="@Icons.Filled.Check" onClick="ChangeImage" />
+            </MudItem>
+        </MudGrid>
+        }
+        else
+        {
+            @if (_projectDeleteMessage is not null)
+            {
+                <Alert Color="_projectAlertColor">
+                    @_projectDeleteMessage
+                </Alert>
+            }
+            <MudGrid Class="d-flex align-center justify-center" Style="gap: 0.219rem">
+                <AuthorizeView Roles="AdminRole">
+                    <MudItem></MudItem>
+                    <MudItem></MudItem>
+                </AuthorizeView>
+                <MudItem>
+                    <MudImage Src=@researchProject.getImageSrc() ObjectPosition="ObjectPosition.Center" Height="228" Width="600" ObjectFit="ObjectFit.Cover" />
+                    <AuthorizeView Roles="AdminRole">
+                        <ToolButton _placement="Placement.Right" _text="Eliminar Proyecto" _icon="@Icons.Filled.DeleteForever" onClick="@OnDeleteProjectClicked" />
+                        <ToolButton _placement="Placement.Right" _text="Editar imagen" _icon="@Icons.Filled.Edit" onClick="EditingImage"/>
+                    </AuthorizeView>
+                </MudItem>
+            </MudGrid>
+                <br />
+        }
+        @if (_projectImageMessage is not null)
+        {
+            <Alert Color="_projectAlertColor">
+                @_projectImageMessage
+            </Alert>
+        }
+        <MudText Class="d-flex justify-center flex-grow-1 gap-4" Align="Align.Center" Color="Color.Dark" Typo="Typo.h6" Style="padding-top:20px">@researchProject.Id </MudText>
+        @if(isEditingName){
+            <div class="d-flex" style="display: block; margin-left: auto; margin-right: auto; width: 100%; align-items: center;">
+                <MudTextField @bind-Value="auxName" Variant="Variant.Outlined" Style="font-size: 2.125rem;" FullWidth="true"/>
+                <ToolButton _placement="Placement.Right" _text="Cancelar" _icon="@Icons.Filled.Cancel" onClick="EditingName" />
+                <ToolButton _placement="Placement.Right" _text="Guardar" _icon="@Icons.Filled.Check" onClick="ChangeName" />
+            </div>
+        }else{
+            <div class="d-flex justify-center flex-grow-1 gap-4" style="display: block; margin-left: auto; margin-right: auto; width: 100%;">
+                <MudText Style="padding-right:10px; padding-top:5px; padding-bottom:15px" Elevation="0" Justify="Justify.Center" Align="Align.Center" Color="Color.Primary" Typo="Typo.h1">
+                    @researchProject.Name
+                </MudText>
+                <AuthorizeView Roles="AdminRole">
+                <ToolButton _placement="Placement.Right" _text="Editar nombre" _icon="@Icons.Filled.Edit" onClick="EditingName" />
+                </AuthorizeView>
+            </div>
+            <br />
+        }
+        @if (_projectNameMessage is not null)
+        {
+        <Alert Color="_projectAlertColor">
+            @_projectNameMessage
+        </Alert>
+        }
+        @if(isEditingDates){
+            <MudGrid Class="d-flex justify-center flex-grow-1 gap-4" Style="Widht= 200px; padding-left:12px; padding-right:12px; padding-top:30px; padding-bottom:20px" Justify="Justify.Center">
+                <MudTextField T="DateTime" Variant="@Variant.Outlined" Format="yyyy-MM-dd" Label="Fecha de inicio" InputType="InputType.Date"
+                          @bind-Value="auxStartDate" />
+                <MudTextField T="DateTime" Variant="@Variant.Outlined" Format="yyyy-MM-dd" Label="Fecha de finalización" InputType="InputType.Date"
+                          @bind-Value="auxEndDate" />
+            
+                <ToolButton _placement="Placement.Right" _text="Cancelar" _icon="@Icons.Filled.Cancel" onClick="EditingDates" />
+                <ToolButton _placement="Placement.Right" _text="Guardar" _icon="@Icons.Filled.Check" onClick="ChangeDates" />
+            </MudGrid>
+        }else{
+            <MudGrid class="d-flex justify-center flex-grow-1 gap-4" style="display: block;">
+             <MudItem>
+                <MudText Style="padding-right:10px; padding-top:5px; padding-bottom:15px" Color="Color.Warning" Typo="Typo.h6">@researchProject.getFormatedStartDate() hasta @researchProject.getFormatedEndDate()</MudText>
+            </MudItem>
+             <MudItem>
+            <AuthorizeView Roles="AdminRole">
+                <ToolButton _placement="Placement.Right" _text="Editar fechas" _icon="@Icons.Filled.Edit" onClick="EditingDates"/>
+            </AuthorizeView>
+            </MudItem>
+            </MudGrid>
+        }
+        @if (_projectDatesMessage is not null)
+        {
+            <Alert Color="_projectAlertColor">
+                @_projectDatesMessage
+            </Alert>
+        }
+        <MudGrid Justify="Justify.Center">
+            <MudItem>
+            <MudText Class="d-inline" Elevation="0" Justify="Justify.Center" Align="Align.Center" Color="Color.Warning" Typo="Typo.h6"> Estado: </MudText>
+            </MudItem>
+            <MudItem Style="padding-left:2px" >
+                @if (@researchProject.getStatus() == "En proceso"){
+                    <MudChip Label="true" Class="d-inline" Elevation="0" Align="Align.Center" Typo="Typo.h6" Color="Color.Primary" Size="Size.Large">@researchProject.getStatus()</MudChip>
+                }else if(@researchProject.getStatus() == "Finalizado"){
+                    <MudChip Label="true" Class="d-inline" Elevation="0" Align="Align.Center" Typo="Typo.h6" Color="Color.Warning" Size="Size.Large">@researchProject.getStatus()</MudChip>
+                }else if (researchProject.getStatus() == "Pronto a iniciar"){
+                    <MudChip Label="true" Class="d-inline" Elevation="0" Align="Align.Center" Typo="Typo.h6" Color="Color.Info" Size="Size.Large">@researchProject.getStatus()</MudChip>
+                }
+            </MudItem>
+        <MudItem>
+            <AuthorizeView Roles="AdminRole">
+                <ToolButton _placement="Placement.Right" _text="Editar estado" _icon="@Icons.Filled.Edit" onClick="ChangeStatus" />
+            </AuthorizeView>
+            </MudItem>
+        </MudGrid>
+
+        @if (_projectStatusMessage is not null)
+        {
+            <Alert Color="_projectAlertColor">
+                 @_projectStatusMessage
+            </Alert>
+        }
+        <MudPaper Class="d-flex flex-grow-1 gap-4 justify-center" Style="padding-top:10px; padding-bottom:10px" Elevation="0">
+            @foreach (var tag in researchProject.ResearchAreas)
+            {
+                <Tag OnTagSelected="removeArea" tagName="@tag.Name" />
+            }
+        </MudPaper>
+    @if(isEditingDescription){
+        <div class="d-flex" style="width: 100%;">
+            <MudTextField @bind-Value="auxDescription" Variant="Variant.Outlined" Lines="8" />
+            <ToolButton _placement="Placement.Right" _text="Cancelar" _icon="@Icons.Filled.Cancel" onClick="EditingDescription" />
+            <ToolButton _placement="Placement.Right" _text="Guardar" _icon="@Icons.Filled.Check" onClick="ChangeDescription" />
+        </div>
+    }else{
+        <div class="d-flex" style="display: block; margin-left: auto; margin-right: auto; width: 100%;">
+            <MudText Align="Align.Justify" Typo="Typo.body2" Style="width: 100%">
+                @researchProject.getDescription()
+            </MudText>
+            <AuthorizeView Roles="AdminRole">
+                <ToolButton _placement="Placement.Right" _text="Editar Descripción" _icon="@Icons.Filled.Edit" onClick="EditingDescription" />
+            </AuthorizeView>
+        </div>
+          <br>
+        }
+    @if (_projectDescriptionMessage is not null)
+    {
+        <Alert Color="_projectAlertColor">
+            @_projectDescriptionMessage
+        </Alert>
+    }
+</MudPaper>
+
+@code {
+    [Parameter]
+    public ResearchProject researchProject { get; set; } = default!;
+
+    //EventCalls to edit a project
+    [Parameter]
+    public EventCallback<string> OnNameEdit { get; set; }
+    [Parameter]
+    public EventCallback<IEnumerable<DateTime>> OnDatesEdit { get; set; }
+    [Parameter]
+    public EventCallback<string> OnDescriptionEdit { get; set; }
+    [Parameter]
+    public EventCallback<byte[]> OnImageEdit { get; set; }
+    [Parameter]
+    public EventCallback<DateTime> OnStatusEdit { get; set; }
+
+    // COnditions to know is the user wants edit information
+    private bool isEditingImage = false;
+    private bool isEditingName = false;
+    private bool isEditingDates = false;
+    private bool isEditingDescription = false;
+    private bool isEditingStatus = false;
+    private List<IBrowserFile> loadedFiles = new();
+    public string? _projectDeleteMessage { get; set; } = null;
+    public string? _projectImageMessage { get; set; } = null;
+    public string? _projectNameMessage { get; set; } = null;
+    public string? _projectDescriptionMessage { get; set; } = null;
+    public string? _projectDatesMessage { get; set; } = null;
+    public string? _projectStatusMessage { get; set; } = null;
+    public Alert.AlertColor _projectAlertColor = Alert.AlertColor.Danger;
+
+    // Vars to save the aux information
+    private byte[]? auxImage { get; set; } = null!;
+    private string auxName { get; set; } = null!;
+    private DateTime auxStartDate { get; set; } = DateTime.Today!;
+    private DateTime auxEndDate { get; set; } = DateTime.Today!;
+    private string auxDescription { get; set; } = null!;
+    private DateTime auxStatus { get; set; } = DateTime.Today!;
+
+    /// <summary>
+    /// Method that return the image of a group.
+    /// </summary>
+    /// <param name="img">An array of bytes with the possible image</param>
+    /// <returns>A string with the image of the group</returns>
+    public String getImage(byte[]? img)
+    {
+        return img != null ? ImageService.ConvertByteToImage(img) : "/Images/DefaultImages/researchProject.jpg";
+    }
+
+    private async Task HandleSelection(InputFileChangeEventArgs e)
+    {
+        loadedFiles.Clear();
+        loadedFiles.Add(e.File);
+
+        foreach (var file in loadedFiles)
+        {
+            Stream stream = file.OpenReadStream();
+            MemoryStream ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            stream.Close();
+
+            auxImage = ms.ToArray();
+            ms.Close();
+            StateHasChanged();
+        }
+    }
+
+    private void EditingName()
+    {
+        if (!isEditingName)
+        {
+            auxName = researchProject!.Name;
+        }
+        isEditingName = !isEditingName;
+    }
+
+    private void ChangeName()
+    {
+        OnNameEdit.InvokeAsync(auxName);
+        isEditingName = !isEditingName;
+    }
+
+    private void EditingDates()
+    {
+        if (!isEditingDates)
+        {
+            auxStartDate = researchProject!.Start_date;
+            auxEndDate = researchProject!.End_date;
+        }
+        isEditingDates = !isEditingDates;
+    }
+
+    private void ChangeDates()
+    {
+        //OnStartDateEdit.InvokeAsync(auxStartDate);
+        //OnEndDateEdit.InvokeAsync(auxEndDate);
+        IEnumerable<DateTime> dates = new DateTime[]{auxStartDate, auxEndDate};
+        OnDatesEdit.InvokeAsync(dates);
+        isEditingDates = !isEditingDates;
+    }
+
+    private void EditingDescription()
+    {
+        if (!isEditingDescription)
+        {
+            auxDescription = researchProject!.Description!;
+        }
+        isEditingDescription = !isEditingDescription;
+    }
+
+    private void ChangeDescription()
+    {
+        OnDescriptionEdit.InvokeAsync(auxDescription);
+        isEditingDescription = !isEditingDescription;
+    }
+
+    private void EditingImage()
+    {
+        if (!isEditingImage)
+        {
+            auxImage = researchProject!.Image;
+        }
+        isEditingImage = !isEditingImage;
+    }
+
+    private void ChangeImage()
+    {
+        OnImageEdit.InvokeAsync(auxImage);
+        isEditingImage = !isEditingImage;
+    }
+
+    private void EditingStatus()
+    {
+        if (!isEditingStatus)
+        {
+            auxStatus = researchProject!.End_date;
+        }
+        isEditingStatus = !isEditingStatus;
+    }
+
+    private void ChangeStatus()
+    {
+        DateTime date = auxStatus;
+        OnStatusEdit.InvokeAsync(date);
+        isEditingStatus = !isEditingStatus;
+    }
+
+    /// <summary>
+    /// Method that calls a method that eliminates a specific area (tag) of a project.
+    /// </summary>
+    /// <param name="areaName">A string that contain the specific area</param>
+    private async Task removeArea(string areaName)
+    {
+        await ResearchProjectService.RemoveAreaofProject(researchProject!, researchProject!.ResearchAreas.FirstOrDefault(a => a.Name == areaName)!);
+    }
+
+    private async void OnDeleteProjectClicked()
+    {
+        try
+        {
+            bool? resultMessage = await DialogService.ShowMessageBox(
+                "Advertencia", 
+                "La eliminación del proyecto no podrá deshacerse", 
+                yesText:"Borrar Proyecto!", cancelText:"Cancelar");
+            if(resultMessage != null){
+                await ResearchProjectService.DeleteResearchProject(researchProject);
+                string refUrl = "/proyectos/";
+                NavigationManager.NavigateTo(refUrl, true);
+            }
+        }
+        catch (DomainException e)
+        {
+            _projectDeleteMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(5000);
+            _projectDeleteMessage = null;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            _projectDeleteMessage = "Ocurrió un error. Intente de nuevo.";
+            StateHasChanged();
+            await Task.Delay(5000);
+            _projectDeleteMessage = null;
+            StateHasChanged();
+        }
+    }
+}

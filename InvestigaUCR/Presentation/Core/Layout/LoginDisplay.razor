@@ -1,0 +1,35 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using Application.Users
+
+@inject IUserService UserService
+
+<AuthorizeView>
+    <Authorized>
+        <MudText>
+            <form class="top-row" method="post" action="Identity/Account/LogOut">
+                <MudContainer Class="d-flex">
+                    <MudLink Class="pt-3 d-inline" Href="/Perfil" Color="Color.Tertiary" Underline="Underline.Hover">
+                        <MudText Color="Color.Tertiary">@(Email)</MudText>
+                    </MudLink>
+                        <MudIconButton Class="d-inline" Icon="@Icons.Filled.AccountCircle" Color="Color.Tertiary" Href="/Perfil"></MudIconButton>
+                    <MudButton ButtonType="ButtonType.Submit" Class="ml-3 d-inline" Color="Color.Tertiary">Cerrar sesión</MudButton>
+                </MudContainer>
+            </form>
+        </MudText>
+    </Authorized>
+    <NotAuthorized>
+        <MudText>
+            <MudLink Class="ml-3" Color="Color.Tertiary" Href="Identity/Account/Register">Registrarse</MudLink>
+            <MudLink id="LoginButton" Class="ml-3" Color="Color.Tertiary" Href="Identity/Account/Login">Iniciar Sesión</MudLink>
+        </MudText>
+    </NotAuthorized>
+</AuthorizeView>
+
+    @code {
+    public string? Email { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Email = await UserService.GetCurrentUserEmail();
+    }
+}

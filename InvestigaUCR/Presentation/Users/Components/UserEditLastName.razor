@@ -1,0 +1,62 @@
+﻿@using Application.Users
+@using Application.Users.Implementation
+@using Domain.People.Entities
+@using Domain.Users.Entities
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IUserService UserService
+
+@if (isEditingLastName)
+{
+    <MudText Align="Align.Left" Typo="Typo.h2">Apellido</MudText>
+    <MudGrid Class="d-flex align-left justify-left" Style="gap: 29px;">
+        <MudItem>
+            <MudTextField @bind-Value="auxName" IconSize="Size.Small" MaxLength="90" Variant="Variant.Outlined" Style="font-size: 1rem;" FullWidth="true" />
+            <ToolButton _placement="Placement.Right" _text="Cancelar" _icon="@Icons.Filled.Cancel" onClick="EditingName" />
+            <ToolButton _placement="Placement.Right" _text="Guardar" _icon="@Icons.Filled.Check" onClick="ChangeName" />
+        </MudItem>
+    </MudGrid>
+}
+else
+{
+    <MudText Align="Align.Left" Typo="Typo.h2">Apellido</MudText>
+    <MudGrid Class="d-flex align-left justify-left" Style="gap: 29px;">
+        <MudItem>
+            <MudText Align="Align.Left" Typo="Typo.h3"> @_userAccount?.LastName1!.ToString() </MudText>
+        </MudItem>
+        <MudItem>
+            <ToolButton _placement="Placement.Right" _text="Editar apellido" _icon="@Icons.Filled.Edit" onClick="EditingName" />
+        </MudItem>
+    </MudGrid>
+
+}
+@if (_userNameMessage is not null)
+{
+    <Alert Color="_userAccountAlertColor">
+        @_userNameMessage
+    </Alert>
+}
+
+@code {
+    [Parameter] public EventCallback<string> OnNameEdit { get; set; }
+    [Parameter] public UserAccount? _userAccount { get; set; } = null!;
+    private bool isEditingLastName = false;
+    public string? _userNameMessage { get; set; } = null;
+    public Alert.AlertColor _userAccountAlertColor = Alert.AlertColor.Danger;
+
+    private string auxName { get; set; } = null!;
+
+    private void EditingName()
+    {
+        if (!isEditingLastName)
+        {
+            auxName = _userAccount!.LastName1!.ToString();
+        }
+        isEditingLastName = !isEditingLastName;
+    }
+
+    private void ChangeName()
+    {
+        OnNameEdit.InvokeAsync(auxName);
+        isEditingLastName = !isEditingLastName;
+    }
+}

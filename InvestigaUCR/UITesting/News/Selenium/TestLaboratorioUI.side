@@ -1,0 +1,97 @@
+{
+  "id": "fa581709-340e-44fe-957b-818b82991f0e",
+  "version": "2.0",
+  "name": "TestLaboratorioUI",
+  "url": "https://localhost:7075",
+  "tests": [{
+    "id": "a722c1ce-c050-4026-a0b3-4e38a19082e5",
+    "name": "PruebaIngresoNoticias",
+    "commands": [{
+      "id": "1f044d61-efd2-464a-9482-5f34c14bd773",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "2cc654b3-fa75-4084-9faf-4a57cf111285",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "2576x1416",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "3c096303-bccb-4d7e-9f61-9a4bfab8bfd6",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.mud-typography-h1",
+      "targets": [
+        ["css=.mud-typography-h1", "css:finder"],
+        ["xpath=//h1", "xpath:position"],
+        ["xpath=//h1[contains(.,'Grupos de Investigación ')]", "xpath:innerText"]
+      ],
+      "value": "Grupos de Investigación"
+    }, {
+      "id": "fa2ceab8-ccc6-495b-a9d0-aead18246341",
+      "comment": "",
+      "command": "assertTitle",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "c7f4f65d-f3e2-4ba7-b0b9-589f7e2bf2a8",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.mud-button-root:nth-child(6) > .mud-button-label",
+      "targets": [
+        ["css=.mud-button-root:nth-child(6) > .mud-button-label", "css:finder"],
+        ["xpath=//a[6]/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Noticias de Grupos')]", "xpath:innerText"]
+      ],
+      "value": "Noticias de Grupos"
+    }, {
+      "id": "4a61b786-7b24-4c3c-95c2-4de2a8b94da5",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-button-root:nth-child(6) > .mud-button-label",
+      "targets": [
+        ["css=.mud-button-root:nth-child(6) > .mud-button-label", "css:finder"],
+        ["xpath=//a[6]/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Noticias de Grupos')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "045a6674-bc94-4753-bae2-72547bb65f3b",
+    "name": "PruebaNoticias",
+    "commands": [{
+      "id": "3dd76227-c6f2-491b-8fef-4a23d863e720",
+      "comment": "",
+      "command": "open",
+      "target": "https://localhost:7075/noticias",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "d74c50bd-c36c-48aa-80f6-22cfa5c97f33",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.mud-typography-align-center",
+      "targets": [
+        ["css=.mud-typography-align-center", "css:finder"],
+        ["xpath=//h1", "xpath:position"],
+        ["xpath=//h1[contains(.,'Noticias')]", "xpath:innerText"]
+      ],
+      "value": "Noticias"
+    }]
+  }],
+  "suites": [{
+    "id": "3d4bf028-e2b7-4322-9d89-2a321b7d241c",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": []
+  }],
+  "urls": ["https://localhost:7075/"],
+  "plugins": []
+}

@@ -1,0 +1,76 @@
+﻿@page "/proyectos"
+@using Domain.ResearchProjects.Entities
+@using Application.ResearchProjects
+@using Presentation.Core.Components
+@using Presentation.ResearchProjects.Components
+@inject IResearchProjectsService ResearchProjectService
+@inject IDialogService DialogService
+
+<SearchBar OnUpdateSearchText="@getFilteredResearchProjects" searchLabel="Buscar proyectos" />
+<MudText Class="d-flex justify-center flex-grow-1"
+         Style="padding-right:10px; padding-top:30px; padding-bottom:30px" Elevation="0" Justify="Justify.Center"
+         Typo="Typo.h1">
+    Proyectos de Investigación
+    <MudTooltip Placement="Placement.Right" Text="Los proyectos están ordenados cronológicamente">
+        <MudIconButton Icon="@Icons.Filled.Info" />
+    </MudTooltip>
+    <AuthorizeView Roles="AdminRole">
+        <ToolButton onClick="OpenDialog" _icon="@Icons.Filled.AddCircle" _text="Añadir un proyecto nuevo" />
+    </AuthorizeView>
+</MudText>
+
+<Loading IsLoading="_isLoading">
+    <div class="form-group">
+
+        @if (_researchProjects!.Any() && !_filteredProjects!.Any())
+        {
+            <MudText Align="Align.Center" Color=Color.Warning Typo="Typo.body2" Class="text-danger">No se encontraron proyectos que coincidan con el texto ingresado</MudText>
+        }
+        else
+        {
+            <ResearchProjectsList _researchProjects="_filteredProjects" />
+        }
+    </div>
+</Loading>
+
+@code {
+    private bool _isLoading { get; set; }
+    private IEnumerable<ResearchProject> _researchProjects = Enumerable.Empty<ResearchProject>();
+    private IEnumerable<ResearchProject>? _filteredProjects { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadResearchProjects();
+    }
+
+    private async Task LoadResearchProjects()
+    {
+        _isLoading = true;
+        _researchProjects = await ResearchProjectService.GetResearchProjectsAsync();
+        _filteredProjects = _researchProjects;
+        _isLoading = false;
+    }
+
+    private void getFilteredResearchProjects(string searchText)
+    {
+        _filteredProjects = ResearchProjectService.GetFilteredResearchProjects(searchText, _researchProjects);
+    }
+
+    private async Task OpenDialog()
+    {
+        DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var dialog = DialogService.Show<ResearchProjectForm>("",maxWidth);
+        var result = await dialog.Result;
+        if (result.Data is not null)
+        {
+            if (result.Data.Equals(true))
+            {
+                _isLoading = true;
+                StateHasChanged();
+                _researchProjects = await ResearchProjectService.GetResearchProjectsAsync();
+                _filteredProjects = _researchProjects;
+                _isLoading = false;
+            }
+        }
+    }
+}

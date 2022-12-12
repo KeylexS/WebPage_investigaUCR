@@ -1,0 +1,73 @@
+﻿@page "/personas"
+
+@using Domain.People.Entities
+@using Application.People
+@using Presentation.Core.Components
+@using Presentation.People.Components
+@using Domain.People.DTOs;
+@inject IPeopleService PersonService
+@inject IDialogService DialogService
+
+@*PIIB22II02-526 MC-PL-1.5 Show people search bar | Added searchbar component*@
+<MudItem Style="position:relative; top:4%; max-width:300px; width:auto; left:10%; margin-left:auto; display:flex">
+    <MudTextField id="SearchBarPeople" @bind-Value="_searchText" Immediate="true" Label="Buscar personas" Clearable="true"
+                    Variant="Variant.Outlined" Adornment="Adornment.End"
+                    AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Secondary" />
+</MudItem>
+
+
+<MudText Align="Align.Center" Typo="Typo.h1">Personas
+    <AuthorizeView Roles="AdminRole">
+        <ToolButton onClick="OpenDialog" _icon="@Icons.Filled.AddCircle" _text="Añadir una nueva persona" />
+    </AuthorizeView>
+</MudText>
+<br>
+<Loading IsLoading="_isLoading">
+    @if (_people!.Any() && !_filteredPeople!.Any())
+        {            
+            <MudText Class="text-danger" Color=Color.Warning Align="Align.Center" Typo="Typo.body2">No se encontraron personas que coincidan con el texto ingresado.</MudText>
+        }
+        else
+        {
+           <div class="form-group">
+
+                <PeopleList _people="_filteredPeople" />
+
+           </div>
+        }
+</Loading>
+
+@code {
+    private bool _isLoading { get; set; }
+
+    private IEnumerable<Person>? _people;
+
+    // PIIB22II02-526 MC-PL-1.5 Show people search bar | Added searchbar component
+    private string _searchText = "";
+
+    private void OpenDialog()
+    {
+        DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+        DialogService.Show<PeopleAddForm>("", maxWidth);
+    }
+
+    private IEnumerable<Person> _filteredPeople
+    {
+        get
+        {
+            return PersonService.GetFilteredPeople(_searchText, _people)!;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPeople();
+    }
+
+    private async Task LoadPeople()
+    {
+        _isLoading = true;
+        _people = await PersonService.GetPeopleAsync();
+        _isLoading = false;
+    }
+}

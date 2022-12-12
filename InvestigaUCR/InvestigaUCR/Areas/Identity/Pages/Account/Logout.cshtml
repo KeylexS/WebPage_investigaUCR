@@ -1,0 +1,20 @@
+﻿@page
+@using Microsoft.AspNetCore.Identity
+@attribute [IgnoreAntiforgeryToken]
+@inject SignInManager<User> SignInManager
+
+@*
+    PIIB22II02-1223 MC-PL-5.12 Logout user account PIIB22II02-1224 Fix intermediate click to close session
+*@
+
+@functions
+{
+    public async Task<IActionResult> OnPost()
+    {
+        if (SignInManager.IsSignedIn(User))
+        {
+            await SignInManager.SignOutAsync();
+        }
+        return Redirect("/");
+    }
+}

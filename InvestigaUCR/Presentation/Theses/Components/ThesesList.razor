@@ -1,0 +1,65 @@
+﻿@using Domain.Theses.Entities
+@using System;
+@using System.Globalization;
+@using Application.Theses
+
+<div class="container">
+    @if (!_theses!.Any())
+    {
+        <MudText Align="Align.Center" Color=Color.Warning Typo="Typo.body2" Class="text-danger">No hay tesis registradas actualmente.</MudText>
+
+    }
+    else
+    {
+        @foreach (var thesis in _theses!)
+        {
+            <MudRTLProvider>
+                <MudCard Outlined="true" Elevation="0">
+                    <MudGrid Outlined="true" Elevation="0" Style="height: 300px;">
+                        <MudCardContent>
+                            <MudItem xs="12">
+                                <MudLink Href="/hola" Style="display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; position: relative; bottom: -20px; left: 200px; margin-right:205px">
+                                    @thesis.Title
+                                </MudLink>
+                                <MudText Style="display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;position: relative; bottom: 5px; left: 10px;">
+                                    @thesis._Type
+                                </MudText>
+                                <MudText Style="position: relative; bottom: -5px; left: 10px;">@thesis._Date.ToString("yyyy").ToUpper()</MudText>
+                                <MudIcon Icon="@Icons.Filled.Person" Title="Favorite"
+                                 Style="position: relative; bottom: 10px; left: 200px;" />
+                                <MudText Style="position: relative; bottom: 32px; left: 235px;">Leonardo Villalobos </MudText>
+                                @if(thesis.Description == null){
+                                   <MudText Style="display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;position: relative; bottom: 15px; left: 200px;margin-right:205px">
+                                       Sin Descripción
+                                    </MudText>
+                                }else{
+                                    <MudText Style="display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; 
+                                                    overflow:hidden; position: relative; bottom: 15px; left: 200px;margin-right:205px">
+                                        @thesis.Description
+                                    </MudText>
+                                }
+                            </MudItem>
+                        </MudCardContent>
+                    </MudGrid>
+                </MudCard>
+            </MudRTLProvider>
+            <br>
+            <br>
+            <br>
+        }
+    }
+</div>
+
+@code {
+    public int spacing { get; set; } = 4;
+
+    [Parameter]
+    public IEnumerable<Thesis>? _theses { get; set; }
+}
+
+@code {
+    [Parameter]
+    public IEnumerable<Thesis>? _thesis { get; set; } = null!;
+
+}
+

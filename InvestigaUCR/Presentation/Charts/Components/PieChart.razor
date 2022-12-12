@@ -1,0 +1,33 @@
+﻿@using Presentation.Core.Components
+@inject IChartService ChartsService
+@using Domain.Shared.Charts.Entities
+@using Application.Shared
+@using System.Diagnostics
+
+<div>
+    <MudText Class="alternate" Align="Align.Center" Style="font: 24px Helvetica">@titulo</MudText>
+
+    <MudChart ChartType="ChartType.Pie" InputData="@_barChart.Values.ToArray()" InputLabels="@_labels" Width="350px" Height="350px"/>
+</div>
+
+@code {
+    [Parameter]
+    public BarChart _barChart { get; set; } = null!;
+
+    [Parameter]
+    public string titulo { get; set; } = null!;
+    public string[] _labels { get; set; } = null!;
+    public List<ChartSeries> Series { get; set; } = null!;
+
+
+
+    protected override void OnInitialized()
+    {
+        LoadDashboard();
+    }
+
+    private void LoadDashboard()
+    {
+        _labels = _barChart.Labels.ToArray();
+    }
+}

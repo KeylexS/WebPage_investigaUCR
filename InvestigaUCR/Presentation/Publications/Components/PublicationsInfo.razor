@@ -1,0 +1,319 @@
+﻿@using Application.Publications
+@using Domain.Core.Exceptions
+@using Domain.Publications.Entities;
+@using Presentation.Core.Components;
+@using System
+@using System.Globalization;
+@inject IDialogService DialogService
+@inject IPublications Publications
+@inject NavigationManager NavigationManager
+
+
+<MudPaper Width="100%" Elevation="0">
+    <!-- Story ID: PIIB22II02-894 HT-PB-3.6 Show title, type and date. -->
+    @if (isEditingType)
+    {
+        <div class="d-flex" style="display: block; margin-left: auto; margin-right: auto; width: 100%; align-items: center;">
+                        <MudTextField @bind-Value="auxType" Variant="Variant.Outlined" Style="font-size: 2.125rem;" FullWidth="true" />
+                        <ToolButton _placement="Placement.Right" _text="Cancelar" _icon="@Icons.Filled.Cancel" onClick="EditingType" />
+                        <ToolButton _placement="Placement.Right" _text="Guardar" _icon="@Icons.Filled.Check" onClick="ChangeType" />
+            
+        </div>
+    }else{
+        <div class="d-flex justify-center flex-grow-1 gap-4" style="display: block; margin-left: auto; margin-right: auto; width: 100%;">
+    <MudText Class="d-flex justify-start flex-grow-1 gap-4" Align="Align.Left" Color="Color.Secondary" Typo="Typo.h6" Style="padding-top:20px">@publication.Type 
+            <AuthorizeView Roles="AdminRole">
+                <ToolButton _placement="Placement.Right" _text="Editar tipo" _icon="@Icons.Filled.Edit" onClick="EditingType" />
+            </AuthorizeView>
+            </MudText>
+             <AuthorizeView Roles="AdminRole">
+            <ToolButton _placement="Placement.Right" _text="Eliminar Publicacion" _icon="@Icons.Filled.DeleteForever" onClick="@OnDeletePublicationClicked" />
+            <ToolButton _placement="Placement.Right" _text="Cambiar Visibilidad Publicacion" _icon="@Icons.Filled.RemoveRedEye" onClick="@OnVisibilityPublicationClicked" />
+            </AuthorizeView>
+            </div>
+    }
+    @if (_publicationTypeMessage is not null)
+    {
+        <Alert Color="_publicationAlertColor">
+            @_publicationTypeMessage
+        </Alert>
+    }
+    @if (isEditingName)
+    {
+        <div class="d-flex" style="display: block; margin-left: auto; margin-right: auto; width: 100%; align-items: center;">
+            <MudTextField @bind-Value="auxName" Variant="Variant.Outlined" Style="font-size: 2.125rem;" FullWidth="true" />
+            <ToolButton _placement="Placement.Right" _text="Cancelar" _icon="@Icons.Filled.Cancel" onClick="EditingName" />
+            <ToolButton _placement="Placement.Right" _text="Guardar" _icon="@Icons.Filled.Check" onClick="ChangeName" />
+        </div>
+    }else{
+        <div class="d-flex justify-center flex-grow-1 gap-4" style="display: block; margin-left: auto; margin-right: auto; width: 100%;">
+    <MudText Class="d-flex justify-start flex-grow-1 gap-4" Align="Align.Left" Color="Color.Primary" Typo="Typo.h1" Style="padding-top:10px">@publication.Name 
+    <AuthorizeView Roles="AdminRole">
+        <ToolButton _placement="Placement.Right" _text="Editar nombre" _icon="@Icons.Filled.Edit" onClick="EditingName" />
+    </AuthorizeView>
+            </MudText>
+            </div>
+    }
+    @if (_publicationNameMessage is not null)
+    {
+        <Alert Color="_publicationAlertColor">
+            @_publicationNameMessage
+        </Alert>
+    }
+    <hr>
+
+    <!-- Story ID: PIIB22II02-896 HT-PB-3.8 Show abstract and DOI -->
+    @if (isEditingReference)
+    {
+         <div class="d-flex" style="display: block; margin-left: auto; margin-right: auto; width: 100%; align-items: center;">
+            <MudTextField @bind-Value="auxReference" Variant="Variant.Outlined" Style="font-size: 2.125rem;" FullWidth="true" />
+            <ToolButton _placement="Placement.Right" _text="Cancelar" _icon="@Icons.Filled.Cancel" onClick="EditingReference" />
+            <ToolButton _placement="Placement.Right" _text="Guardar" _icon="@Icons.Filled.Check" onClick="ChangeReference" />
+        </div>
+    }else{
+     <div class="d-flex justify-center flex-grow-1 gap-4" style="display: block; margin-left: auto; margin-right: auto; width: 100%;">
+       <MudText Class="d-flex justify-start flex-grow-1 gap-4" Align="Align.Justify" Color="Color.Warning" Typo="Typo.subtitle1">@publication.Reference 
+        @publication.Reference - doi:
+        @{
+            string link = "http://dx.doi.org/" + publication.DOI;
+        }
+                <MudLink Typo="Typo.subtitle1" Href=@link>@publication.DOI</MudLink>
+            <AuthorizeView Roles="AdminRole">
+        <ToolButton _placement="Placement.Right" _text="Editar procedding" _icon="@Icons.Filled.Edit" onClick="EditingReference" />
+    </AuthorizeView>
+            </MudText>
+     </div>
+
+    }
+     @if (_publicationReferenceMessage is not null)
+    {
+        <Alert Color="_publicationAlertColor">
+            @_publicationReferenceMessage
+        </Alert>
+    }
+    <hr>
+    @if(isEditingDate){
+            <MudGrid Class="d-flex justify-center flex-grow-1 gap-4" Style="Widht= 200px; padding-left:12px; padding-right:12px; padding-top:30px; padding-bottom:20px" Justify="Justify.Center">
+                <MudTextField T="DateTime" Variant="@Variant.Outlined" Format="yyyy-MM-dd" Label="Fecha de publicacion" InputType="InputType.Date"
+                          @bind-Value="auxDate" />
+
+            
+                <ToolButton _placement="Placement.Right" _text="Cancelar" _icon="@Icons.Filled.Cancel" onClick="EditingDate" />
+                <ToolButton _placement="Placement.Right" _text="Guardar" _icon="@Icons.Filled.Check" onClick="ChangeDate" />
+            </MudGrid>
+        }else{
+    <!-- Story ID: PIIB22II02-894 HT-PB-3.6 Show title, type and date. -->
+     <MudGrid class="d-flex justify-center flex-grow-1 gap-4" style="display: block;">
+    <MudText Class="d-flex justify-start flex-grow-1 gap-4" Align="Align.Justify" Color="Color.Warning" Typo="Typo.subtitle1">Publicado: @publication.getFormatedDate()
+        <AuthorizeView Roles="AdminRole">
+            <ToolButton _placement="Placement.Right" _text="Editar fecha" _icon="@Icons.Filled.Edit" onClick="EditingDate" />
+        </AuthorizeView>
+            </MudText>
+        </MudGrid>
+        }
+     @if (_publicationDateMessage is not null)
+        {
+        <Alert Color="_publicationAlertColor">
+            @_publicationDateMessage
+        </Alert>
+        }
+    <hr>
+
+    <!-- Story ID: PIIB22II02-896 HT-PB-3.8 Show abstract and DOI -->
+    <MudText Class="d-flex justify-start flex-grow-1 gap-4" Align="Align.Justify" Color="Color.Warning" Typo="Typo.h2" Style="padding-bottom:10px">Abstract: </MudText>
+        @if(isEditingAbstract){
+        <div class="d-flex" style="width: 100%;">
+            <MudTextField @bind-Value="auxAbstract" Variant="Variant.Outlined" Lines="8" />
+            <ToolButton _placement="Placement.Right" _text="Cancelar" _icon="@Icons.Filled.Cancel" onClick="EditingAbstract" />
+            <ToolButton _placement="Placement.Right" _text="Guardar" _icon="@Icons.Filled.Check" onClick="ChangeAbstract" />
+        </div>
+    }else{
+         <div class="d-flex" style="display: block; margin-left: auto; margin-right: auto; width: 100%;">
+    <MudText Class="d-flex justify-start flex-grow-1 gap-4" Align="Align.Justify" Color="Color.Warning" Typo="Typo.body2">@publication.Abstract 
+            <AuthorizeView Roles="AdminRole">
+                <ToolButton _placement="Placement.Right" _text="Editar Abstract" _icon="@Icons.Filled.Edit" onClick="EditingAbstract" />
+            </AuthorizeView>
+            </MudText>
+        </div>
+        @if (_publicationAbstractMessage is not null)
+        {
+            <Alert Color="_publicationAlertColor">
+                @_publicationAbstractMessage
+            </Alert>
+        }
+    }
+</MudPaper>
+
+@code {
+    [Parameter]
+    public Publication publication { get; set; } = default!;
+    private bool resetValueOnEmptyText = false, coerceText = false, coerceValue = false;
+    public string? _publicationDeleteMessage { get; set; } = null;
+    public string? _publicationVisibilityMessage { get; set; } = null;
+
+    private bool isEditingName = false;
+    private string auxName { get; set; } = null!;
+    public string? _publicationNameMessage { get; set; } = null;
+    public Alert.AlertColor _publicationAlertColor = Alert.AlertColor.Danger;
+    [Parameter]
+    public EventCallback<string> OnNameEdit { get; set; }
+
+    private bool isEditingType = false;
+    private string auxType { get; set; } = null!;
+    public string? _publicationTypeMessage { get; set; } = null;
+    [Parameter]
+    public EventCallback<string> OnTypeEdit { get; set; }
+
+    private bool isEditingDate = false;
+    private DateTime auxDate { get; set; } = DateTime.Today!;
+    public string? _publicationDateMessage { get; set; } = null;
+    [Parameter]
+    public EventCallback<DateTime> OnDateEdit { get; set; }
+
+    private bool isEditingAbstract = false;
+    private string auxAbstract { get; set; } = null!;
+    public string? _publicationAbstractMessage { get; set; } = null;
+    [Parameter]
+    public EventCallback<string> OnAbstractEdit { get; set; }
+    private bool isEditingReference = false;
+    private string auxReference { get; set; } = null!;
+    public string? _publicationReferenceMessage { get; set; } = null;
+    [Parameter]
+    public EventCallback<string> OnReferenceEdit { get; set; }
+    private void EditingName()
+    {
+        if (!isEditingName)
+        {
+            auxName = publication!.Name;
+        }
+        isEditingName = !isEditingName;
+    }
+
+    private void ChangeName()
+    {
+        OnNameEdit.InvokeAsync(auxName);
+        isEditingName = !isEditingName;
+    }
+    private void EditingType()
+    {
+        if (!isEditingType)
+        {
+            auxType = publication!.Type;
+        }
+        isEditingType = !isEditingType;
+    }
+
+    private void ChangeType()
+    {
+        OnTypeEdit.InvokeAsync(auxType);
+        isEditingType = !isEditingType;
+    }
+    private void EditingDate()
+    {
+        if (!isEditingDate)
+        {
+            auxDate = publication!._Date;
+        }
+        isEditingDate = !isEditingDate;
+    }
+
+    private void ChangeDate()
+    {
+
+        DateTime date = auxDate;
+        OnDateEdit.InvokeAsync(date);
+        isEditingDate = !isEditingDate;
+    }
+    private void EditingAbstract()
+    {
+        if (!isEditingAbstract)
+        {
+            auxAbstract = publication!.Abstract;
+        }
+        isEditingAbstract = !isEditingAbstract;
+    }
+
+    private void ChangeAbstract()
+    {
+        OnAbstractEdit.InvokeAsync(auxAbstract);
+        isEditingAbstract = !isEditingAbstract;
+    }
+    private void EditingReference()
+    {
+        if (!isEditingReference)
+        {
+            auxReference = publication!.Reference;
+        }
+        isEditingReference = !isEditingReference;
+    }
+
+    private void ChangeReference()
+    {
+        OnReferenceEdit.InvokeAsync(auxReference);
+        isEditingReference = !isEditingReference;
+    }
+    private async void OnDeletePublicationClicked()
+    {
+        try
+        {
+            bool? resultMessage = await DialogService.ShowMessageBox(
+                "Advertencia",
+                "La eliminación de la publicacion no podrá deshacerse",
+                yesText: "Borrar Publicacion", cancelText: "Cancelar");
+            if (resultMessage != null)
+            {
+                await Publications.DeletePublication(publication);
+                string refUrl = "/publicaciones/";
+                NavigationManager.NavigateTo(refUrl, true);
+            }
+        }
+        catch (DomainException e)
+        {
+            _publicationDeleteMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(5000);
+            _publicationDeleteMessage = null;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            _publicationDeleteMessage = "Ocurrió un error. Intente de nuevo.";
+            StateHasChanged();
+            await Task.Delay(5000);
+            _publicationDeleteMessage = null;
+            StateHasChanged();
+        }
+    }
+    private async void OnVisibilityPublicationClicked()
+    {
+        try
+        {
+            bool? resultMessage = await DialogService.ShowMessageBox(
+                "Advertencia",
+                "Si cambia la visualizacion, ya no aparecera la publicacion",
+                yesText: "Cambiar Visualizacion", cancelText: "Cancelar");
+            if (resultMessage != null)
+            {
+                await Publications.ChangeVisibility(publication);
+                string refUrl = "/publicaciones/";
+                NavigationManager.NavigateTo(refUrl, true);
+            }
+        }
+        catch (DomainException e)
+        {
+            _publicationVisibilityMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(5000);
+            _publicationVisibilityMessage = null;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            _publicationVisibilityMessage = "Ocurrió un error. Intente de nuevo.";
+            StateHasChanged();
+            await Task.Delay(5000);
+            _publicationVisibilityMessage = null;
+            StateHasChanged();
+        }
+    }
+}

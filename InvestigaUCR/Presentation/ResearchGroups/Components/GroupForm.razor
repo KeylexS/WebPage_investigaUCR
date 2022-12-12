@@ -1,0 +1,173 @@
+﻿@using Blazored.FluentValidation
+@using Domain.Core.Exceptions
+@using Domain.Core.Helpers
+@using Domain.ResearchGroups.ValueObjects
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Hosting
+@using Microsoft.Extensions.Logging
+@using Presentation.ResearchGroups.Models
+@inject IWebHostEnvironment Environment
+@inject IGroupService GroupService
+@inject IImageService ImageService
+<br>
+@if (_groupEditMessage is not null)
+{
+    <Alert Color="_groupEditAlertColor">
+        @_groupEditMessage
+    </Alert>
+}
+<EditForm OnValidSubmit="HandleSubmit" Model="@Model">
+    <FluentValidationValidator />
+    <h3 style="text-align: center;">Añadir un grupo</h3>
+    <MudDialog>
+        <DialogContent>
+            <MudContainer Style="max-height: 500px; overflow-y: scroll">
+                <MudImage Src="@getImage(Model.Image)" Elevation="0" Class="rounded-circle" Width="225" Height="225" ObjectFit="ObjectFit.Cover" Style="display: block; margin-left: auto; margin-right: auto; border-radius: 50%;" />
+                <MudPaper Class="d-flex justify-center py-2 px-1 mt-6" Elevation="0" Outlined="false">
+                <InputFile id="fileInput" OnChange="HandleSelection" accept="image/png, image/jpeg, image/jpg" hidden/>
+                    <MudButton HtmlTag="label"
+                                Variant="Variant.Filled"
+                                Color="Color.Success"
+                                StartIcon="@Icons.Filled.CloudUpload"
+                                Disabled="@off"
+                                for="fileInput">
+                        Añadir imagen
+                    </MudButton>
+                </MudPaper>
+                <br>
+                <div class="form-group">       
+                    <MudGrid>
+                        <MudItem>
+                            <MudTextField T="string" @bind-Value="Model.Id" Immediate="true" Variant="Variant.Outlined" Label="Identificador" Clearable="true" Adornment="Adornment.Start" AdornmentText="CRCUCRCITIC" 
+                                    Counter="4" MaxLength="4" Required="true" RequiredError="El identificador es necesario." Disabled="@off"/>    
+                            <ValidationMessage For="@(() => Model.Id)"/>
+                        </MudItem>
+                        <MudItem>
+                            <MudTextField T="DateTime?" Format="yyyy-MM-dd"  InputType="InputType.Date" @bind-Value="Model.Start_Date" Immediate="true" 
+                                Variant="Variant.Outlined" Label="Fecha de inicio" Clearable="true" Disabled="@off"/>                    
+                            <ValidationMessage For="@(() => Model.Start_Date)"/>
+                        </MudItem>
+                    </MudGrid>
+                </div>
+                <br>
+                <div class="form-group">
+                    <MudTextField T="string" @bind-Value="Model.Name" Immediate="true" Variant="Variant.Outlined" Label="Nombre" Clearable="true" Required="true" RequiredError="El nombre es necesario." Disabled="@off"/>       
+                    <ValidationMessage For="@(() => Model.Name)"/>
+                </div>
+                <br>
+                <div class="form-group">
+                    <MudTextField T="string" @bind-Value="Model.Description" Immediate="true" Variant="Variant.Outlined" Label="Descripción" Clearable="true" Lines="8" Required="true" RequiredError="La descripción es necesaria." Disabled="@off"/>       
+                    <ValidationMessage For="@(() => Model.Description)"/>
+                </div>
+                <br>
+            </MudContainer>
+        </DialogContent>
+        <DialogActions>
+            <MudButton Style="block; margin-left: auto; margin-right: auto;" Color="Color.Primary" OnClick="Close" Disabled="@off">Cancelar</MudButton>
+            <MudButton Style="block; margin-left: auto; margin-right: auto;" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" Disabled="@off">Añadir</MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>
+
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = null!;
+
+    void Close() => MudDialog.Close(DialogResult.Ok(true));
+    private static string prefixId = "CRCUCRCITIC";
+    private ResearchGroupModel Model { get; set; } = new();
+    private List<IBrowserFile> loadedFiles = new();
+    private string? _groupEditMessage = null;
+    private Alert.AlertColor _groupEditAlertColor = Alert.AlertColor.Danger;
+    private bool off = false;
+
+    /// <summary>
+    /// Method <c>HandleSubmit</c> Handle the submit of the form to create a new group.
+    /// </summary>
+    /// <returns></returns>
+    private async Task HandleSubmit()
+    {
+        _groupEditMessage = null;
+        try
+        {
+            off = true;
+            StateHasChanged();
+            string id = prefixId + (Model.Id!).ToUpper();
+            var group = new Group(
+                ResearchGroupId.TryCreate(id).Success(),
+                1,
+                ResearchGroupName.TryCreate(Model.Name).Success(),
+                ResearchGroupDescription.TryCreate(Model.Description).Success(),
+                Model.Image,
+                Model.Start_Date);
+            await GroupService.AddGroup(group);            
+            _groupEditAlertColor = Alert.AlertColor.Success;
+            _groupEditMessage = "Grupo de investigación añadido con exito.";
+            StateHasChanged();
+            await Task.Delay(5000);
+            _groupEditMessage = null;       
+            StateHasChanged();
+            Model = new ResearchGroupModel();
+            Close();
+        }
+        catch (DomainException e)
+        {            
+            off = true;
+            _groupEditAlertColor = Alert.AlertColor.Success;
+            _groupEditMessage = e.ToString();
+            StateHasChanged();
+            await Task.Delay(5000);
+            _groupEditMessage = null;       
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            off = true;
+            _groupEditAlertColor = Alert.AlertColor.Danger;
+            _groupEditMessage = "Ocurrió un error. Intente de nuevo.";
+            StateHasChanged();
+            await Task.Delay(5000);
+            _groupEditMessage = null;       
+            StateHasChanged();            
+        }
+    }
+
+
+    /// <summary>
+    /// Method <c>HandleSelection</c> Handles the selection of an image with the input file.
+    /// </summary>
+    /// <param name="e">Arguments casted by the interaction with the component</param>
+    /// <returns></returns>
+    private async Task HandleSelection(InputFileChangeEventArgs e)
+    {
+        loadedFiles.Clear();
+        loadedFiles.Add(e.File);
+
+        foreach (var file in loadedFiles)
+        {
+            Stream stream = file.OpenReadStream();
+            MemoryStream ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            stream.Close();
+
+            Model.Image = ms.ToArray();
+            ms.Close();
+            StateHasChanged();
+        }
+    }
+
+    /// <summary>
+    /// Return the a custom image or the default image.
+    /// </summary>
+    /// <param name="img">Array of bytes with the data of the image</param>
+    /// <returns></returns>
+    public String getImage(byte[]? img)
+    {
+        return img != null ? ImageService.ConvertByteToImage(img) : "/Images/DefaultImages/groupDefault.png";
+    }
+
+    public async void CreateMessage(string message)
+    {
+
+    }
+}

@@ -1,0 +1,76 @@
+﻿@using Domain.Publications.Entities
+@using System;
+@using System.Globalization;
+@using Presentation.Core.Components
+
+<div class="container">
+    @if (!_publications!.Any())
+    {
+        <MudText Align="Align.Center" Color=Color.Warning Typo="Typo.body2" Class="text-danger">No hay publicaciones registradas actualmente.</MudText>
+    }
+    else
+    {
+        @foreach (var publication in _publications! )
+        {
+            if(publication.Visibility == 1){
+            <MudRTLProvider>
+                <MudItem>
+                    <MudCard Outlined="true" Elevation="0">
+                        <MudGrid Outlined="true" Elevation="0" Style="height: 400px;">
+                            <MudCardContent>
+                                <MudLink Style="position: relative; bottom: -20px; left: 200px" Typo="Typo.h3" Href="@($"/publicaciones/{ publication.DOI.Replace("/", "%S1%")}")">
+                                    @publication.Name
+                                </MudLink>
+                                <MudText Style="display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;position: relative; bottom: 5px; left: 10px; width: 150px">@publication.Type</MudText>
+
+                                <!-- Story ID: PIIB22II02-894 HT-PB-3.6 Show title, type and date. -->
+                                <!-- Subtask ID: PIIB22II02-993 Create designated page for each publication. -->
+                                <MudText Style="display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;position: relative; bottom: -5px; left: 10px;">@publication._Date.ToString("MMMM yyyy").ToUpper()</MudText>
+                                <MudText Style="display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;position: relative; bottom: -15px; left: 10px;">@publication.Publisher_name</MudText>
+                                <MudIcon Icon="@Icons.Filled.Person" Title="Favorite" Style="position: relative; bottom: 10px; left: 200px;" />
+                                <MudText Style="display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;position: relative; bottom: 32px; left: 235px;">Alexandra Martínez, Christian Quesada López</MudText>
+                                <MudText Style="position: relative; bottom: 10px; left: 200px; margin-right:205px">
+                                    @publication.Reference - doi:
+                                    <!-- Story ID: PIIB22II02-495 HT-PB-1.15 Show proceeding -->
+                                    <!-- Subtask ID: PIIB22II02-817 Add conference/magazine to proceeding -->
+                                    <!-- Subtask ID: PIIB22II02-818 Add publish date to proceeding -->
+                                    <!-- Subtask ID: PIIB22II02-819 Add publication´s pages to proceeding -->
+                                    @{
+                                        string link = "http://dx.doi.org/" + publication.DOI;
+                                    }
+                                    <MudLink Href=@link>@publication.DOI</MudLink>
+                                </MudText>
+                                <!-- Story ID: PIIB22II02-317 HT-PB-1.4 Base publication, DOI and title -->
+                                <!-- Subtask ID: PIIB22II02-596 Set the DOI as a link -->
+                                <!-- Subtask ID: PIIB22II02-597 DOI link redirect to the publication page -->
+                                <MudText Style="display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; position: relative; bottom: -12px; left: 200px;margin-right:205px">
+                                    @publication.Abstract
+                                </MudText>
+                                @*  <MudButton Href="/View"
+                                    Variant="Variant.Outlined"
+                                    EndIcon="@Icons.Filled.RemoveRedEye"
+                                    Color="Color.Info"
+                                    Disabled="true"
+                                    Style="position: relative; bottom: -75px; left: 1040px;margin-right:405px">
+                                    View
+                                    </MudButton>
+                                *@
+                            </MudCardContent>
+                        </MudGrid>
+                    </MudCard>
+                </MudItem>
+            </MudRTLProvider>
+        }
+        }
+    }
+</div>
+@code {
+    public int spacing { get; set; } = 4;
+
+    [Parameter]
+    public IEnumerable<Publication>? _publications { get; set; }
+
+    public IEnumerable<Publication>? _publication { get; set; } = null!;
+
+}
+

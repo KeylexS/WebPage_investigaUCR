@@ -1,0 +1,29 @@
+﻿@*
+    PIIB22II02-1225 MC-PL-5.13 User account detail | PIIB22II02-1226 Add menu component to user profile page.
+*@
+<MudNavMenu>
+    <MudText Align="Align.Center">
+        <MudButton Href="/Account" Style="text-transform:none; color: black">
+            Ver detalles de cuenta
+        </MudButton>
+        <MudButton Href="/ChangeEmail" Style="text-transform:none; color: black">
+            Cambiar email
+        </MudButton>
+        <MudButton Href="/ChangePassword" Style="text-transform:none; color: black">
+            Cambiar contraseña
+        </MudButton>
+        <MudButton Href="/TwoFactorAuthentication" Style="text-transform:none; color: black">
+            Autentificacion de dos factores
+        </MudButton>
+        <AuthorizeView Roles="AdminRole">
+            <Authorized>
+                <MudButton Href="/ManageUsers" Style="text-transform:none; color: black">
+                    Administrar usuarios
+                </MudButton>
+            </Authorized>
+        </AuthorizeView>
+        <MudButton Href="/DeleteAccount" Style="text-transform:none; color: black">
+            Borrar mi cuenta
+        </MudButton>
+    </MudText>
+</MudNavMenu>

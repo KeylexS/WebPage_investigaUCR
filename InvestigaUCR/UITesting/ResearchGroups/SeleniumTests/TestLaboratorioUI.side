@@ -1,0 +1,450 @@
+{
+  "id": "3cf6426f-1a56-4dd6-b22b-e963b05ae1c3",
+  "version": "2.0",
+  "name": "TestLaboratorioUI",
+  "url": "http://10.1.4.119/grupos/CRCUCRCITICESE",
+  "tests": [{
+    "id": "e7ede7eb-097e-40f7-a265-8de87cc716bd",
+    "name": "ChangeCoordinator",
+    "commands": [{
+      "id": "1a451bc3-6a85-46c3-94d5-1a2fb19cb1df",
+      "comment": "",
+      "command": "open",
+      "target": "http://10.1.4.119/grupos/CRCUCRCITICESE",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "00dd019d-7d04-4ab5-b170-bd7d91aaadfb",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1920x1080",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "32e34303-a263-47ce-83c6-20a75ac48af0",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-grid-item:nth-child(1) > .btn",
+      "targets": [
+        ["css=.mud-grid-item:nth-child(1) > .btn", "css:finder"],
+        ["xpath=//button[@onclick=\"document.getElementById('people').scrollIntoView({behavior:'smooth'})\"]", "xpath:attributes"],
+        ["xpath=//button", "xpath:position"],
+        ["xpath=//button[contains(.,'Personas')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "79f580e3-2b33-4822-8889-037fa93738c6",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-paper:nth-child(13) .mud-icon-root",
+      "targets": [
+        ["css=.mud-paper:nth-child(13) .mud-icon-root", "css:finder"]
+      ],
+      "value": ""
+    }, {
+      "id": "7fdd11c4-f51f-4553-934c-219dff2612e1",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-input-slot:nth-child(1)",
+      "targets": [
+        ["css=.mud-input-slot:nth-child(1)", "css:finder"],
+        ["xpath=//input[@type='text']", "xpath:attributes"],
+        ["xpath=//div[@id='_85f4837a16664c159c15fc399523b6fd']/div[2]/div[4]/div/div/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "8a72f972-c362-4dba-9395-00ccbd757458",
+      "comment": "",
+      "command": "click",
+      "target": "css=#fe206110-0321-4d1c-a27d-30153d82c9f8_item0 .mud-typography",
+      "targets": [
+        ["css=#fe206110-0321-4d1c-a27d-30153d82c9f8_item0 .mud-typography", "css:finder"],
+        ["xpath=//div[@id='fe206110-0321-4d1c-a27d-30153d82c9f8_item0']/div/p", "xpath:idRelative"],
+        ["xpath=//div[9]/div/div/div/p", "xpath:position"],
+        ["xpath=//p[contains(.,'Adrian Lara Petitdemange')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "f3bb0204-cff1-4075-bd4c-1ccd6610f9d1",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-button-filled:nth-child(2) > .mud-button-label",
+      "targets": [
+        ["css=.mud-button-filled:nth-child(2) > .mud-button-label", "css:finder"],
+        ["xpath=//div[@id='_85f4837a16664c159c15fc399523b6fd']/div[2]/div[5]/div/button[2]/span", "xpath:idRelative"],
+        ["xpath=//button[2]/span", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "b002fc65-d9e7-4439-a3a9-5d2b910c96e7",
+      "comment": "",
+      "command": "runScript",
+      "target": "window.scrollTo(0,976)",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "4cbb5a0d-b0a7-43f8-af82-b3915356a0cd",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "css=.container:nth-child(15) .mud-image",
+      "targets": [
+        ["css=.container:nth-child(15) .mud-image", "css:finder"],
+        ["xpath=//img[contains(@src,'data:image / bmp; base64,/9j/4AAQSkZJRgABAQEAYABgAAD/4QBaRXhpZgAATU0AKgAAAAgABQMBAAUAAAABAAAASgMDAAEAAAABAAAAAFEQAAEAAAABAQAAAFERAAQAAAABAAAOw1ESAAQAAAABAAAOwwAAAAAAAYagAACxj//bAEMACAYGBwYFCAcHBwkJCAoMFA0MCwsMGRITDxQdGh8eHRocHCAkLicgIiwjHBwoNyksMDE0NDQfJzk9ODI8LjM0Mv/bAEMBCQkJDAsMGA0NGDIhHCEyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMv/AABEIANIA0gMBIgACEQEDEQH/xAAfAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgv/xAC1EAACAQMDAgQDBQUEBAAAAX0BAgMABBEFEiExQQYTUWEHInEUMoGRoQgjQrHBFVLR8CQzYnKCCQoWFxgZGiUmJygpKjQ1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4eLj5OXm5+jp6vHy8/T19vf4+fr/xAAfAQADAQEBAQEBAQEBAAAAAAAAAQIDBAUGBwgJCgv/xAC1EQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2gAMAwEAAhEDEQA/APf6KKKACiiigAooooAKKKKACiiigAorN1fX9L0K3M+pXsNugGfnbk/QV5nrHx+0O0nMWm2Vxe4/j+6tK47Nnr1FfNt/8dPFN0W+x2ltaoeny7iKyl+LnjtH3G9Q5P3TGMUudD5GfU9FfP2jfHzU7Y+XrWmJOMcPCdp/KvRvD3xb8L69sjN0bO4b/lncDHP16U1JMTTR3dFNSRJUDxsrqRkMpyDTqYgooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAzgZNeXeOvi5a6MZNN0JRe6j90uOUjP9TR8TfF91FMvh3SJNs8g/0iVeqA9hXDaX4ZtrLE0v7yU8kn1rnrV1DQ6KOHlUORvrHWvEV01/rt3I7PyAT09gO1RRaRDAxUJnFeiXFokqEBR7CslNGkMzFlBXtXC8Q3uzv+qcuyOXXTskYQD8Kk+wEHG3j6V166U4UfJimnTX+6F6n0qfbDeHa6HINpSSY3ICDxVefw5nLRjIxx7V3Y0h8hQuKux6Yqx4ZaPrDQ1hG9zlvCXxD13wVcJbTs97pefmhc5ZB/smvobw74m0vxRpy3mmXCyKR86fxIfQivCtU8NpcRuUHOOK5zw9q2peAvEMd7bFjCzbZoSeHTv+NdtHEKWjOGvhnB3PrCiqml6jb6tplvf2rhoZ0DqR71brrOQKKKKACiiigAooooAKKKKACiiigAooooAKKKKACormdba1lnfhY0Ln6AZqWsDxrc/ZPBuqS5x+5Kj8eKT0QI8QsrqXVddvtSuDueWUnJ7DPFbhk3HHYVzmgALbt1zmtxG9a8Wu7zZ7+FilBFpBmrKx8cCoICM1fTAFczO5bDRjpinMi9cDNOX72adwTzUjsMC8UyQVaKDbmqsrDNAEDcHFcr4nsImjMmMNXTu3NYOuOJIih7VvRbUkcuJScGdt8EtVefQbzS5GJNpLlM/wB1q9SrxD4NTGHxRf24B2ywZ/EGvb69ym7xPnpq0goooqyAooooAKKKKACiiigAooooAKKKKACiiigArj/ieSPAd8B3KA/nXYVzHjyKK98F6pEGVmSMPgHkEEUpbDjueLaVC0Nj5jHPmcitSM54rKvL+HTdNtzKeqA49axo/G0QkI8vcPQdq8eVOU3dHuU6sKaSbO7ijPY1ZG8DFcdaeOLB5Ar7kY9iK6mx1SC7jDqeDWEqco7o7IVoS+Fl5QVGc0AnNKWXsRUMl7bW8ZeSRQB6mpsacySuTvI23qQKrPnk5rKvPGOlWwwZ1ZvRaxX8eWjyYjjJXPUnFUqM30MXiKae50rtjisHVVfeSR8pqWDxBZXbIqSYZv4TVy+QPZSHGcDIqoJwepnVaqR0YvwtuPI8eRRngSxOP0r32vB/hjbG48cRSqDthiYk/hXvFezR+E8Gr8QUUUVqZBRRRQAUUUUAFFFFABRRRQAUUUUAFFFFACHpXher3V/BrOqWU0jqx3KeeHU17rXlvxG07ydagvUGPOUA/UVy4pPkuuh3YGS53F9Uefa5pSXTweYR5aRgEGudgubCwlmW2s/PKDLDbnArtr2ITEqRkYxWUdNhhbckRQngkDrXDGotpHc6LteJzhnttXYKunBWxkFR0/KtDRZWtHEGWAb7uTWla6fBZb2toyrv1IFMNqxmT5ANpzTnOLVkEKck7vc2ES+eThsKB1rF1hPlMUsre+K6m3kJtM+grDubZneQ+XvLcg1hGWp1VIe6ctHBpFgyz3FtJIpOMnnJrWB8NapF5axCNug+XGDViaw+32ItJMR7W3Kw4INSx+HIRY/ZSwPzbi/8RNdDlG123c5FTmnZJWI4vDdvDtltj9MGugmTGmup67KbZWH2SEKXJAHerUgzEwPTFYObb1Oj2aitCv4N1C50W2u5YURWn4EhHIHtXqXgzV5tW06VpmZzG+Azd68ugURW8cWPvCvVPBdn9k8PRZ6yEsa68LOc6m+hyYulThh721bOiooor0jxwooooAKKKKACiiigAooooAKKKKACiiigArgPiJJDK1vAT88YLEeld/XH+K/C9zq10Lm1kQZXDhqxxEZSptROnCSjGqnJ2PPECsQ3rU3kKw5AIqo7G2byywJU7SRSTalHBCXZsAV48k7nu0pK1x08RGdmFHvVNY1yQGBY96y7vWRJljJ9FBqSx8Qae8sduco3TLd6PZy3B1IXsdRaw4tGHqKrJGA+DjParkc0KWzENwBnrWe9/Y87pRv7VFmzXmSLRtY5D86AH1q1b2Ua8gfpWUmoFMMSGj746itmC7ieEFSDmizC8egy5jA6VTnfbEF7scVYlmDZqg4ee9ijQE4OcDvTijGbLf2WSSeNl+5GPzr2DS4vJ0u2jHaMV51pelXdzcJEkTAE5ZmGAK9NiTyoUjH8KgV6GBi1ds8/MppqMEx9FFFegeUFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFNkBMTgdSpxTqKAPnTULh0vZo5PlcSMMH61zfiG5m+0R265C7N+R3NdL8RbKXT/Fd6BwrPvT6NzXPuVvY7XI/eE4JxXlOPLPU9eM+aFkYVtbmdv8Aj4CuD90nmrx8PyTsG89QRyDU+o6AXvI7mH5ZEIOexrp7SePyh9r0wsAMFom5qnPS8WXGg+quYeNeWBbdHVkAxnNUlsdRXJkLFgecmuyin0xc/wChXgOeBmor+aN42W0sWQn7rSNmpUmaSpPszlZLjULZdzkgGtzw/fXElq285GePas2bQbry2uri4dmP8A6AVfsf9DtAoGCxzt71FSzWgqfNGV2bv2sDhjye2a6LwHafbvEhndcpCu4VwfmL53m8gdvavWPhhaEaVPfMc+a+1fYDrVYaneaMcVV9xneBVXooH0FLRRXrHkBRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAeefFXwy2q6VHqdtGXntf9Yq9WT/AOtXhMdw0NxGoOArdzX1wQGUqwBB4INfN/xV8LjRvErz2CfuJh5hT+4T1xXNWpp6nTQqtaDg7C38xVEgI6VVj1uZGaNLCUkHkA1m6NroNmIpAN6nBHpWhBq0SXJOQCPUda4OVxbTR60aikk07F+PVW3Zkspl46Vp27faMP8AZ2jX/arIi1aGWXeOx5FacmsW0aZZx0qJt9EbRknq5C6k6RWzZ6elcxJLLK27cFQDim6hryXcpSMlip7d6gmluZEURw4ZuoAqoU2tzlq1VJ6E6z+e6wIG3NhVr6N8LacNL8N2VqAARGC2PU814Z4e0fyJo7ic7nYg4PavoW0x9jhx02D+VdmFcXJ2OHFKSir9Saiiiu04gooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACvJvif5VxqaBGDMkeGHpXqN3dJaws7noCa+el1htZ1fU5GJZRMQCe9c2Kl7ljrwkbzuc7e6Ornfb/ALubrwODWdKl7DkSW5ZsfeFdi8OO3TpUa2yyt8wriVR9TtdLXQ4yC6uoc7LaQs3qKlEGqahiORPKU967hbCORRhQpFS/Y1VMD86HXS2QvYSejZzWk6HHaj5suzHkmumt7RcfKAMUsNsVckcrV+GI4zWE6jkzop0ktB8Y2qvtWz4S8a3UPiBNIuyZI5X2Rk9vSsVztX6VX8L2L6h8RdP2fdhJlc+wrTCyaqWFi4J0230PeaKKK9k8EKKKKACiiigAooooAKKKKACiiigAooooAKKRmCjLHAqpLejGEH40m0h2LmcdaqT3qoCE5PrVKS5kYck0gHy89ahz7DSKl80lzbzLn5mQgflXz5oQa1uriB+GErhvrmvohgA1eJeLdLbRvHEm1cQXZ81D2z3rlrpuB2YSSU7FtUDAg1Ebc78rU0WdoNWAnSvO5j1eW4QIduMVKYW4z0p8YA7VOvNS2WokccKgdKk4A4FOIxRgYpFFG6kCRMx6AV1Pwx05oYrnWp0+a4+SLI521zlppkmvaollHkQg5lb2r1m1tY7W2jt4VCxRqFUCu7B03fnZ52Oq6ezRopMr+1S5B6VRyFFIJWz8tejznlWL9FUlvCDhu1WklWQcGqUkxWH0UUUxBRRRQAUUUUAFFISB1OKrzXaoPk5PrSbSAsFlXqQKrS3iKCF5NUZJGkfcTzTfrUOT6DsPeV5Tlm49KjJ44oJzTakoavzSCrB6VWPyncKsRurrwaQEUo4zWJ4j8O2/iCxXcALiLmKT+6a3pBxTLfkEehoaTVmOMnF3R5B9nmtJntrhdk0Zwwqyi7lzXoWueHIdUQyphboD5X9fY1w32aW0naC4QpIhwRXl16Lpu/Q9zDV41V5kSgrUqZ6CnNgCkjPcVz3OpIkIqPZLcTJbW67pHOOO1SxxS3M6wQLudj27V2eiaJFpx3MN855ZjW1Ci6jv0ObE4hUlbqWfD+iw6TbEKMyNy7eprZJPQUIMCncV68YqKsjw5ScndjNnrQcKKSSUL0qvvMje1BI49c0qsVOQaDSUDLcV3jh6tK6uMqc1lU5HZDkE01Jolo1aKqx3YPDjn1qyCGGQcitE0yRaKKKYHPedJIfmcn8anHKCqKt81XIW3RkehrBIsdilxQKKYBxTWFL3oPWmAwjiojGc5BwfarGKaF60AVpFlYFfNYVPZyQQQiN2IbuW7mkccg014w4zTA0FEbjKEH6GsTxBoa6hb+dEuLhBwf7w9KnSMo+VJH0NXEmlT7w3r+tTOCkrMuE5U5KUTy2QMrlGBBXgg9qsWFncajcCC2Qk/wATdlFdP4g8P/2jcx3FiQrucSqePxrb0vTbfS7UQwj5jyz9ya86ODfPaWx6s8wXs047si03RbfS7f5BvmYfM561fgjKuxJyD932p/mRKPmcVH9oHREJ9zXoxgoqyPJlJyd2CXEgdleMcHqDT2mYjhcUxQSSxxk0/FUIiwWPJqRQAKWloAKTFFFIBMUnanUqruIosAgU4zT0mePofwpW64HaozSsIl/tBv7goqrRRzSFYzI+TVq2f94ynuMiqsQxLH7ipk+W6X6kU0MuZoJqPJAPtRkmnYCRXB4p4GarBckkVNETjFIB9JTsUhoGRtQOmKU0lMAxz0qZsKmTTAKDl3C+lAiNRyWC8mpvL+X5iamEYAokHy01oIqBAOgqQLTgKWi4wFFFLSGJRS0tADM84pwGaRlyOO1CHigVxGODipF+VM1COWJqRj0X0oQCqeKaTSbsAmkHSmIjxRS0UrBczR96CpT/AMfa/WiigZa7H60naiimwFTvTk60UVKAkpD1oooGM70UUUwHjpT4PvtRRQhMn70x+lFFNiI6WiikUJR2oooAWlFFFAC+tRL/ABUUUdBdQTr+NP7miimBE/3fxp3aiigQ2iiikB//2Q==')]", "xpath:img"],
+        ["xpath=//p/img", "xpath:position"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "8e7b076d-0a24-4b43-a134-38649939626a",
+    "name": "UnassignCoordinator",
+    "commands": [{
+      "id": "25d4b0cd-8483-460c-8c63-f712c2b1d5e3",
+      "comment": "",
+      "command": "open",
+      "target": "http://10.1.4.119/grupos/CRCUCRCITICESE",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "5fac8cd6-3795-4d2b-8a27-307709c0ff2c",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1920x1080",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "04e61353-c5f9-495e-8dc3-4ccce6749e68",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-grid-item:nth-child(1) > .btn",
+      "targets": [
+        ["css=.mud-grid-item:nth-child(1) > .btn", "css:finder"],
+        ["xpath=//button[@onclick=\"document.getElementById('people').scrollIntoView({behavior:'smooth'})\"]", "xpath:attributes"],
+        ["xpath=//button", "xpath:position"],
+        ["xpath=//button[contains(.,'Personas')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "1c026548-4724-4101-83f1-dce85e55b564",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-paper:nth-child(13) > .mud-tooltip-root:nth-child(3) > #ToolButton .mud-icon-root",
+      "targets": [
+        ["css=.mud-paper:nth-child(13) > .mud-tooltip-root:nth-child(3) > #ToolButton .mud-icon-root", "css:finder"]
+      ],
+      "value": ""
+    }, {
+      "id": "c155adf3-0ff6-482f-88d5-ed1f658f08d3",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.text-danger",
+      "targets": [
+        ["css=.text-danger", "css:finder"],
+        ["xpath=//div[7]/p", "xpath:position"],
+        ["xpath=//p[contains(.,'Aún no hay un coordinador relacionado con este grupo')]", "xpath:innerText"]
+      ],
+      "value": "Aún no hay un coordinador relacionado con este grupo"
+    }]
+  }, {
+    "id": "eb3062ca-b35f-4458-bf3b-d2856717ec65",
+    "name": "ChangeCoordinatorCancel",
+    "commands": [{
+      "id": "2ea22188-9311-4e4f-aea5-fe6ede62111a",
+      "comment": "",
+      "command": "open",
+      "target": "http://10.1.4.119/grupos/CRCUCRCITICESE",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "70862839-b1b9-49d2-8ce4-c049f836c4bc",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1920x1080",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "fa41f582-f567-43b7-b0a0-72e908c33d82",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-grid-item:nth-child(1) > .btn",
+      "targets": [
+        ["css=.mud-grid-item:nth-child(1) > .btn", "css:finder"],
+        ["xpath=//button[@onclick=\"document.getElementById('people').scrollIntoView({behavior:'smooth'})\"]", "xpath:attributes"],
+        ["xpath=//button", "xpath:position"],
+        ["xpath=//button[contains(.,'Personas')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "57628a6d-8828-4442-905f-961291b967e9",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-paper:nth-child(13) path:nth-child(2)",
+      "targets": [
+        ["css=.mud-paper:nth-child(13) path:nth-child(2)", "css:finder"]
+      ],
+      "value": ""
+    }, {
+      "id": "4cc2285e-6a08-4099-8eb9-93da2a3fb3cc",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-button-text-primary > .mud-button-label",
+      "targets": [
+        ["css=.mud-button-text-primary > .mud-button-label", "css:finder"],
+        ["xpath=//div[@id='_e2096b3279b642f2a20b7c3ae464a82f']/div[2]/div[5]/div/button/span", "xpath:idRelative"],
+        ["xpath=//span", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "e6db3d04-1557-4e7c-a061-2734a1a6224c",
+      "comment": "",
+      "command": "verifyElementPresent",
+      "target": "css=.text-danger",
+      "targets": [
+        ["css=.text-danger", "css:finder"],
+        ["xpath=//div[7]/p", "xpath:position"],
+        ["xpath=//p[contains(.,'Aún no hay un coordinador relacionado con este grupo')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "8d79dc3d-0422-4888-b61b-c3905176b6e7",
+    "name": "AddResearcher",
+    "commands": [{
+      "id": "0a6372ca-08f7-4a80-a36d-9902b95e45af",
+      "comment": "",
+      "command": "open",
+      "target": "http://10.1.4.119/grupos/CRCUCRCITICESE",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "1d1a6f04-cf88-4d35-9404-d8774b56d1f9",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1920x1080",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "3dbb2015-d44d-47af-8b42-8b0fe2587abb",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-grid-item:nth-child(1) > .btn",
+      "targets": [
+        ["css=.mud-grid-item:nth-child(1) > .btn", "css:finder"],
+        ["xpath=//button[@onclick=\"document.getElementById('people').scrollIntoView({behavior:'smooth'})\"]", "xpath:attributes"],
+        ["xpath=//button", "xpath:position"],
+        ["xpath=//button[contains(.,'Personas')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "5d4d5725-d0ed-48ab-b204-af443f71ffa3",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-paper:nth-child(22) .mud-button-label",
+      "targets": [
+        ["css=.mud-paper:nth-child(22) .mud-button-label", "css:finder"],
+        ["xpath=//div[10]/button/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Ver más\n')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "1b0ff72b-330d-4363-b5fc-5f3a040ca5bb",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "css=.mud-paper:nth-child(22) .mud-button-label",
+      "targets": [
+        ["css=.mud-paper:nth-child(22) .mud-button-label", "css:finder"],
+        ["xpath=//div[10]/button/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Ver más\n')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "448d71d2-f164-492e-84cd-97a0b1606355",
+      "comment": "",
+      "command": "mouseOut",
+      "target": "css=.mud-paper:nth-child(22) .mud-button-label",
+      "targets": [
+        ["css=.mud-paper:nth-child(22) .mud-button-label", "css:finder"],
+        ["xpath=//div[10]/button/span", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "ba45388e-b477-42d7-8061-fe81dcda392a",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-paper:nth-child(17) > .mud-tooltip-root:nth-child(2) > #ToolButton path:nth-child(2)",
+      "targets": [
+        ["css=.mud-paper:nth-child(17) > .mud-tooltip-root:nth-child(2) > #ToolButton path:nth-child(2)", "css:finder"]
+      ],
+      "value": ""
+    }, {
+      "id": "b02eadd8-935d-4a77-aa75-d03bcd662fab",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-input-slot:nth-child(1)",
+      "targets": [
+        ["css=.mud-input-slot:nth-child(1)", "css:finder"],
+        ["xpath=//input[@type='text']", "xpath:attributes"],
+        ["xpath=//div[@id='select_829c6ea5']/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "507573fd-00f5-4163-a23d-a9a9b2f07d8c",
+      "comment": "",
+      "command": "click",
+      "target": "css=#\\_8a03f2b6 .mud-typography",
+      "targets": [
+        ["css=#\\_8a03f2b6 .mud-typography", "css:finder"],
+        ["xpath=//div[@id='_8a03f2b6']/div[2]/p", "xpath:idRelative"],
+        ["xpath=//div[9]/div/div/div[2]/p", "xpath:position"],
+        ["xpath=//p[contains(.,'Braulio Solano Rojas')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "4570bdc5-f885-4426-be1d-d3aad65180dd",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-button-filled:nth-child(2) > .mud-button-label",
+      "targets": [
+        ["css=.mud-button-filled:nth-child(2) > .mud-button-label", "css:finder"],
+        ["xpath=//div[@id='_57d7bff9d8c7407c98effdabfa99aac5']/div[2]/div[5]/div/button[2]/span", "xpath:idRelative"],
+        ["xpath=//button[2]/span", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "71654ed7-4bce-41a9-9889-5c6be61f8310",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "css=.mud-grid-item:nth-child(8) .mud-image",
+      "targets": [
+        ["css=.mud-grid-item:nth-child(8) .mud-image", "css:finder"],
+        ["xpath=//div[8]/div/div/p/img", "xpath:position"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "9cdccad3-d507-47c5-b56d-c3ef8cf6b03e",
+    "name": "RemoveResearcher",
+    "commands": [{
+      "id": "f3b6cd47-041c-4ca3-8347-80b27f650a7e",
+      "comment": "",
+      "command": "open",
+      "target": "http://10.1.4.119/grupos/CRCUCRCITICESE",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "f3345190-d514-437c-98b4-be50a41216a7",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1920x1040",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "389fd88e-4fe9-4fc6-b12d-af99fa93a638",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-grid-item:nth-child(1) > .btn",
+      "targets": [
+        ["css=.mud-grid-item:nth-child(1) > .btn", "css:finder"],
+        ["xpath=//button[@onclick=\"document.getElementById('people').scrollIntoView({behavior:'smooth'})\"]", "xpath:attributes"],
+        ["xpath=//button", "xpath:position"],
+        ["xpath=//button[contains(.,'Personas')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "e7145c07-e469-470b-bcde-e4ea03572005",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-paper:nth-child(22) .mud-button-label",
+      "targets": [
+        ["css=.mud-paper:nth-child(22) .mud-button-label", "css:finder"],
+        ["xpath=//div[10]/button/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Ver más\n')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "3d4a6851-3094-45ab-83f9-06b31cbce011",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-paper > .mud-tooltip-root:nth-child(3) > #ToolButton path:nth-child(2)",
+      "targets": [
+        ["css=.mud-paper > .mud-tooltip-root:nth-child(3) > #ToolButton path:nth-child(2)", "css:finder"]
+      ],
+      "value": ""
+    }, {
+      "id": "f4414a39-cd00-4e7f-b5ed-190bf8e96461",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "css=.mud-paper > .mud-tooltip-root:nth-child(3) > #ToolButton path:nth-child(2)",
+      "targets": [
+        ["css=.mud-paper > .mud-tooltip-root:nth-child(3) > #ToolButton path:nth-child(2)", "css:finder"]
+      ],
+      "value": ""
+    }, {
+      "id": "5d09980e-9248-4da1-9d81-2aa4ed62d63b",
+      "comment": "",
+      "command": "mouseOut",
+      "target": "css=.mud-paper > .mud-tooltip-root:nth-child(3) > #ToolButton path:nth-child(2)",
+      "targets": [
+        ["css=.mud-paper > .mud-tooltip-root:nth-child(3) > #ToolButton path:nth-child(2)", "css:finder"]
+      ],
+      "value": ""
+    }, {
+      "id": "3952a7af-5c3e-4227-905d-97c1e9c519b2",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-input-slot:nth-child(1)",
+      "targets": [
+        ["css=.mud-input-slot:nth-child(1)", "css:finder"],
+        ["xpath=//input[@type='text']", "xpath:attributes"],
+        ["xpath=//div[@id='select_837f4960']/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "e087964d-ebca-4b9e-aafe-a66f436fad8f",
+      "comment": "",
+      "command": "click",
+      "target": "css=#\\_e98b9115 .mud-typography",
+      "targets": [
+        ["css=#\\_e98b9115 .mud-typography", "css:finder"],
+        ["xpath=//div[@id='_e98b9115']/div[2]/p", "xpath:idRelative"],
+        ["xpath=//div[7]/div[2]/p", "xpath:position"],
+        ["xpath=//p[contains(.,'Braulio Solano Rojas')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "8170ba20-8375-4a04-b3e8-b7191e60cbe8",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-button-filled:nth-child(2)",
+      "targets": [
+        ["css=.mud-button-filled:nth-child(2)", "css:finder"],
+        ["xpath=(//button[@type='button'])[2]", "xpath:attributes"],
+        ["xpath=//div[@id='_6f736f2d58f9479ba40f00f965886066']/div[2]/div[5]/div/button[2]", "xpath:idRelative"],
+        ["xpath=//button[2]", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "fc5f6bea-7fd6-474a-87e3-0cc9512872a5",
+      "comment": "",
+      "command": "assertElementNotPresent",
+      "target": "css=.mud-grid-item:nth-child(8) .mud-image",
+      "targets": [
+        ["css=.mud-grid-item:nth-child(8) .mud-image", "css:finder"],
+        ["xpath=//div[8]/div/div/p/img", "xpath:position"]
+      ],
+      "value": ""
+    }]
+  }],
+  "suites": [{
+    "id": "a30a7015-d4cc-4f3a-a6a5-c9d123ba8c9a",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": []
+  }],
+  "urls": ["http://10.1.4.119/grupos/CRCUCRCITICESE"],
+  "plugins": []
+}

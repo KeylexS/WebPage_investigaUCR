@@ -1,0 +1,32 @@
+﻿@using Application.ResearchAreas
+@using Application.Shared
+@using Domain.ResearchAreas.Entities
+@using Domain.Shared.Charts.Entities
+@using Presentation.Core.Components
+@using Presentation.Charts.Core
+@inject IResearchAreasService AreasService
+@inject IChartService ChartsService
+
+<Loading IsLoading="_isLoading">
+    <MudText Class="alternate" Align="Align.Center" Style="font: 24px Helvetica">Proyectos de investigación activos por año y por área.</MudText>
+    <TableGraph table="_table"/>
+</Loading>
+
+@code {
+    private bool _isLoading { get; set; }
+    private IEnumerable<ResearchArea>? _areas { get; set; }
+    private Table? _table { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTable();
+    }
+
+    private async Task LoadTable()
+    {
+        _isLoading = true;
+        _areas = await AreasService.GetResearchAreaAsync();
+        _table = ChartsService.GetResearchProjectsTable(2015, 2021, _areas);
+        _isLoading = false;
+    }
+}

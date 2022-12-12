@@ -1,0 +1,78 @@
+﻿@using Application.People
+@using Domain.People.Entities
+@inject IPeopleService PeopleService
+@inject IGroupService GroupService
+
+<MudDialog>
+    <DialogContent>
+        <MudContainer Style="max-height: 500px; overflow-y: scroll">
+            <Loading IsLoading="_isLoading">
+                <MudAutocomplete T="Person" Label="Seleccione a la persona coordinadora" @bind-Value="person" SearchFunc="@SearchPeople"
+                             ResetValueOnEmptyText="@resetValueOnEmptyText" AdornmentIcon="@Icons.Material.Filled.Group" AdornmentColor="Color.Primary" AnchorOrigin=" Origin.BottomCenter"
+                             CoerceText="@coerceText" CoerceValue="@coerceValue" ToStringFunc="@(p => p == null?null : p.Name.Value+" "+p.LastName1.Value+" "+p.LastName2.Value)"/>
+            </Loading>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudToolBar Class="d-flex justify-start flex-grow-1 gap-4">
+            <MudButton OnClick="Close" Color="Color.Primary">Cancelar</MudButton>
+            <MudButton OnClick="SelectPerson" Color="Color.Primary" Variant="Variant.Filled">Confirmar</MudButton>
+        </MudToolBar>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = null!;
+    [Parameter]
+    public Group _group { get; set; } = null!;
+    [Parameter]
+    public EventCallback<Person?> ChangeCoordinator { get; set; }
+
+    private IEnumerable<Person>? _people { get; set; } = null!;
+    private bool _isLoading { get; set; } = false;
+    private Person? person { get; set; } = null!;
+    private bool resetValueOnEmptyText = false, coerceText = false, coerceValue = false;
+
+    void Close() => MudDialog.Close(DialogResult.Ok(true));
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPeople();
+    }
+
+    private async Task LoadPeople()
+    {
+        _isLoading = true;
+        _people = await PeopleService.GetPeopleAsync();
+        _isLoading = false;
+    }
+
+    /// <summary>
+    /// Method <c>SearchPeople</c> Searchs people by name 
+    /// </summary>
+    /// <param name="value">Text written on the input field</param>
+    /// <returns>list of people with a matching name</returns>
+    private async Task<IEnumerable<Person>> SearchPeople(String value)
+    {
+        await Task.Delay(1);
+        List<Person> names = new List<Person>();
+        @foreach (var p in _people!)
+        {
+            if(_group.Coordinator != p)
+                names.Add(p);
+        }
+        // if text is null or empty, show complete list
+        if (string.IsNullOrEmpty(value))
+            return names;
+        return names.Where(x => x.Name.Value.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    private async Task SelectPerson()
+    {
+        if(person is not null)
+        {
+            await ChangeCoordinator.InvokeAsync(person);
+        }
+        Close();
+    }
+}

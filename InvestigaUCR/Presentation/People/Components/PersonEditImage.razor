@@ -1,0 +1,163 @@
+﻿@using Application.People
+@using Application.Shared.ImageConverter;
+@using Domain.Core.Exceptions
+@using Domain.People.Entities
+@using Domain.Users.Entities
+@using Microsoft.AspNetCore.Components.Forms
+@using Application.Users;
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IUserService UserService
+@inject IPeopleService PersonService
+@inject IImageService ImageService
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+
+@*PIIB22II02-1132 MC-PL-6.3 Update people image | PIIB22II02-1277 Show edit message and allow upload image*@
+
+@if (isEditingImage) {
+    <MudGrid Class="d-flex align-center justify-center" Style="gap: 29px;">
+        <MudItem></MudItem><MudItem></MudItem><MudItem></MudItem> 
+        <MudItem>
+            <MudImage Src="@getImage(editImage)" Elevation="0" Class="rounded-circle" Width="165" Height="165" ObjectFit="ObjectFit.Cover" Style="border-radius: 50%; " />
+            <ToolButton _placement="Placement.Right" _text="Cancelar" _icon="@Icons.Filled.Cancel" onClick="EditingImage" />            
+            <MudTooltip Placement="Placement.Right" Text="Subir">
+                <InputFile id="fileInput" OnChange="HandleSelection" accept="image/png, image/jpeg, image/jpg" hidden/>
+                    <MudIconButton Icon="@Icons.Filled.Upload" 
+                                HtmlTag="label"                              
+                                for="fileInput"/>                    
+            </MudTooltip>
+            <ToolButton _placement="Placement.Right" _text="Subir" _icon="@Icons.Filled.Check" onClick="ChangeImage" />
+        </MudItem>
+    </MudGrid>
+}else{
+    @if (_personDeleteMessage is not null)
+    {
+        <Alert Color="personAlertColor">
+            @_personDeleteMessage
+        </Alert>
+    }
+    <MudGrid Class="d-flex align-center justify-center" Style="gap: 0.219rem">
+        @if (userEmail == _person!.Id.ToString())
+        {
+            @*four item spaces*@
+            <MudItem></MudItem><MudItem></MudItem><MudItem></MudItem><MudItem></MudItem>
+        }
+        else
+        {
+            <AuthorizeView Roles="AdminRole">
+                <MudItem></MudItem><MudItem></MudItem><MudItem></MudItem><MudItem></MudItem>
+            </AuthorizeView>
+        }
+        <MudItem>
+            @if (userEmail == _person.Id.ToString())
+            {
+                <MudImage Src="@getImage(_person!.ProfilePicture)" Elevation="0" Class="rounded-circle" Width="165" Height="165" ObjectFit="ObjectFit.Cover" Style="border-radius: 50%;" />
+                <ToolButton _placement="Placement.Right" _text="Editar imagen" _icon="@Icons.Filled.Edit" onClick="EditingImage" />
+                <ToolButton _placement="Placement.Right" _text="Eliminar Persona" _icon="@Icons.Filled.DeleteForever" onClick="OnDeletePersonClicked" />
+            }else{
+                if (userEmail != "")
+                {
+                    <MudImage Src="@getImage(_person!.ProfilePicture)" Elevation="0" Class="rounded-circle" Width="165" Height="165" ObjectFit="ObjectFit.Cover" Style="border-radius: 50%;" />
+                    <AuthorizeView Roles="AdminRole">
+                        <ToolButton _placement="Placement.Right" _text="Editar imagen" _icon="@Icons.Filled.Edit" onClick="EditingImage" />
+                        <ToolButton _placement="Placement.Right" _text="Eliminar Persona" _icon="@Icons.Filled.DeleteForever" onClick="OnDeletePersonClicked" />
+                    </AuthorizeView>
+                }else{
+                    <MudImage Src="@getImage(_person!.ProfilePicture)" Elevation="0" Class="rounded-circle" Width="165" Height="165" ObjectFit="ObjectFit.Cover" Style="border-radius: 50%;" />
+                }
+            }
+        </MudItem>
+    </MudGrid>
+}
+
+@code {
+    [Parameter] public EventCallback<byte[]> OnImageEdit { get; set; }
+    [Parameter] public Person? _person { get; set; } = null!;
+    private bool isEditingImage = false;
+    private byte[]? editImage { get; set; } = null!;
+    private List<IBrowserFile> loadedFiles = new();
+    public string? personImageMessage { get; set; } = null;
+    public Alert.AlertColor personAlertColor = Alert.AlertColor.Danger;
+    private string? userEmail { get; set; }
+    private UserAccount? _userAccount;
+    public string? _personDeleteMessage { get; set; } = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        userEmail = await UserService.GetCurrentUserEmail();
+        if (userEmail != "")
+        {
+            _userAccount = await UserService.GetCurrentUserAccount();
+        }
+    }
+
+    private void EditingImage()
+    {
+        if (!isEditingImage)
+        {
+            editImage = _person!.ProfilePicture;
+        }
+        isEditingImage = !isEditingImage;
+    }
+
+    private void ChangeImage()
+    {
+        OnImageEdit.InvokeAsync(editImage);
+        isEditingImage = !isEditingImage;
+    }
+
+    private async Task HandleSelection(InputFileChangeEventArgs e)
+    {
+        loadedFiles.Clear();
+        loadedFiles.Add(e.File);
+
+        foreach (var file in loadedFiles)
+        {
+            Stream stream = file.OpenReadStream();
+            MemoryStream ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            stream.Close();
+
+            editImage = ms.ToArray();
+            ms.Close();
+            StateHasChanged();
+        }
+    }
+
+    private async void OnDeletePersonClicked()
+    {
+        try
+        {
+            bool? resultMessage = await DialogService.ShowMessageBox(
+                "Advertencia",
+                "La eliminación de la persona no podrá deshacerse",
+                yesText: "Borrar Persona!", cancelText: "Cancelar");
+            if (resultMessage != null)
+            {
+                await PersonService.DeletePerson(_person!);
+                NavigationManager.NavigateTo("/personas", true);
+            }
+        }
+        catch (DomainException e)
+        {
+            _personDeleteMessage = e.Message;
+            StateHasChanged();
+            await Task.Delay(5000);
+            _personDeleteMessage = null;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            _personDeleteMessage = "Ocurrió un error. Intente de nuevo.";
+            StateHasChanged();
+            await Task.Delay(5000);
+            _personDeleteMessage = null;
+            StateHasChanged();
+        }
+    }
+
+    public String getImage(byte[]? img)
+    {
+        return img != null ? ImageService.ConvertByteToImage(img) : "/Images/DefaultImages/profile_photo.png";
+    }
+}

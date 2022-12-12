@@ -1,0 +1,87 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using Presentation.Core.Components;
+@using Domain.Users.Entities;
+@inherits LayoutComponentBase
+@inject NavigationManager NavManager
+@inject IUserService UserService
+@inject IImageService ImageService
+@inject IDialogService DialogService
+@using Application.Users;
+@using Presentation.News.Components
+@using Presentation.Users.Components
+
+@if (isEditingImage) {
+    <MudGrid Class="d-flex align-center justify-center" Style="gap: 29px;">
+        <MudItem>
+            <MudImage Src="@getImage(editImage)" Elevation="0" Class="rounded-circle" Width="165" Height="165" ObjectFit="ObjectFit.Cover" Style="border-radius: 50%; " />
+        </MudItem>
+    </MudGrid>
+    <MudText Align="Align.Center">
+        <ToolButton _placement="Placement.Right" _text="Cancelar" _icon="@Icons.Filled.Cancel" onClick="EditingImage" />
+        <MudTooltip Placement="Placement.Right" Text="Subir">
+            <InputFile id="fileInput" OnChange="HandleSelection" accept="image/png, image/jpeg, image/jpg" hidden />
+            <MudIconButton Icon="@Icons.Filled.Upload"
+                        HtmlTag="label"
+                        for="fileInput" />
+        </MudTooltip>
+        <ToolButton _placement="Placement.Right" _text="Subir" _icon="@Icons.Filled.Check" onClick="ChangeImage" />
+    </MudText>
+}
+else
+{
+    <MudGrid Class="d-flex align-center justify-center" Style="gap: 0.219rem">
+        <MudItem>
+        <MudImage Src="@getImage(_userAccount.ProfilePicture)" Elevation="0" Class="rounded-circle" Width="165" Height="165" ObjectFit="ObjectFit.Cover" Style="border-radius: 50%; " />
+        </MudItem>
+    </MudGrid>
+    <MudText Align="Align.Center"><ToolButton _placement="Placement.Bottom" _text="Editar imagen" _icon="@Icons.Filled.Edit" onClick="EditingImage" /></MudText>
+                        
+} 
+
+@code {
+    [Parameter] public EventCallback<byte[]> OnImageEdit { get; set; }
+    [Parameter] public UserAccount? _userAccount { get; set; } = null!;
+    private bool isEditingImage = false;
+    private byte[]? editImage { get; set; } = null!;
+    private List<IBrowserFile> loadedFiles = new();
+    public string? userImageMessage { get; set; } = null;
+    public Alert.AlertColor userAlertColor = Alert.AlertColor.Danger;
+
+    private void EditingImage()
+    {
+        if (!isEditingImage)
+        {
+            editImage = _userAccount!.ProfilePicture;
+        }
+        isEditingImage = !isEditingImage;
+    }
+
+    private void ChangeImage()
+    {
+        OnImageEdit.InvokeAsync(editImage);
+        isEditingImage = !isEditingImage;
+    }
+
+    private async Task HandleSelection(InputFileChangeEventArgs e)
+    {
+        loadedFiles.Clear();
+        loadedFiles.Add(e.File);
+
+        foreach (var file in loadedFiles)
+        {
+            Stream stream = file.OpenReadStream();
+            MemoryStream ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            stream.Close();
+
+            editImage = ms.ToArray();
+            ms.Close();
+            StateHasChanged();
+        }
+    }
+
+    public String getImage(byte[]? img)
+    {
+        return img != null ? ImageService.ConvertByteToImage(img) : "/Images/DefaultImages/profile_photo.png";
+    }
+}

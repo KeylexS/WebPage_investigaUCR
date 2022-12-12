@@ -1,0 +1,55 @@
+﻿@using Domain.People.Entities
+@using Application.People;
+@inject IImageService ImageService
+
+@*PIIB22II02-153 MC-PL-1.6 Organize card of the coordinator role in a research group Task: PIIB22II02-1039 Create coordinator component*@
+
+<div class="container">
+    @if (_coordinator == null)
+    {
+        <MudText Align="Align.Center" Color=Color.Warning Typo="Typo.body2" Class="text-danger">Aún no hay un coordinador relacionado con este grupo</MudText>
+    }
+    else
+    {
+        <span style="white-space: pre-line"></span>
+        <p>
+            <MudGrid Spacing="@spacing" Justify="Justify.Center">
+                <MudItem lg="3">
+                    <MudCard Outlined="true" Elevation="0">
+                        <MudCardContent>
+                            <MudText Align="Align.Center"><MudImage Src="@getImage(_coordinator.ProfilePicture)" Elevation="0" Class="rounded-circle" Style="align-content" Width="100" Height="100" Fluid="true" /></MudText>
+                            <MudText Align="Align.Center" Typo="Typo.h3" Style="display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden"><MudLink Color="Color.Default" Typo="Typo.h3" Href="@($"/personas/{_coordinator.Id}")">@_coordinator.HighestDegree.ToString() @_coordinator.Name.ToString() @_coordinator.LastName1.ToString()</MudLink></MudText>
+                            <MudText Align="Align.Center" Typo="Typo.body2" Style="display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden">@_coordinator.University.ToString()</MudText>
+                            <MudText Align="Align.Center" Typo="Typo.body2" Style="display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden"> <MudLink Typo="Typo.body2" Underline="Underline.Always">@_coordinator.Id.ToString().ToLower()</MudLink></MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+        </p>
+    }
+</div>
+
+@code {
+    public int spacing { get; set; } = 4;
+    [Parameter]
+    public Person? _coordinator { get; set; }
+
+    //[Parameter]
+    //public String? GroupId { get; set; }
+
+    public String getImage(byte[]? img)
+    {
+        return img != null ? ImageService.ConvertByteToImage(img) : "/Images/DefaultImages/profile_photo.png";
+    }
+
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    await LoadCoordinator();
+    //}
+
+    //private async Task LoadCoordinator()
+    //{
+    //    _coordinator = await CoordinatorService.GetCoordinatorByGroupIdAsync(GroupId);
+    //}
+}
+

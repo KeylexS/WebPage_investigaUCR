@@ -1,0 +1,114 @@
+﻿@using Application.Shared.ImageConverter
+@using Domain.Core.Helpers
+@using Domain.Core.ValueObjects
+@using Domain.People.Entities
+@using Domain.People.ValueObjects
+@using Presentation.People.Components
+
+@inherits TestContext
+
+@code {
+    internal class FallbackServiceProvider : IServiceProvider
+    {
+        public object GetService(Type serviceType)
+        {
+            return new ImageService();
+        }
+    }
+
+    internal class ImageService : IImageService
+    {
+        public string ConvertByteToImage(byte[] img)
+        {
+            return "/Images/DefaultImages/profile_photo.png";
+        }
+
+        public byte[] ConvertImageToByte(string url)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public Coordinator GetCoordinator() {
+        return new Coordinator("Group1", "Email1", RequiredString.TryCreate("Sivana").Success(), RequiredString.TryCreate("Hamer").Success(),
+                RequiredString.TryCreate("Coronas").Success(), PersonHighestDegree.TryCreate("Bach.").Success(),
+                RequiredString.TryCreate("Universidad de Costa Rica").Success(), null);
+    }
+
+    [Fact]
+    public void CoordinatorCardHasImage()
+    {
+        Services.AddFallbackServiceProvider(new FallbackServiceProvider());
+
+        var cut = Render(@<CoordinatorCard _coordinator="GetCoordinator()"></CoordinatorCard>);
+        var actualMudCard = cut.FindComponent<MudCard>();
+        var actualMudText = actualMudCard.FindComponents<MudText>().ElementAt(0);
+
+        actualMudText.MarkupMatches(@"<p class=""mud-typography mud-typography-body1 mud-typography-align-center"">
+          <img src=""/Images/DefaultImages/profile_photo.png"" class=""mud-image fluid object-fill object-center rounded-circle"" style=""align-content"" width=""100"" height=""100"">
+        </p>");
+    }
+
+    [Fact]
+    public void CoordinatorCardHasName() {
+        Services.AddFallbackServiceProvider(new FallbackServiceProvider());
+
+        var cut = Render(@<CoordinatorCard _coordinator="GetCoordinator()"></CoordinatorCard>);
+        var actualMudCard = cut.FindComponent<MudCard>();
+        var actualMudText = actualMudCard.FindComponents<MudText>().ElementAt(1);
+
+        actualMudText.MarkupMatches(@"<h3 class=""mud-typography mud-typography-h3 mud-typography-align-center"" style=""display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden"">
+          <a href=""/personas/Email1"" class=""mud-typography mud-link mud-default-text mud-link-underline-hover mud-typography-h3"">Bach. Sivana Hamer</a>
+        </h3>");
+    }
+
+    [Fact]
+    public void CoordinatorCardHasUniversity()
+    {
+        Services.AddFallbackServiceProvider(new FallbackServiceProvider());
+
+        var cut = Render(@<CoordinatorCard _coordinator="GetCoordinator()"></CoordinatorCard>);
+        var actualMudCard = cut.FindComponent<MudCard>();
+        var actualMudText = actualMudCard.FindComponents<MudText>().ElementAt(2);
+
+        actualMudText.MarkupMatches(@"<p class=""mud-typography mud-typography-body2 mud-typography-align-center"" style=""display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden"">Universidad de Costa Rica</p>");
+    }
+
+    [Fact]
+    public void CoordinatorCardHasEmail()
+    {
+        Services.AddFallbackServiceProvider(new FallbackServiceProvider());
+
+        var cut = Render(@<CoordinatorCard _coordinator="GetCoordinator()"></CoordinatorCard>);
+        var actualMudCard = cut.FindComponent<MudCard>();
+        var actualMudText = actualMudCard.FindComponents<MudText>().ElementAt(3);
+
+        actualMudText.MarkupMatches(@"<p class=""mud-typography mud-typography-body2 mud-typography-align-center"" style=""display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden"">
+          <a class=""mud-typography mud-link mud-primary-text mud-link-underline-always mud-typography-body2"">email1</a>
+        </p>");
+    }
+
+    [Fact]
+    public void CoordinatorCardExists()
+    {
+        Services.AddFallbackServiceProvider(new FallbackServiceProvider());
+
+        var cut = Render(@<CoordinatorCard _coordinator="GetCoordinator()"></CoordinatorCard>);
+        var actualMudCard = cut.FindComponent<MudCard>();
+
+        actualMudCard.MarkupMatches(@"<div class=""mud-paper mud-paper-outlined mud-card"" style="""">
+          <div class=""mud-card-content"">
+            <p class=""mud-typography mud-typography-body1 mud-typography-align-center"">
+              <img src=""/Images/DefaultImages/profile_photo.png"" class=""mud-image fluid object-fill object-center rounded-circle"" style=""align-content"" width=""100"" height=""100"">
+            </p>
+            <h3 class=""mud-typography mud-typography-h3 mud-typography-align-center"" style=""display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden"">
+              <a href=""/personas/Email1"" class=""mud-typography mud-link mud-default-text mud-link-underline-hover mud-typography-h3"">Bach. Sivana Hamer</a>
+            </h3>
+            <p class=""mud-typography mud-typography-body2 mud-typography-align-center"" style=""display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden"">Universidad de Costa Rica</p>
+            <p class=""mud-typography mud-typography-body2 mud-typography-align-center"" style=""display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden"">
+              <a class=""mud-typography mud-link mud-primary-text mud-link-underline-always mud-typography-body2"">email1</a>
+            </p>
+          </div>
+        </div>");
+    }
+}

@@ -1,0 +1,454 @@
+{
+  "id": "dc087c93-b973-4e5a-aae6-23ca1135718d",
+  "version": "2.0",
+  "name": "TestLaboratorioUI",
+  "url": "https://localhost:7075",
+  "tests": [{
+    "id": "3ff1f171-b086-47b6-8ef0-ada1bc1cbfcb",
+    "name": "Busqueda",
+    "commands": [{
+      "id": "e8e810dd-9fc9-46ed-82e7-4e10f69c7f80",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "2c4194a1-9f07-4da6-bbb3-8f45be6e0717",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1936x1048",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "4b557ac9-293e-4698-b839-bb10342300b4",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-button-root:nth-child(2) > .mud-button-label",
+      "targets": [
+        ["css=.mud-button-root:nth-child(2) > .mud-button-label", "css:finder"],
+        ["xpath=//a[2]/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Proyectos')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "faa71ea7-6486-4678-b4fa-258a397c2d30",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-input-slot:nth-child(1)",
+      "targets": [
+        ["css=.mud-input-slot:nth-child(1)", "css:finder"],
+        ["xpath=//input[@type='text']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "17997914-d821-4a85-bc8c-021fc35a2bf0",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-input-slot:nth-child(1)",
+      "targets": [
+        ["css=.mud-input-slot:nth-child(1)", "css:finder"],
+        ["xpath=//input[@type='text']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "4eda17f9-ed5c-4368-96f3-9e618abd5c14",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-input-slot:nth-child(1)",
+      "targets": [
+        ["css=.mud-input-slot:nth-child(1)", "css:finder"],
+        ["xpath=//input[@type='text']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "d879f8e5-86ab-439e-b06e-4fc97661bf17",
+      "comment": "",
+      "command": "type",
+      "target": "css=.mud-input-slot:nth-child(1)",
+      "targets": [
+        ["css=.mud-input-slot:nth-child(1)", "css:finder"],
+        ["xpath=//input[@type='text']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "Evaluac"
+    }, {
+      "id": "4083cfdf-8b0c-4be6-bd40-726010bc7985",
+      "comment": "",
+      "command": "assertText",
+      "target": "linkText=Implementación de un cuestionario estandarizado de evaluación de experiencia de usuario a través de asistentes inteligentes por voz",
+      "targets": [
+        ["linkText=Implementación de un cuestionario estandarizado de evaluación de experiencia de usuario a través de asistentes inteligentes por voz", "linkText"],
+        ["css=.mud-grid-item:nth-child(2) .mud-typography > .mud-typography", "css:finder"],
+        ["xpath=//a[contains(text(),'Implementación de un cuestionario estandarizado de evaluación de experiencia de usuario a través de asistentes inteligentes por voz')]", "xpath:link"],
+        ["xpath=//a[contains(@href, '/proyectos/834-C1-013')]", "xpath:href"],
+        ["xpath=//div[2]/div/div[2]/h3/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Implementación de un cuestionario estandarizado de evaluación de experiencia de usuario a través de asistentes inteligentes por voz')]", "xpath:innerText"]
+      ],
+      "value": "Implementación de un cuestionario estandarizado de evaluación de experiencia de usuario a través de asistentes inteligentes por voz"
+    }]
+  }, {
+    "id": "8fd4e651-d8f2-4aa8-ab22-d12fbefad823",
+    "name": "Agregar_Proyecto",
+    "commands": [{
+      "id": "13e69d0b-2a51-4f6d-ad81-0d530629cd34",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "8475c645-a0ee-46a7-8125-7819645d7587",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1936x1048",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "3661430f-cb24-4873-88d8-c0064c498f63",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-button-root:nth-child(2) > .mud-button-label",
+      "targets": [
+        ["css=.mud-button-root:nth-child(2) > .mud-button-label", "css:finder"],
+        ["xpath=//a[2]/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Proyectos')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "fbcf88e5-03be-4b53-86a8-51207e450630",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Iniciar Sesión",
+      "targets": [
+        ["linkText=Iniciar Sesión", "linkText"],
+        ["css=.mud-link:nth-child(2)", "css:finder"],
+        ["xpath=//a[contains(text(),'Iniciar Sesión')]", "xpath:link"],
+        ["xpath=//a[contains(@href, 'Identity/Account/Login')]", "xpath:href"],
+        ["xpath=//a[2]", "xpath:position"],
+        ["xpath=//a[contains(.,'Iniciar Sesión')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "408274da-5117-4839-b9ac-f21c020e6da0",
+      "comment": "",
+      "command": "click",
+      "target": "id=Email",
+      "targets": [
+        ["id=Email", "id"],
+        ["name=Input.Email", "name"],
+        ["css=#Email", "css:finder"],
+        ["xpath=//input[@id='Email']", "xpath:attributes"],
+        ["xpath=//form[@id='account']/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "7d6cbc82-8ca9-4a49-9eb9-45bc510c3e05",
+      "comment": "",
+      "command": "type",
+      "target": "id=Email",
+      "targets": [
+        ["id=Email", "id"],
+        ["name=Input.Email", "name"],
+        ["css=#Email", "css:finder"],
+        ["xpath=//input[@id='Email']", "xpath:attributes"],
+        ["xpath=//form[@id='account']/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "admin@admin.com"
+    }, {
+      "id": "d2a8c9cc-3321-4441-a442-a0afededb70c",
+      "comment": "",
+      "command": "click",
+      "target": "id=Contrasena",
+      "targets": [
+        ["id=Contrasena", "id"],
+        ["name=Input.Password", "name"],
+        ["css=#Contrasena", "css:finder"],
+        ["xpath=//input[@id='Contrasena']", "xpath:attributes"],
+        ["xpath=//form[@id='account']/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "285c491b-423d-462e-ac02-4d68fb6ad848",
+      "comment": "",
+      "command": "type",
+      "target": "id=Contrasena",
+      "targets": [
+        ["id=Contrasena", "id"],
+        ["name=Input.Password", "name"],
+        ["css=#Contrasena", "css:finder"],
+        ["xpath=//input[@id='Contrasena']", "xpath:attributes"],
+        ["xpath=//form[@id='account']/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": "Abc!12"
+    }, {
+      "id": "2a089ccd-5f6d-4aab-9685-4554eae01cf0",
+      "comment": "",
+      "command": "click",
+      "target": "id=login-submit",
+      "targets": [
+        ["id=login-submit", "id"],
+        ["css=#login-submit", "css:finder"],
+        ["xpath=//button[@id='login-submit']", "xpath:attributes"],
+        ["xpath=//form[@id='account']/div[4]/button", "xpath:idRelative"],
+        ["xpath=//button", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "b36cf687-9a16-480d-9529-a2afd6d6ac33",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Proyectos",
+      "targets": [
+        ["linkText=Proyectos", "linkText"],
+        ["css=.mud-button-root:nth-child(2)", "css:finder"],
+        ["xpath=(//a[@type='button'])[3]", "xpath:attributes"],
+        ["xpath=//a[contains(@href, '/proyectos')]", "xpath:href"],
+        ["xpath=//div[2]/a[2]", "xpath:position"],
+        ["xpath=//a[contains(.,'Proyectos')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "b4053f59-5b40-4207-8dd2-c9a2159995bf",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-tooltip-root:nth-child(2) path:nth-child(2)",
+      "targets": [
+        ["css=.mud-tooltip-root:nth-child(2) path:nth-child(2)", "css:finder"]
+      ],
+      "value": ""
+    }, {
+      "id": "a5dde0e5-6662-464b-a491-67109c826bcb",
+      "comment": "",
+      "command": "click",
+      "target": "css=#mask_480e3f29 > .mud-input-slot:nth-child(1)",
+      "targets": [
+        ["css=#mask_480e3f29 > .mud-input-slot:nth-child(1)", "css:finder"],
+        ["xpath=//input[@type='text']", "xpath:attributes"],
+        ["xpath=//div[@id='mask_480e3f29']/input", "xpath:idRelative"],
+        ["xpath=//div[4]/div[2]/div/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "eead4cdc-ed93-4b21-a908-2b9edbcf7da0",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-input-control:nth-child(7) .mud-input-slot",
+      "targets": [
+        ["css=.mud-input-control:nth-child(7) .mud-input-slot", "css:finder"],
+        ["xpath=//textarea[@type='text']", "xpath:attributes"],
+        ["xpath=//div[@id='_5a3c923a7ad4429eaa5efb5c54864236']/div[2]/div[4]/div[3]/div/div/textarea", "xpath:idRelative"],
+        ["xpath=//textarea", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "4e5be0cf-35db-4b29-8619-af504e0a8f2c",
+      "comment": "",
+      "command": "type",
+      "target": "css=.mud-input-control:nth-child(7) .mud-input-slot",
+      "targets": [
+        ["css=.mud-input-control:nth-child(7) .mud-input-slot", "css:finder"],
+        ["xpath=//textarea[@type='text']", "xpath:attributes"],
+        ["xpath=//div[@id='_5a3c923a7ad4429eaa5efb5c54864236']/div[2]/div[4]/div[3]/div/div/textarea", "xpath:idRelative"],
+        ["xpath=//textarea", "xpath:position"]
+      ],
+      "value": "Estructuras de datos en la nube"
+    }, {
+      "id": "8f4a4c0a-9fb6-481a-b34e-b38c720229fd",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-input-required:nth-child(1) .mud-input-slot:nth-child(1)",
+      "targets": [
+        ["css=.mud-input-required:nth-child(1) .mud-input-slot:nth-child(1)", "css:finder"],
+        ["xpath=//input[@type='date']", "xpath:attributes"],
+        ["xpath=//div[@id='_5a3c923a7ad4429eaa5efb5c54864236']/div[2]/div[4]/div[4]/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//div[4]/div[4]/div/div/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "6b14d478-8b64-4376-b7cd-7af56659930b",
+      "comment": "",
+      "command": "type",
+      "target": "css=.mud-input-required:nth-child(1) .mud-input-slot:nth-child(1)",
+      "targets": [
+        ["css=.mud-input-required:nth-child(1) .mud-input-slot:nth-child(1)", "css:finder"],
+        ["xpath=//input[@type='date']", "xpath:attributes"],
+        ["xpath=//div[@id='_5a3c923a7ad4429eaa5efb5c54864236']/div[2]/div[4]/div[4]/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//div[4]/div[4]/div/div/div/input", "xpath:position"]
+      ],
+      "value": "2022-12-04"
+    }, {
+      "id": "d278cc32-a3c5-4fb4-be70-01a00bef8ba8",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-input-control:nth-child(2) .mud-input-slot:nth-child(1)",
+      "targets": [
+        ["css=.mud-input-control:nth-child(2) .mud-input-slot:nth-child(1)", "css:finder"],
+        ["xpath=(//input[@type='date'])[2]", "xpath:attributes"],
+        ["xpath=//div[@id='_5a3c923a7ad4429eaa5efb5c54864236']/div[2]/div[4]/div[4]/div[2]/div/div/input", "xpath:idRelative"],
+        ["xpath=//div[4]/div[4]/div[2]/div/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "48e494d5-78ec-43bf-acd3-28de0e199e04",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-input-control:nth-child(2) .mud-input-slot:nth-child(1)",
+      "targets": [
+        ["css=.mud-input-control:nth-child(2) .mud-input-slot:nth-child(1)", "css:finder"],
+        ["xpath=(//input[@type='date'])[2]", "xpath:attributes"],
+        ["xpath=//div[@id='_5a3c923a7ad4429eaa5efb5c54864236']/div[2]/div[4]/div[4]/div[2]/div/div/input", "xpath:idRelative"],
+        ["xpath=//div[4]/div[4]/div[2]/div/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "e6fdd630-f2dc-4024-8812-0f9d5e532273",
+      "comment": "",
+      "command": "type",
+      "target": "css=.mud-input-control:nth-child(2) .mud-input-slot:nth-child(1)",
+      "targets": [
+        ["css=.mud-input-control:nth-child(2) .mud-input-slot:nth-child(1)", "css:finder"],
+        ["xpath=(//input[@type='date'])[2]", "xpath:attributes"],
+        ["xpath=//div[@id='_5a3c923a7ad4429eaa5efb5c54864236']/div[2]/div[4]/div[4]/div[2]/div/div/input", "xpath:idRelative"],
+        ["xpath=//div[4]/div[4]/div[2]/div/div/input", "xpath:position"]
+      ],
+      "value": "2023-01-19"
+    }, {
+      "id": "45464e61-fbcd-4397-9d5a-30040a155d49",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-input-control:nth-child(10) .mud-input-slot",
+      "targets": [
+        ["css=.mud-input-control:nth-child(10) .mud-input-slot", "css:finder"],
+        ["xpath=(//textarea[@type='text'])[2]", "xpath:attributes"],
+        ["xpath=//div[@id='_5a3c923a7ad4429eaa5efb5c54864236']/div[2]/div[4]/div[5]/div/div/textarea", "xpath:idRelative"],
+        ["xpath=//div[5]/div/div/textarea", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "38152d99-56ca-4ee4-85cb-27cec8e51524",
+      "comment": "",
+      "command": "type",
+      "target": "css=.mud-input-control:nth-child(10) .mud-input-slot",
+      "targets": [
+        ["css=.mud-input-control:nth-child(10) .mud-input-slot", "css:finder"],
+        ["xpath=(//textarea[@type='text'])[2]", "xpath:attributes"],
+        ["xpath=//div[@id='_5a3c923a7ad4429eaa5efb5c54864236']/div[2]/div[4]/div[5]/div/div/textarea", "xpath:idRelative"],
+        ["xpath=//div[5]/div/div/textarea", "xpath:position"]
+      ],
+      "value": "Listas enlazadas"
+    }, {
+      "id": "465f2175-5317-4116-8876-b88f94cc4586",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-select:nth-child(11) .mud-input-slot:nth-child(1)",
+      "targets": [
+        ["css=.mud-select:nth-child(11) .mud-input-slot:nth-child(1)", "css:finder"],
+        ["xpath=(//input[@type='text'])[2]", "xpath:attributes"],
+        ["xpath=//div[@id='_5a3c923a7ad4429eaa5efb5c54864236']/div[2]/div[4]/div[6]/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//div[6]/div/div/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "2e42fa8c-5a92-48f3-b6cd-0b4831aff700",
+      "comment": "",
+      "command": "click",
+      "target": "css=#c4f5de6e-c35d-49b8-8e30-3e17a66d6ff6_item1 .mud-typography",
+      "targets": [
+        ["css=#c4f5de6e-c35d-49b8-8e30-3e17a66d6ff6_item1 .mud-typography", "css:finder"],
+        ["xpath=//div[@id='c4f5de6e-c35d-49b8-8e30-3e17a66d6ff6_item1']/div/p", "xpath:idRelative"],
+        ["xpath=//div[3]/div/div[2]/div/p", "xpath:position"],
+        ["xpath=//p[contains(.,'Adrian Vega Vega')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "a34d96f8-0957-49a1-833d-953dce45f8d4",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-select:nth-child(12) .mud-input-slot:nth-child(1)",
+      "targets": [
+        ["css=.mud-select:nth-child(12) .mud-input-slot:nth-child(1)", "css:finder"],
+        ["xpath=(//input[@type='text'])[3]", "xpath:attributes"],
+        ["xpath=//div[@id='_5a3c923a7ad4429eaa5efb5c54864236']/div[2]/div[4]/div[7]/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//div[7]/div/div/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "80ac51e9-04ff-4628-abab-021b85aa7049",
+      "comment": "",
+      "command": "click",
+      "target": "css=#d89c1204-40d9-42b3-9879-859c8c5344cb_item0 .mud-typography",
+      "targets": [
+        ["css=#d89c1204-40d9-42b3-9879-859c8c5344cb_item0 .mud-typography", "css:finder"],
+        ["xpath=//div[@id='d89c1204-40d9-42b3-9879-859c8c5344cb_item0']/div/p", "xpath:idRelative"],
+        ["xpath=//div[4]/div/div/div/p", "xpath:position"],
+        ["xpath=//p[contains(.,'Ingeniería de software empírica')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "9b1ed753-fd7b-4958-a11f-d13b75cd0aaf",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-button-filled-primary > .mud-button-label",
+      "targets": [
+        ["css=.mud-button-filled-primary > .mud-button-label", "css:finder"],
+        ["xpath=//div[@id='_5a3c923a7ad4429eaa5efb5c54864236']/div[2]/div[5]/div/button[2]/span", "xpath:idRelative"],
+        ["xpath=//button[2]/span", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "c61a4a6a-1788-4338-ba6e-97305e678a11",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-button-text-primary > .mud-button-label",
+      "targets": [
+        ["css=.mud-button-text-primary > .mud-button-label", "css:finder"],
+        ["xpath=//div[@id='_5a3c923a7ad4429eaa5efb5c54864236']/div[2]/div[5]/div/button/span", "xpath:idRelative"],
+        ["xpath=//button/span", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "cce9aa06-4b06-4558-bd4f-361d89eb844f",
+      "comment": "",
+      "command": "click",
+      "target": "css=.mud-grid-item:nth-child(2) .mud-card-content > .mud-typography-h3",
+      "targets": [
+        ["css=.mud-grid-item:nth-child(2) .mud-card-content > .mud-typography-h3", "css:finder"],
+        ["xpath=//div[2]/div/div[2]/h3", "xpath:position"],
+        ["xpath=//h3[contains(.,'Estructuras de datos en la nube')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "3fc2e970-9362-4a9a-9d7a-a199c760a368",
+      "comment": "",
+      "command": "assertText",
+      "target": "linkText=Estructuras de datos en la nube",
+      "targets": [
+        ["linkText=Estructuras de datos en la nube", "linkText"],
+        ["css=.mud-grid-item:nth-child(2) .mud-typography > .mud-typography", "css:finder"],
+        ["xpath=//a[contains(text(),'Estructuras de datos en la nube')]", "xpath:link"],
+        ["xpath=//a[contains(@href, '/proyectos/835-BA-12')]", "xpath:href"],
+        ["xpath=//div[2]/div/div[2]/h3/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Estructuras de datos en la nube')]", "xpath:innerText"]
+      ],
+      "value": "Estructuras de datos en la nube"
+    }]
+  }],
+  "suites": [{
+    "id": "80c649a4-92b2-4b86-a4b2-b357bbf2f7c6",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": []
+  }],
+  "urls": ["https://localhost:7075/"],
+  "plugins": []
+}

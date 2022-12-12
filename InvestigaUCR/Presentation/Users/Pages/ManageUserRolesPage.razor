@@ -1,0 +1,41 @@
+﻿@page "/administrarUsuarios"
+@using Domain.Users.Entities
+@using Presentation.Core.Layout
+@using Application.Users;
+@using Microsoft.AspNetCore.Components.Authorization
+@using Presentation.Users.Components
+@inject IUserService UserService
+@*PIIB22II02-1319 MC-PL-3.5 Show Logged Users Task : PIIB22II02-1325 create page of admin page Dev: Sam Cheang*@
+
+
+<AuthorizeView Roles="AdminRole">
+    <Authorized>
+        <Loading IsLoading="_isLoading">
+            <ListOfUsersRols userRols="userRols"></ListOfUsersRols>
+        </Loading>
+    </Authorized>
+    <NotAuthorized>
+        <MudText Align="Align.Center" Color=Color.Error Typo="Typo.h2" Class="text-danger">No se encuentra autorizado para administrar usuarios.</MudText>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+
+
+@code {
+    private bool _isLoading { get; set; }
+    public IEnumerable<UserRolModel>? userRols { get; set; }// = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsers();
+    }
+
+    private async Task LoadUsers()
+    {
+        _isLoading = true;
+        userRols = await UserService.GetAllUsersRols();
+        _isLoading = false;
+    }
+}
+
